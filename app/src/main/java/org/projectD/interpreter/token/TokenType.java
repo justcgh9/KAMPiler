@@ -8,6 +8,7 @@ public enum TokenType {
     IDENT("IDENT"),
     INT("INT"),
     STRING("STRING"),
+    REAL("REAL"),
     
     // Operators
     ASSIGN(":="),
@@ -16,6 +17,7 @@ public enum TokenType {
     BANG("!"),
     ASTERISK("*"),
     SLASH("/"),
+    DOT("."),
     
     LT("<"),
     GT(">"),

@@ -113,6 +113,9 @@ public class Lexer {
             case ']':
                 tok = newToken(TokenType.RBRACKET, ch);
                 break;
+            case '.':
+                tok = newToken(TokenType.DOT, ch);
+                break;
             case '\0':
                 tok = new Token("", TokenType.EOF);
                 break;
@@ -122,7 +125,24 @@ public class Lexer {
                     TokenType type = TokenLookup.lookupIdent(literal);
                     return new Token(literal, type);
                 } else if (isDigit(ch)) {
-                    return new Token(readNumber(), TokenType.INT);
+                    int startPos = position;
+                    boolean isReal = false;
+                    while (isDigit(ch)) {
+                        if (peekChar() == '.') {
+                            if (isReal) {
+                                break;
+                            }
+
+                            isReal = true;
+                            readChar();
+                            if (!isDigit(peekChar())) {
+                                readChar();
+                                break;
+                            }
+                        }
+                        readChar();
+                    }
+                    return new Token(input.substring(startPos, position), isReal ? TokenType.REAL: TokenType.INT);
                 } else {
                     tok = newToken(TokenType.ILLEGAL, ch);
                 }
@@ -165,13 +185,13 @@ public class Lexer {
         return input.substring(startPos, position);
     }
 
-    private String readNumber() {
-        int startPos = position;
-        while (isDigit(ch)) {
-            readChar();
-        }
-        return input.substring(startPos, position);
-    }
+    // private String readNumber() {
+    //     int startPos = position;
+    //     while (isDigit(ch)) {
+    //         readChar();
+    //     }
+    //     return input.substring(startPos, position);
+    // }
 
     private String readString() {
         int startPos = position + 1;
