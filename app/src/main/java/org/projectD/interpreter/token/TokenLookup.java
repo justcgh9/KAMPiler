@@ -15,6 +15,11 @@ public class TokenLookup {
         keywords.put("else", TokenType.ELSE);
         keywords.put("return", TokenType.RETURN);
         keywords.put("is", TokenType.IS);
+        keywords.put("in", TokenType.IN);
+        keywords.put("loop", TokenType.LOOP);
+        keywords.put("while", TokenType.WHILE);
+        keywords.put("for", TokenType.FOR);
+        keywords.put("do", TokenType.DO);
         keywords.put("end", TokenType.END);
     }
 

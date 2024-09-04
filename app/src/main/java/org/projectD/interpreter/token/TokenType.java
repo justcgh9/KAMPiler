@@ -49,6 +49,11 @@ public enum TokenType {
     ELSE("ELSE"),
     RETURN("RETURN"),
     END("END"),
+    FOR("FOR"),
+    WHILE("WHILE"),
+    DO("DO"),
+    LOOP("LOOP"),
+    IN("IN"),
     IS("IS");
     
     private final String value;
