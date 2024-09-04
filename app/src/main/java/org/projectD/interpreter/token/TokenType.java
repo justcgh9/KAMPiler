@@ -32,7 +32,7 @@ public enum TokenType {
     COMMA(","),
     SEMICOLON(";"),
     COLON(":"),
-    
+    NEWLINE("\\n"),
     LPAREN("("),
     RPAREN(")"),
     LBRACE("{"),

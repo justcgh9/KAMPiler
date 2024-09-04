@@ -116,6 +116,9 @@ public class Lexer {
             case '.':
                 tok = newToken(TokenType.DOT, ch);
                 break;
+            case '\n':
+                tok = newToken(TokenType.NEWLINE, ch);
+                break;
             case '\0':
                 tok = new Token("", TokenType.EOF);
                 break;
@@ -154,7 +157,7 @@ public class Lexer {
     }
 
     private void skipWhitespace() {
-        while (ch == ' ' || ch == '\t' || ch == '\n' || ch == '\r') {
+        while (ch == ' ' || ch == '\t' || ch == '\r') {
             readChar();
         }
     }
