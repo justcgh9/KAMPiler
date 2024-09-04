@@ -19,6 +19,9 @@ public enum TokenType {
     
     LT("<"),
     GT(">"),
+    LEQ(">="),
+    GEQ("<="),
+    ARROW("=>"),
     
     EQ("="),
     NOT_EQ("!="),

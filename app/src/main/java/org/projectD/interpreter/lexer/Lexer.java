@@ -25,7 +25,14 @@ public class Lexer {
 
         switch (ch) {
             case '=':
-                tok = newToken(TokenType.EQ, ch);
+                if (peekChar() == '>') {
+                    char currentChar = ch;
+                    readChar();
+                    String literal = "" + currentChar + ch;
+                    tok = new Token(literal, TokenType.ARROW);
+                } else {
+                    tok = newToken(TokenType.EQ, ch);
+                }
                 break;
             case '+':
                 tok = newToken(TokenType.PLUS, ch);
@@ -50,10 +57,24 @@ public class Lexer {
                 tok = newToken(TokenType.ASTERISK, ch);
                 break;
             case '<':
-                tok = newToken(TokenType.LT, ch);
+                if (peekChar() == '=') {
+                    char currentChar = ch;
+                    readChar();
+                    String literal = "" + currentChar + ch;
+                    tok = new Token(literal, TokenType.LEQ);
+                } else {
+                    tok = newToken(TokenType.LT, ch);
+                }
                 break;
             case '>':
-                tok = newToken(TokenType.GT, ch);
+                if (peekChar() == '=') {
+                    char currentChar = ch;
+                    readChar();
+                    String literal = "" + currentChar + ch;
+                    tok = new Token(literal, TokenType.GEQ);
+                } else {
+                    tok = newToken(TokenType.GT, ch);
+                }
                 break;
             case ';':
                 tok = newToken(TokenType.SEMICOLON, ch);
