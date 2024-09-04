@@ -182,7 +182,8 @@ public class Lexer {
 
     private String readIdentifier() {
         int startPos = position;
-        while (isLetter(ch)) {
+        readChar();
+        while (isLetter(ch) || isDigit(ch)) {
             readChar();
         }
         return input.substring(startPos, position);
