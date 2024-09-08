@@ -16,11 +16,12 @@ repositories {
 }
 
 dependencies {
-    // Use JUnit test framework.
-    testImplementation libs.junit
-
     // This dependency is used by the application.
     implementation libs.guava
+    
+    // Add JUnit5.
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.0.3'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.0.3'
 }
 
 // Apply a specific Java toolchain to ease working on different environments.
@@ -33,4 +34,15 @@ java {
 application {
     // Define the main class for the application.
     mainClass = 'org.example.App'
+}
+
+
+test {
+    // Enable JUnit.
+    useJUnitPlatform()
+    // Enable showing standard output and error in the console
+    testLogging {
+        showStandardStreams = true
+        exceptionFormat = 'full'
+    }
 }
