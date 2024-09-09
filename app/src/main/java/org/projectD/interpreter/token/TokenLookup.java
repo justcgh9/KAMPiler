@@ -21,6 +21,14 @@ public class TokenLookup {
         keywords.put("for", TokenType.FOR);
         keywords.put("do", TokenType.DO);
         keywords.put("end", TokenType.END);
+        keywords.put("int", TokenType.TYPE);
+        keywords.put("str", TokenType.TYPE);
+        keywords.put("real", TokenType.TYPE);
+        keywords.put("bool", TokenType.TYPE);
+        keywords.put("array", TokenType.TYPE);
+        keywords.put("tuple", TokenType.TYPE);
+        keywords.put("empty", TokenType.TYPE);
+        keywords.put("print", TokenType.PRINT);
     }
 
     public static TokenType lookupIdent(String ident) {

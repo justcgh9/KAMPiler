@@ -202,7 +202,7 @@ public class Lexer {
         do {
             readChar();
         } while (ch != '"' && ch != '\0');
-        return input.substring(startPos, position);
+        return "\"" + input.substring(startPos, position) + ch;
     }
 
     private boolean isLetter(char ch) {
