@@ -1,11 +1,70 @@
+import java.util.stream.Stream;
+
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
+import static org.junit.jupiter.params.provider.Arguments.arguments;
 
 import org.projectD.interpreter.lexer.Lexer;
 import org.projectD.interpreter.token.TokenType;
 
 
 public class LexerTest {
+    static Stream<Arguments> keywordProvider() {
+        return Stream.of(
+            arguments("func", TokenType.FUNCTION),
+            arguments("var", TokenType.VAR),
+            arguments("true", TokenType.TRUE),
+            arguments("false", TokenType.FALSE),
+            arguments("if", TokenType.IF),
+            arguments("else", TokenType.ELSE),
+            arguments("return", TokenType.RETURN),
+            arguments("end", TokenType.END),
+            arguments("for", TokenType.FOR),
+            arguments("while", TokenType.WHILE),
+            arguments("do", TokenType.DO),
+            arguments("loop", TokenType.LOOP),
+            arguments("in", TokenType.IN),
+            arguments("is", TokenType.IS)
+        );
+    }
+
+    static Stream<Arguments> operationProvider() {
+        return Stream.of(
+            arguments(":=", TokenType.ASSIGN),
+            arguments("+", TokenType.PLUS),
+            arguments("-", TokenType.MINUS),
+            arguments("!", TokenType.BANG),
+            arguments("*", TokenType.ASTERISK),
+            arguments("/", TokenType.SLASH),
+            arguments(".", TokenType.DOT),
+            arguments("<", TokenType.LT),
+            arguments(">", TokenType.GT),
+            arguments(">=", TokenType.GEQ),
+            arguments("<=", TokenType.LEQ),
+            arguments("=>", TokenType.ARROW),
+            arguments("=", TokenType.EQ),
+            arguments("!=", TokenType.NOT_EQ)
+        );
+    }
+
+    static Stream<Arguments> delimiterProvider() {
+        return Stream.of(
+            arguments(",", TokenType.COMMA),
+            arguments(";", TokenType.SEMICOLON),
+            arguments(":", TokenType.COLON),
+            arguments("\n", TokenType.NEWLINE),
+            arguments("(", TokenType.LPAREN),
+            arguments(")", TokenType.RPAREN),
+            arguments("{", TokenType.LBRACE),
+            arguments("}", TokenType.RBRACE),
+            arguments("[", TokenType.LBRACKET),
+            arguments("]", TokenType.RBRACKET)
+        );
+    }
+
     @Test
     void testNotAllowedSymbol() {
         var token = new Lexer("п").nextToken();
@@ -34,25 +93,25 @@ public class LexerTest {
         Assertions.assertEquals("abc", token.gLiteral());
     }
 
-    @Test
-    void testKeywordIsKeyrwordToken() {
-        var token = new Lexer("func").nextToken();
-        Assertions.assertEquals(TokenType.FUNCTION, token.gTokenType());
-        Assertions.assertEquals("func", token.gLiteral());
+    @ParameterizedTest
+    @MethodSource("keywordProvider")
+    void testKeywordIsKeyrwordToken(String value, TokenType expectedTokenType) {
+        var token = new Lexer(value).nextToken();
+        Assertions.assertEquals(expectedTokenType, token.gTokenType());
     }
 
-    @Test
-    void testOperationIsOperationToken() {
-        var token = new Lexer("+").nextToken();
-        Assertions.assertEquals(TokenType.PLUS, token.gTokenType());
-        Assertions.assertEquals("+", token.gLiteral());
+    @ParameterizedTest
+    @MethodSource("operationProvider")
+    void testOperationIsOperationToken(String value, TokenType expectedTokenType) {
+        var token = new Lexer(value).nextToken();
+        Assertions.assertEquals(expectedTokenType, token.gTokenType());
     }
 
-    @Test
-    void testDelimiterIsDelimiterToken() {
-        var token = new Lexer("(").nextToken();
-        Assertions.assertEquals(TokenType.LPAREN, token.gTokenType());
-        Assertions.assertEquals("(", token.gLiteral());
+    @ParameterizedTest
+    @MethodSource("delimiterProvider")
+    void testDelimiterIsDelimiterToken(String value, TokenType expectedTokenType) {
+        var token = new Lexer(value).nextToken();
+        Assertions.assertEquals(expectedTokenType, token.gTokenType());
     }
 
     @Test
