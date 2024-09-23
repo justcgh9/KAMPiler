@@ -9,6 +9,8 @@ public enum TokenType {
     INT("INT"),
     STRING("STRING"),
     REAL("REAL"),
+
+    TYPE("TYPE"),
     
     // Operators
     ASSIGN(":="),
@@ -54,7 +56,8 @@ public enum TokenType {
     DO("DO"),
     LOOP("LOOP"),
     IN("IN"),
-    IS("IS");
+    IS("IS"),
+    PRINT("PRINT");
     
     private final String value;
     
