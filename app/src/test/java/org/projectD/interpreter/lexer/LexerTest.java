@@ -1,7 +1,9 @@
+package org.projectD.interpreter.lexer;
+
+import org.projectD.interpreter.lexer.Lexer;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-import org.projectD.interpreter.lexer.Lexer;
 import org.projectD.interpreter.token.TokenType;
 
 
