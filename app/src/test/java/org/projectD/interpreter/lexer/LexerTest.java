@@ -134,6 +134,6 @@ public class LexerTest {
     void testLiteralString() {
         var token = new Lexer("\"str\"").nextToken();
         Assertions.assertEquals(TokenType.STRING, token.gTokenType());
-        Assertions.assertEquals("str", token.gLiteral());
+        Assertions.assertEquals("\"str\"", token.gLiteral());
     }
 }
