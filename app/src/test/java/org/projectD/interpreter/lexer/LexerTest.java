@@ -1,3 +1,6 @@
+package org.projectD.interpreter.lexer;
+
+import org.projectD.interpreter.lexer.Lexer;
 import java.util.stream.Stream;
 
 import org.junit.jupiter.api.Assertions;
@@ -7,7 +10,6 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import static org.junit.jupiter.params.provider.Arguments.arguments;
 
-import org.projectD.interpreter.lexer.Lexer;
 import org.projectD.interpreter.token.TokenType;
 
 
@@ -132,6 +134,6 @@ public class LexerTest {
     void testLiteralString() {
         var token = new Lexer("\"str\"").nextToken();
         Assertions.assertEquals(TokenType.STRING, token.gTokenType());
-        Assertions.assertEquals("str", token.gLiteral());
+        Assertions.assertEquals("\"str\"", token.gLiteral());
     }
 }
