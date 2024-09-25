@@ -15,16 +15,20 @@ public class Ast {
         String toString();
     }
 
-    interface Statement extends Node {
+    public interface Statement extends Node {
         void statementNode();
     }
 
-    interface Expression extends Node {
+    public interface Expression extends Node {
         void expressionNode();
     }
 
-    class Program implements Node{
+    public class Program implements Node{
         List<Statement> statements;
+
+        public Program(List<Statement> statements) {
+            this.statements = statements;
+        }
 
         public String tokenLiteral() {
             return this.statements.size() > 0 ? this.statements.get(0).tokenLiteral(): "";
@@ -41,7 +45,7 @@ public class Ast {
         }
     }
 
-    class VarStatement implements Statement {
+    public class VarStatement implements Statement {
         Token token;
         Identifier name;
         Expression value;
@@ -70,7 +74,7 @@ public class Ast {
 
     }
 
-    class ReturnStatement implements Statement {
+    public class ReturnStatement implements Statement {
         Token token;
         Expression returnValue;
 
@@ -96,9 +100,14 @@ public class Ast {
 
     }
 
-    class ExpressionStatement implements Statement {
+    public class ExpressionStatement implements Statement {
         Token token; // I suggest to store the first token of the expression
         Expression expression;
+
+        public ExpressionStatement(Token token, Expression expression) {
+            this.token = token;
+            this.expression = expression;
+        }
 
         public void statementNode() {};
 
@@ -112,7 +121,7 @@ public class Ast {
 
     }
 
-    class BlockStatement implements Statement {
+    public class BlockStatement implements Statement {
         Token token;
         List<Statement> statements;
 
@@ -134,7 +143,7 @@ public class Ast {
 
     }
 
-    class Identifier implements Expression {
+    public class Identifier implements Expression {
         Token token;
         String value;
 
@@ -149,7 +158,7 @@ public class Ast {
         }
     }
 
-    class BooleanLiteral implements Expression {
+    public class BooleanLiteral implements Expression {
         Token token;
         String value;
 
@@ -164,7 +173,27 @@ public class Ast {
         }
     }
 
-    class IntegerLiteral implements Expression {
+    public class IntegerLiteral implements Expression {
+        Token token;
+        String value;
+
+        public IntegerLiteral(Token token, String value) {
+            this.token = token;
+            this.value = value;
+        }
+
+        public void expressionNode() {};
+
+        public String tokenLiteral() {
+            return this.token.gLiteral();
+        }
+
+        public String toString() {
+            return this.token.gLiteral();
+        }
+    }
+
+    public class RealLiteral implements Expression {
         Token token;
         String value;
 
@@ -179,7 +208,7 @@ public class Ast {
         }
     }
 
-    class RealLiteral implements Expression {
+    public class StringLiteral implements Expression {
         Token token;
         String value;
 
@@ -194,22 +223,7 @@ public class Ast {
         }
     }
 
-    class StringLiteral implements Expression {
-        Token token;
-        String value;
-
-        public void expressionNode() {};
-
-        public String tokenLiteral() {
-            return this.token.gLiteral();
-        }
-
-        public String toString() {
-            return this.token.gLiteral();
-        }
-    }
-
-    class PrefixExpression implements Expression {
+    public class PrefixExpression implements Expression {
         Token token;
         String operator;
         Expression right;
@@ -234,11 +248,17 @@ public class Ast {
         }
     }
 
-    class InfixExpression implements Expression {
+    public class InfixExpression implements Expression {
         Token token;
         String operator;
         Expression left, right;
 
+        public InfixExpression(Token token, String operator, Expression left, Expression right) {
+            this.token = token;
+            this.operator = operator;
+            this.left = left;
+            this.right = right;
+        }
 
         public void expressionNode() {};
 
@@ -260,7 +280,7 @@ public class Ast {
         }
     }
 
-    class IfExpression implements Expression {
+    public class IfExpression implements Expression {
         Token token;
         Expression predicate;
         BlockStatement ifBlock, elseBlock;
@@ -291,7 +311,7 @@ public class Ast {
         }
     }
 
-    class FunctionLiteral implements Expression {
+    public class FunctionLiteral implements Expression {
         Token token;
         BlockStatement body;
         List<Identifier> parameters;
@@ -327,7 +347,7 @@ public class Ast {
         }
     }
 
-    class CallExpression implements Expression {
+    public class CallExpression implements Expression {
         Token token;
         Expression function;
         List<Expression> arguments;
@@ -356,7 +376,7 @@ public class Ast {
         }
     }
 
-    class ArrayLiteral implements Expression {
+    public class ArrayLiteral implements Expression {
         Token token;
         List<Expression> elements;
 
@@ -383,7 +403,7 @@ public class Ast {
         }
     }
 
-    class IndexLiteral implements Expression {
+    public class IndexLiteral implements Expression {
         Token token;
         Expression left, index;
 
@@ -407,7 +427,7 @@ public class Ast {
         }
     }
 
-    class TupleLiteral implements Expression {
+    public class TupleLiteral implements Expression {
         Token token;
         Map<Expression, Expression> pairs;
 
