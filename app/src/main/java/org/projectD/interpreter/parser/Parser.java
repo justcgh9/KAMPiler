@@ -41,7 +41,11 @@ package org.projectD.interpreter.parser;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 /* "%code imports" blocks.  */
+<<<<<<< HEAD
 /* "parser.y":9  */
+=======
+/* "parser.y":10  */
+>>>>>>> 9dcbd93 (add addition grammar)
  
 	import java.io.IOException;
 	import java.util.List;    
@@ -170,7 +174,11 @@ public class Parser
      * Method to retrieve the semantic value of the last scanned token.
      * @return the semantic value of the last scanned token.
      */
+<<<<<<< HEAD
     Object getLVal();
+=======
+    Ast.Node getLVal();
+>>>>>>> 9dcbd93 (add addition grammar)
 
     /**
      * Entry point for the scanner.  Returns the token identifier corresponding
@@ -234,19 +242,31 @@ public class Parser
 
   private final class YYStack {
     private int[] stateStack = new int[16];
+<<<<<<< HEAD
     private Object[] valueStack = new Object[16];
+=======
+    private Ast.Node[] valueStack = new Ast.Node[16];
+>>>>>>> 9dcbd93 (add addition grammar)
 
     public int size = 16;
     public int height = -1;
 
+<<<<<<< HEAD
     public final void push(int state, Object value) {
+=======
+    public final void push(int state, Ast.Node value) {
+>>>>>>> 9dcbd93 (add addition grammar)
       height++;
       if (size == height) {
         int[] newStateStack = new int[size * 2];
         System.arraycopy(stateStack, 0, newStateStack, 0, height);
         stateStack = newStateStack;
 
+<<<<<<< HEAD
         Object[] newValueStack = new Object[size * 2];
+=======
+        Ast.Node[] newValueStack = new Ast.Node[size * 2];
+>>>>>>> 9dcbd93 (add addition grammar)
         System.arraycopy(valueStack, 0, newValueStack, 0, height);
         valueStack = newValueStack;
 
@@ -273,7 +293,11 @@ public class Parser
       return stateStack[height - i];
     }
 
+<<<<<<< HEAD
     public final Object valueAt(int i) {
+=======
+    public final Ast.Node valueAt(int i) {
+>>>>>>> 9dcbd93 (add addition grammar)
       return valueStack[height - i];
     }
 
@@ -354,6 +378,7 @@ public class Parser
        Otherwise, the following line sets YYVAL to garbage.
        This behavior is undocumented and Bison
        users should not rely upon it.  */
+<<<<<<< HEAD
     Object yyval = (0 < yylen) ? yystack.valueAt(yylen - 1) : yystack.valueAt(0);
 
     switch (yyn)
@@ -364,6 +389,26 @@ public class Parser
                   { 
 		List<Ast.Statement> statements = new ArrayList<>();
 		statements.add((Ast.ExpressionStatement)yystack.valueAt (0));
+=======
+    Ast.Node yyval = (0 < yylen) ? yystack.valueAt(yylen - 1) : yystack.valueAt(0);
+
+    switch (yyn)
+      {
+          case 2: /* CompilationUnit: %empty  */
+  if (yyn == 2)
+    /* "parser.y":46  */
+                 {yyval = null;};
+  break;
+
+
+  case 3: /* CompilationUnit: AddUnit  */
+  if (yyn == 3)
+    /* "parser.y":47  */
+                  { 
+		List<Ast.Statement> statements = new ArrayList<>();
+		statements.add((Ast.ExpressionStatement)yystack.valueAt (0));
+		System.out.println(statements);
+>>>>>>> 9dcbd93 (add addition grammar)
 		yyval = new Ast.Program(statements);
 	};
   break;
@@ -371,6 +416,7 @@ public class Parser
 
   case 4: /* AddUnit: INT PLUS INT  */
   if (yyn == 4)
+<<<<<<< HEAD
     /* "parser.y":54  */
                        {
         Ast.IntegerLiteral left = new Ast.IntegerLiteral(new Token(String.valueOf(yystack.valueAt (2)), TokenType.INT), String.valueOf(yystack.valueAt (2)));
@@ -381,12 +427,27 @@ public class Parser
         Ast.ExpressionStatement exprStmt = new Ast.ExpressionStatement(new Token(String.valueOf(yystack.valueAt (2))), addExpr);
     
         yyval = exprStmt;
+=======
+    /* "parser.y":56  */
+                       {
+		((Ast.InfixExpression)yystack.valueAt (1)).setLeft((Ast.IntegerLiteral)yystack.valueAt (2));
+		((Ast.InfixExpression)yystack.valueAt (1)).setRight((Ast.IntegerLiteral)yystack.valueAt (0));
+
+		var token = new Token(yystack.valueAt (2).tokenLiteral(), TokenType.INT);
+        Ast.ExpressionStatement expr = new Ast.ExpressionStatement(token, (Ast.InfixExpression)yystack.valueAt (1));
+    
+        yyval = expr;
+>>>>>>> 9dcbd93 (add addition grammar)
 	};
   break;
 
 
 
+<<<<<<< HEAD
 /* "app/src/main/java/org/projectD/interpreter/parser/Parser.java":390  */
+=======
+/* "app/src/main/java/org/projectD/interpreter/parser/Parser.java":397  */
+>>>>>>> 9dcbd93 (add addition grammar)
 
         default: break;
       }
@@ -429,7 +490,11 @@ public class Parser
 
 
     /* Semantic value of the lookahead.  */
+<<<<<<< HEAD
     Object yylval = null;
+=======
+    Ast.Node yylval = null;
+>>>>>>> 9dcbd93 (add addition grammar)
 
 
 
@@ -953,27 +1018,46 @@ private static final byte[] yycheck_ = yycheck_init();
   private static final int YYNTOKENS_ = 5;
 
 /* Unqualified %code blocks.  */
+<<<<<<< HEAD
 /* "parser.y":20  */
+=======
+/* "parser.y":21  */
+>>>>>>> 9dcbd93 (add addition grammar)
 
 	// TODO: remove main function.
 	// This function must be used only for debugging purposes.
 	// Run command:
 	// java app/src/main/java/org/projectD/interpreter/parser/Parser.java 
 	public static void main (String args[]) throws IOException {
+<<<<<<< HEAD
 		ParserLexer l = new ParserLexer("1 + 1");
+=======
+		ParserLexer l = new ParserLexer("1 + 3");
+>>>>>>> 9dcbd93 (add addition grammar)
 		Parser p = new Parser(l);
 		p.parse();
 	}
 
+<<<<<<< HEAD
 /* "app/src/main/java/org/projectD/interpreter/parser/Parser.java":969  */
 
 }
 /* "parser.y":65  */
+=======
+/* "app/src/main/java/org/projectD/interpreter/parser/Parser.java":976  */
+
+}
+/* "parser.y":66  */
+>>>>>>> 9dcbd93 (add addition grammar)
 
 
 class ParserLexer implements Parser.Lexer {
 	private Lexer lexer;
+<<<<<<< HEAD
 	private Object value;
+=======
+	private Ast.Node value;
+>>>>>>> 9dcbd93 (add addition grammar)
 
 	ParserLexer(String input) {
 		this.lexer = new Lexer(input);
@@ -988,10 +1072,17 @@ class ParserLexer implements Parser.Lexer {
 			case TokenType.EOF:
 				return Parser.Lexer.EOF;
 			case TokenType.PLUS:
+<<<<<<< HEAD
 				this.value = literal;
 				return Parser.Lexer.PLUS;
 			case TokenType.INT:
 				this.value = Integer.parseInt(literal);
+=======
+				this.value = new Ast.InfixExpression("+");
+				return Parser.Lexer.PLUS;
+			case TokenType.INT:
+				this.value = new Ast.IntegerLiteral(tok, literal);
+>>>>>>> 9dcbd93 (add addition grammar)
 				return Parser.Lexer.INT;
 		}
 
@@ -999,7 +1090,11 @@ class ParserLexer implements Parser.Lexer {
 	}
 
 	@Override
+<<<<<<< HEAD
 	public Object getLVal() {
+=======
+	public Ast.Node getLVal() {
+>>>>>>> 9dcbd93 (add addition grammar)
 		return this.value;
 	}
 

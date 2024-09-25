@@ -3,6 +3,7 @@
 %define api.package {org.projectD.interpreter.parser}
 %define api.parser.public
 %define api.parser.class {Parser}
+%define api.value.type {Ast.Node}
 
 %define parse.error detailed
 
@@ -23,7 +24,7 @@
 	// Run command:
 	// java app/src/main/java/org/projectD/interpreter/parser/Parser.java 
 	public static void main (String args[]) throws IOException {
-		ParserLexer l = new ParserLexer("1 + 1");
+		ParserLexer l = new ParserLexer("1 + 3");
 		Parser p = new Parser(l);
 		p.parse();
 	}
@@ -42,31 +43,40 @@
 %%
 
 CompilationUnit
+<<<<<<< HEAD
 	: %empty
 	| AddUnit { 
 		List<Ast.Statement> statements = new ArrayList<>();
 		statements.add((Ast.ExpressionStatement)$1);
+=======
+	: %empty {$$ = null;}
+	| AddUnit { 
+		List<Ast.Statement> statements = new ArrayList<>();
+		statements.add((Ast.ExpressionStatement)$1);
+		
+		// TODO: remove, added for debugging
+		System.out.println(statements);
+>>>>>>> 9dcbd93 (add addition grammar)
 		$$ = new Ast.Program(statements);
 	}
 	;
 
 AddUnit
 	: INT PLUS INT {
-        Ast.IntegerLiteral left = new Ast.IntegerLiteral(new Token(String.valueOf($1), TokenType.INT), String.valueOf($1));
-        Ast.IntegerLiteral right = new Ast.IntegerLiteral(new Token(String.valueOf($3), TokenType.INT), String.valueOf($3));
+		((Ast.InfixExpression)$2).setLeft((Ast.IntegerLiteral)$1);
+		((Ast.InfixExpression)$2).setRight((Ast.IntegerLiteral)$3);
 
-        Ast.InfixExpression addExpr = new Ast.InfixExpression(new Token(String.valueOf($1), TokenType.PLUS), "+", left, right);
-
-        Ast.ExpressionStatement exprStmt = new Ast.ExpressionStatement(new Token(String.valueOf($1)), addExpr);
+		var token = new Token($1.tokenLiteral(), TokenType.INT);
+        Ast.ExpressionStatement expr = new Ast.ExpressionStatement(token, (Ast.InfixExpression)$2);
     
-        $$ = exprStmt;
+        $$ = expr;
 	}
 
 %%
 
 class ParserLexer implements Parser.Lexer {
 	private Lexer lexer;
-	private Object value;
+	private Ast.Node value;
 
 	ParserLexer(String input) {
 		this.lexer = new Lexer(input);
@@ -81,10 +91,10 @@ class ParserLexer implements Parser.Lexer {
 			case TokenType.EOF:
 				return Parser.Lexer.EOF;
 			case TokenType.PLUS:
-				this.value = literal;
+				this.value = new Ast.InfixExpression("+");
 				return Parser.Lexer.PLUS;
 			case TokenType.INT:
-				this.value = Integer.parseInt(literal);
+				this.value = new Ast.IntegerLiteral(tok, literal);
 				return Parser.Lexer.INT;
 		}
 
@@ -92,7 +102,7 @@ class ParserLexer implements Parser.Lexer {
 	}
 
 	@Override
-	public Object getLVal() {
+	public Ast.Node getLVal() {
 		return this.value;
 	}
 
