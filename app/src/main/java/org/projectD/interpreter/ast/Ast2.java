@@ -10,9 +10,8 @@ import org.projectD.interpreter.token.Token;
 
 public class Ast {
 
-    public interface Node {
+    interface Node {
         String tokenLiteral();
-
         String toString();
     }
 
@@ -24,7 +23,7 @@ public class Ast {
         void expressionNode();
     }
 
-    public static class Program implements Node {
+    public static class Program implements Node{
         List<Statement> statements;
 
         public Program(List<Statement> statements) {
@@ -32,7 +31,7 @@ public class Ast {
         }
 
         public String tokenLiteral() {
-            return this.statements.size() > 0 ? this.statements.get(0).tokenLiteral() : "";
+            return this.statements.size() > 0 ? this.statements.get(0).tokenLiteral(): "";
         }
 
         public String toString() {
@@ -51,8 +50,7 @@ public class Ast {
         Identifier name;
         Expression value;
 
-        public void statementNode() {
-        };
+        public void statementNode() {};
 
         public String tokenLiteral() {
             return this.token.gLiteral();
@@ -80,8 +78,7 @@ public class Ast {
         Token token;
         Expression returnValue;
 
-        public void statementNode() {
-        };
+        public void statementNode() {};
 
         public String tokenLiteral() {
             return this.token.gLiteral();
@@ -104,25 +101,20 @@ public class Ast {
     }
 
     public static class ExpressionStatement implements Statement {
-        Token token; // I suggest to store the first token of the expression
         Expression expression;
 
-        public ExpressionStatement(Token token, Expression expression) {
-            this.token = token;
+        public ExpressionStatement(Expression expression) {
             this.expression = expression;
         }
-
-        public void statementNode() {
-        };
 
         public void statementNode() {};
         
         public String tokenLiteral() {
-            return this.token.gLiteral();
+            return "expression statement";
         }
         
         public String toString() {
-            return Objects.nonNull(expression) ? this.expression.toString() : "";
+            return Objects.nonNull(expression) ? this.expression.toString(): "";
         }
         
     }
@@ -149,14 +141,13 @@ public class Ast {
         
     }
     
-    public class ForLiteral implements Statement {
+    public static class ForLiteral implements Statement {
         Token token;
         BlockStatement loopBody;
         Identifier  loopVariable;
         Expression typeIndicator;
 
-        public void statementNode() {
-        };
+        public void statementNode() {};
 
         public String tokenLiteral() {
             return this.token.gLiteral();
@@ -173,16 +164,13 @@ public class Ast {
             .append("loop")
             .append(loopBody.toString())
             .append("end");
-            
-            for (Statement s : this.statements) {
-                out.append(s.toString());
-            }
 
+            
             return out.toString();
         }
     }
 
-    public class WhileLiteral implements Statement {
+    public static class WhileLiteral implements Statement {
         Token token;
         Expression predicate;
         BlockStatement loopBody;
@@ -212,8 +200,7 @@ public class Ast {
         Token token;
         String value;
 
-        public void expressionNode() {
-        };
+        public void expressionNode() {};
 
         public String tokenLiteral() {
             return this.token.gLiteral();
@@ -228,8 +215,7 @@ public class Ast {
         Token token;
         String value;
 
-        public void expressionNode() {
-        };
+        public void expressionNode() {};
 
         public String tokenLiteral() {
             return this.token.gLiteral();
@@ -249,8 +235,7 @@ public class Ast {
             this.value = value;
         }
 
-        public void expressionNode() {
-        };
+        public void expressionNode() {};
 
         public String tokenLiteral() {
             return this.token.gLiteral();
@@ -265,13 +250,12 @@ public class Ast {
         Token token;
         String value;
 
-        public void expressionNode() {
-        };
+        public void expressionNode() {};
 
         public String tokenLiteral() {
             return this.token.gLiteral();
         }
-        
+
         public String toString() {
             return this.token.gLiteral();
         }
@@ -280,14 +264,13 @@ public class Ast {
     public static class StringLiteral implements Expression {
         Token token;
         String value;
-
-        public void expressionNode() {
-        };
-
+        
+        public void expressionNode() {};
+        
         public String tokenLiteral() {
             return this.token.gLiteral();
         }
-
+        
         public String toString() {
             return this.token.gLiteral();
         }
@@ -298,8 +281,8 @@ public class Ast {
         String operator;
         Expression right;
 
-        public void expressionNode() {
-        };
+
+        public void expressionNode() {};
 
         public String tokenLiteral() {
             return this.token.gLiteral();
@@ -309,55 +292,40 @@ public class Ast {
             StringBuilder out = new StringBuilder();
 
             out
-                    .append("(")
-                    .append(this.operator)
-                    .append(this.right.toString())
-                    .append(")");
+            .append("(")
+            .append(this.operator)
+            .append(this.right.toString())
+            .append(")");
 
             return out.toString();
         }
     }
 
     public static class InfixExpression implements Expression {
-        Token token;
         String operator;
         Expression left, right;
 
-        public InfixExpression(String operator) {
-            this.operator = operator;
-        }
-
-        public InfixExpression(Token token, String operator, Expression left, Expression right) {
-            this.token = token;
+        public InfixExpression(String operator, Expression left, Expression right) {
             this.operator = operator;
             this.left = left;
             this.right = right;
         }
 
-        public void setLeft(Expression left) {
-            this.left = left;
-        }
-
-        public void setRight(Expression right) {
-            this.right = right;
-        }
-
-        public void expressionNode() {
-        };
+        public void expressionNode() {};
 
         public String tokenLiteral() {
-            return this.token.gLiteral();
+            return "expression infix";
         }
 
         public String toString() {
             StringBuilder out = new StringBuilder();
 
             out
-                    .append("(")
-                    .append(this.left.toString())
-                    .append(" " + this.operator + " ")
-                    .append(this.right.toString())
-                    .append(")");
+            .append("(")
+            .append(this.left.toString())
+            .append(" " + this.operator + " ")
+            .append(this.right.toString())
+            .append(")");
 
             return out.toString();
         }
@@ -368,8 +336,8 @@ public class Ast {
         Expression predicate;
         BlockStatement ifBlock, elseBlock;
 
-        public void expressionNode() {
-        };
+
+        public void expressionNode() {};
 
         public String tokenLiteral() {
             return this.token.gLiteral();
@@ -379,15 +347,15 @@ public class Ast {
             StringBuilder out = new StringBuilder();
 
             out
-                    .append("if")
-                    .append(this.predicate.toString())
-                    .append(" ")
-                    .append(this.ifBlock.toString());
+            .append("if")
+            .append(this.predicate.toString())
+            .append(" ")
+            .append(this.ifBlock.toString());
 
-            if (Objects.nonNull(this.elseBlock)) {
+            if(Objects.nonNull(this.elseBlock)) {
                 out
-                        .append("else ")
-                        .append(this.elseBlock.toString());
+                .append("else ")
+                .append(this.elseBlock.toString());
             }
 
             return out.toString();
@@ -398,7 +366,7 @@ public class Ast {
         Token token;
         BlockStatement body;
         List<Identifier> parameters;
-
+        
         @Override
         public String toString() {
             StringBuilder out = new StringBuilder();
@@ -415,7 +383,7 @@ public class Ast {
             for (String param : params) {
                 joiner.add(param);
             }
-
+            
             out.append(joiner.toString());
             out.append(") ");
             out.append(body.toString());
@@ -423,9 +391,8 @@ public class Ast {
             return out.toString();
         }
 
-        public void expressionNode() {
-        };
-
+        public void expressionNode() {};
+    
         public String tokenLiteral() {
             return this.token.gLiteral();
         }
@@ -436,8 +403,7 @@ public class Ast {
         Expression function;
         List<Expression> arguments;
 
-        public void expressionNode() {
-        };
+        public void expressionNode() {};
 
         public String tokenLiteral() {
             return this.token.gLiteral();
@@ -447,15 +413,15 @@ public class Ast {
             StringBuilder out = new StringBuilder();
             StringJoiner joiner = new StringJoiner(", ");
 
-            for (Expression a : this.arguments) {
+            for(Expression a: this.arguments) {
                 joiner.add(a.toString());
             }
 
             out
-                    .append(this.function.toString())
-                    .append("(")
-                    .append(joiner.toString())
-                    .append(")");
+            .append(this.function.toString())
+            .append("(")
+            .append(joiner.toString())
+            .append(")");
 
             return out.toString();
         }
@@ -465,25 +431,24 @@ public class Ast {
         Token token;
         List<Expression> elements;
 
-        public void expressionNode() {
-        };
+        public void expressionNode() {};
 
         public String tokenLiteral() {
             return this.token.gLiteral();
         }
-
+        
         public String toString() {
             StringBuilder out = new StringBuilder();
             StringJoiner joiner = new StringJoiner(", ");
 
-            for (Expression a : this.elements) {
+            for(Expression a: this.elements) {
                 joiner.add(a.toString());
             }
 
             out
-                    .append("(")
-                    .append(joiner.toString())
-                    .append(")");
+            .append("(")
+            .append(joiner.toString())
+            .append(")");
 
             return out.toString();
         }
@@ -493,8 +458,7 @@ public class Ast {
         Token token;
         Expression left, index;
 
-        public void expressionNode() {
-        };
+        public void expressionNode() {};
 
         public String tokenLiteral() {
             return this.token.gLiteral();
@@ -504,11 +468,11 @@ public class Ast {
             StringBuilder out = new StringBuilder();
 
             out
-                    .append("(")
-                    .append(this.left.toString())
-                    .append("[")
-                    .append(this.index.toString())
-                    .append("])");
+            .append("(")
+            .append(this.left.toString())
+            .append("[")
+            .append(this.index.toString())
+            .append("])");
 
             return out.toString();
         }
@@ -518,8 +482,7 @@ public class Ast {
         Token token;
         Map<Expression, Expression> pairs;
 
-        public void expressionNode() {
-        };
+        public void expressionNode() {};
 
         public String tokenLiteral() {
             return this.token.gLiteral();
@@ -529,20 +492,21 @@ public class Ast {
             StringBuilder out = new StringBuilder();
             StringJoiner joiner = new StringJoiner(", ");
 
-            for (Map.Entry<Expression, Expression> entry : this.pairs.entrySet()) {
+            for (Map.Entry<Expression, Expression> entry: this.pairs.entrySet()) {
                 joiner.add(entry.getKey().toString() + ":" + entry.getValue().toString());
             }
 
             out
-                    .append("{")
-                    .append(joiner.toString())
-                    .append("}");
+            .append("{")
+            .append(joiner.toString())
+            .append("}");
+            
 
             return out.toString();
         }
     }
 
-    public class PrintLiteral implements Expression {
+    public static class PrintLiteral implements Expression {
         Token token;
         List<Expression> arguments;
 
