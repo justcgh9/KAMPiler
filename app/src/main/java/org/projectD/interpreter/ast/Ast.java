@@ -110,37 +110,92 @@ public class Ast {
         }
 
         public void statementNode() {};
-
+        
         public String tokenLiteral() {
             return this.token.gLiteral();
         }
-
+        
         public String toString() {
             return Objects.nonNull(expression) ? this.expression.toString(): "";
         }
-
+        
     }
 
     public class BlockStatement implements Statement {
         Token token;
         List<Statement> statements;
+        
+        public void statementNode() {};
+
+        public String tokenLiteral() {
+            return this.token.gLiteral();
+        }
+        
+        public String toString() {
+            StringBuilder out = new StringBuilder();
+            
+            for(Statement s: this.statements) {
+                out.append(s.toString());
+            }
+            
+            return out.toString();
+        }
+        
+    }
+    
+    public class ForLiteral implements Statement {
+        Token token;
+        BlockStatement loopBody;
+        Identifier  loopVariable;
+        Expression typeIndicator;
 
         public void statementNode() {};
 
         public String tokenLiteral() {
             return this.token.gLiteral();
         }
-
+        
         public String toString() {
             StringBuilder out = new StringBuilder();
+            
+            out
+            .append("for")
+            .append(loopVariable.toString())
+            .append("in")
+            .append(typeIndicator.toString())
+            .append("loop")
+            .append(loopBody.toString())
+            .append("end");
 
-            for(Statement s: this.statements) {
-                out.append(s.toString());
-            }
-
+            
             return out.toString();
         }
+    }
 
+    public class WhileLiteral implements Statement {
+        Token token;
+        Expression predicate;
+        BlockStatement loopBody;
+
+        public void statementNode() {};
+
+        public String tokenLiteral() {
+            return this.token.gLiteral();
+        }
+        
+        public String toString() {
+            StringBuilder out = new StringBuilder();
+            
+            out
+            .append("while")
+            .append(predicate.toString())
+            .append("loop")
+            .append(loopBody.toString())
+            .append("end");
+
+            
+            return out.toString();
+        }
     }
 
     public class Identifier implements Expression {
@@ -211,13 +266,13 @@ public class Ast {
     public class StringLiteral implements Expression {
         Token token;
         String value;
-
+        
         public void expressionNode() {};
-
+        
         public String tokenLiteral() {
             return this.token.gLiteral();
         }
-
+        
         public String toString() {
             return this.token.gLiteral();
         }
@@ -454,4 +509,34 @@ public class Ast {
             return out.toString();
         }
     }
+
+    public class PrintLiteral implements Expression {
+        Token token;
+        List<Expression> arguments;
+
+
+        public void expressionNode() {};
+
+        public String tokenLiteral() {
+            return this.token.gLiteral();
+        }
+
+        public String toString() {
+            StringBuilder out = new StringBuilder();
+            StringJoiner joiner = new StringJoiner(", ");
+
+            for (Expression argument: this.arguments) {
+                joiner.add(argument.toString());
+            }
+
+            out
+            .append("print(")
+            .append(joiner.toString())
+            .append(")");
+            
+
+            return out.toString();
+        }
+    }
+
 }

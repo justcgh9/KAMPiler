@@ -29,6 +29,7 @@ public class TokenLookup {
         keywords.put("tuple", TokenType.TYPE);
         keywords.put("empty", TokenType.TYPE);
         keywords.put("print", TokenType.PRINT);
+        keywords.put("then", TokenType.THEN);
     }
 
     public static TokenType lookupIdent(String ident) {

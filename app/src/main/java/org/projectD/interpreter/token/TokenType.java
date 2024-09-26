@@ -57,6 +57,7 @@ public enum TokenType {
     LOOP("LOOP"),
     IN("IN"),
     IS("IS"),
+    THEN("THEN"),
     PRINT("PRINT");
     
     private final String value;
