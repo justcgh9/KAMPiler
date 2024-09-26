@@ -5,3 +5,6 @@
 build
 
 .vscode
+
+# Parser is bison-generated
+app/src/main/java/org/projectD/interpreter/parser/Parser.java
