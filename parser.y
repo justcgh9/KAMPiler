@@ -24,7 +24,7 @@
 	// Run command:
 	// java app/src/main/java/org/projectD/interpreter/parser/Parser.java 
 	public static void main (String args[]) throws IOException {
-		ParserLexer l = new ParserLexer("1 + 3");
+		ParserLexer l = new ParserLexer("1 + 2 + 3 + 4 + 5");
 		Parser p = new Parser(l);
 		p.parse();
 	}
@@ -43,34 +43,33 @@
 %%
 
 CompilationUnit
-<<<<<<< HEAD
-	: %empty
-	| AddUnit { 
-		List<Ast.Statement> statements = new ArrayList<>();
-		statements.add((Ast.ExpressionStatement)$1);
-=======
 	: %empty {$$ = null;}
 	| AddUnit { 
 		List<Ast.Statement> statements = new ArrayList<>();
-		statements.add((Ast.ExpressionStatement)$1);
+		var exprStmt = new Ast.ExpressionStatement((Ast.Expression)$1);
+		statements.add(exprStmt);
 		
 		// TODO: remove, added for debugging
 		System.out.println(statements);
->>>>>>> 9dcbd93 (add addition grammar)
 		$$ = new Ast.Program(statements);
 	}
 	;
 
 AddUnit
-	: INT PLUS INT {
-		((Ast.InfixExpression)$2).setLeft((Ast.IntegerLiteral)$1);
-		((Ast.InfixExpression)$2).setRight((Ast.IntegerLiteral)$3);
+	: AddUnit PLUS Term {
+		var infix = (Ast.InfixExpression)$2;
 
-		var token = new Token($1.tokenLiteral(), TokenType.INT);
-        Ast.ExpressionStatement expr = new Ast.ExpressionStatement(token, (Ast.InfixExpression)$2);
-    
-        $$ = expr;
+		infix.setLeft((Ast.Expression)$1);
+		infix.setRight((Ast.IntegerLiteral)$3);
+
+        $$ = infix;
 	}
+	| Term 
+	;
+
+Term
+	: INT
+	;
 
 %%
 
