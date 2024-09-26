@@ -104,21 +104,16 @@ public class Ast {
     }
 
     public static class ExpressionStatement implements Statement {
-        Token token; // I suggest to store the first token of the expression
         Expression expression;
 
-        public ExpressionStatement(Token token, Expression expression) {
-            this.token = token;
+        public ExpressionStatement(Expression expression) {
             this.expression = expression;
         }
-
-        public void statementNode() {
-        };
 
         public void statementNode() {};
         
         public String tokenLiteral() {
-            return this.token.gLiteral();
+            return "expression statement";
         }
         
         public String toString() {
@@ -174,12 +169,8 @@ public class Ast {
             .append(loopBody.toString())
             .append("end");
             
-            for (Statement s : this.statements) {
-                out.append(s.toString());
-            }
-
             return out.toString();
-        }
+        } 
     }
 
     public class WhileLiteral implements Statement {
@@ -319,7 +310,6 @@ public class Ast {
     }
 
     public static class InfixExpression implements Expression {
-        Token token;
         String operator;
         Expression left, right;
 
@@ -327,8 +317,7 @@ public class Ast {
             this.operator = operator;
         }
 
-        public InfixExpression(Token token, String operator, Expression left, Expression right) {
-            this.token = token;
+        public InfixExpression(String operator, Expression left, Expression right) {
             this.operator = operator;
             this.left = left;
             this.right = right;
@@ -346,7 +335,7 @@ public class Ast {
         };
 
         public String tokenLiteral() {
-            return this.token.gLiteral();
+            return "expression prefix";
         }
 
         public String toString() {
