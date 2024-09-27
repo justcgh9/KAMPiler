@@ -260,6 +260,11 @@ public class Ast {
         Token token;
         String value;
 
+        public RealLiteral(Token token, String value) {
+            this.token = token;
+            this.value = value;
+        }
+
         public void expressionNode() {
         };
 

@@ -24,7 +24,7 @@
 	// Run command:
 	// java app/src/main/java/org/projectD/interpreter/parser/Parser.java 
 	public static void main (String args[]) throws IOException {
-		ParserLexer l = new ParserLexer("1 + 2 / 3 * 4 + 5;");
+		ParserLexer l = new ParserLexer("1.1 + 2 / 3 * 4 + 5;");
 		Parser p = new Parser(l);
 		p.parse();
 	}
@@ -34,6 +34,7 @@
 
 // literals
 %token INT
+%token REAL
 
 // operators
 %token PLUS
@@ -42,7 +43,6 @@
 %token DIVIDE
 
 // delimeters
-
 %token SEMICOLON
 %token NEWLINE
 
@@ -135,8 +135,8 @@ MultExpression
 	;
 
 UnaryExpression
-	: Term 
-	| MINUS Term {
+	: NumericalTerm 
+	| MINUS NumericalTerm {
 		var expr = (Ast.PrefixExpression) $1;
 
 		expr.setRight((Ast.Expression)$2);
@@ -144,8 +144,9 @@ UnaryExpression
 	}
 	;
 
-Term
+NumericalTerm
 	: INT
+	| REAL
 	;
 
 %%
@@ -172,6 +173,9 @@ class ParserLexer implements Parser.Lexer {
 			case TokenType.INT:
 				this.value = new Ast.IntegerLiteral(tok, literal);
 				return Parser.Lexer.INT;
+			case TokenType.REAL:
+				this.value = new Ast.RealLiteral(tok, literal);
+				return Parser.Lexer.REAL;
 			case TokenType.MINUS:
 				if (this.value instanceof Ast.IntegerLiteral)
 					this.value = new Ast.InfixExpression("-");
