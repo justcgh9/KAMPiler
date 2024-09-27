@@ -7,6 +7,7 @@ import java.util.Objects;
 import java.util.StringJoiner;
 
 import org.projectD.interpreter.token.Token;
+import org.projectD.interpreter.token.TokenType;
 
 public class Ast {
 
@@ -35,6 +36,10 @@ public class Ast {
             return this.statements;
         }
 
+        public void addStatement(Statement statement) {
+            this.statements.add(statement);
+        }
+
         public String tokenLiteral() {
             return this.statements.size() > 0 ? this.statements.get(0).tokenLiteral() : "";
         }
@@ -55,6 +60,12 @@ public class Ast {
         Identifier name;
         Expression value;
 
+        public VarStatement(Identifier name, Expression value) {
+            this.token = new Token("var", TokenType.VAR);
+            this.name = name;
+            this.value = value;
+        }
+
         public void statementNode() {
         };
 
@@ -67,9 +78,9 @@ public class Ast {
 
             out.append(token.gLiteral()).append(" ");
             out.append(name.toString());
-            out.append(" = ");
-
+            
             if (Objects.nonNull(value)) {
+                out.append(" = ");
                 out.append(value.toString());
             }
 
@@ -83,6 +94,11 @@ public class Ast {
     public static class ReturnStatement implements Statement {
         Token token;
         Expression returnValue;
+
+        public ReturnStatement(Expression returnValue) {
+            this.token = new Token("return", TokenType.RETURN);
+            this.returnValue = returnValue;
+        }
 
         public void statementNode() {
         };
@@ -130,6 +146,14 @@ public class Ast {
         Token token;
         List<Statement> statements;
         
+        public BlockStatement(List<Statement> statements) {
+            this.statements = statements;
+        }
+
+        public void addStatement(Statement statement) {
+            this.statements.add(statement);
+        }
+
         public void statementNode() {};
 
         public String tokenLiteral() {
@@ -138,10 +162,14 @@ public class Ast {
         
         public String toString() {
             StringBuilder out = new StringBuilder();
+
+            out.append(" {\n");
             
             for(Statement s: this.statements) {
                 out.append(s.toString());
             }
+
+            out.append("\n}");
             
             return out.toString();
         }
@@ -206,6 +234,11 @@ public class Ast {
     public static class Identifier implements Expression {
         Token token;
         String value;
+
+        public Identifier(Token token, String value) {
+            this.token = token;
+            this.value = value;
+        }
 
         public void expressionNode() {
         };
@@ -416,6 +449,19 @@ public class Ast {
         BlockStatement body;
         List<Identifier> parameters;
 
+        public FunctionLiteral(List<Identifier> parameters) {
+            this.token = new Token("func", TokenType.FUNCTION);
+            this.parameters = parameters;
+        }
+
+        public void setBody(BlockStatement body) {
+            this.body = body;
+        }
+
+        public void addParameter(Identifier param) {
+            this.parameters.add(param);
+        }
+
         @Override
         public String toString() {
             StringBuilder out = new StringBuilder();
@@ -586,6 +632,17 @@ public class Ast {
 
             return out.toString();
         }
+    }
+
+    public static class Semicolon implements Node {
+
+        public Semicolon(){}
+
+        @Override
+        public String tokenLiteral() {
+            return ";";
+        }
+
     }
 
 }

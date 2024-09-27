@@ -34,7 +34,7 @@
 	// Run command:
 	// java app/src/main/java/org/projectD/interpreter/parser/Parser.java 
 	public static void main (String args[]) throws IOException {
-		ParserLexer l = new ParserLexer("\"1\" + \"1\" + \"1\";");
+		ParserLexer l = new ParserLexer("var a\nvar b := (1 + 1) * 3;");
 		Parser p = new Parser(l);
 		p.parse();
 
@@ -48,18 +48,28 @@
 %token INT
 %token REAL
 %token STRING
+%token IDENT
 
 // operators
 %token PLUS
 %token MINUS
 %token MULTIPLY
 %token DIVIDE
+%token ASSIGN
 
 // delimeters
 %token SEMICOLON
 %token NEWLINE
 %token LPAREN
 %token RPAREN
+%token COMMA
+
+%token VAR
+%token RETURN
+%token FUNCTION
+%token ARROW
+%token IS
+%token END
 
 %start CompilationUnit
 
@@ -93,28 +103,80 @@ Statements
 
 Statement
 	: ExpressionStatement
+	| VarStatement
 	;
-	
+
+VarStatement
+	: VAR IDENT LineBreak {
+		$$ = new Ast.VarStatement((Ast.Identifier) $2, null);
+		}
+	| VAR IDENT ASSIGN Expression LineBreak {$$ = new Ast.VarStatement((Ast.Identifier) $2, (Ast.Expression) $4);}
+	;
+
 ExpressionStatement
-	: Expression SEMICOLON { $$ = new Ast.ExpressionStatement((Ast.Expression)$1); }
-	| Expression NEWLINE { $$ = new Ast.ExpressionStatement((Ast.Expression)$1); }
+	: Expression LineBreak { $$ = new Ast.ExpressionStatement((Ast.Expression)$1); }
+	;
+
+LineBreak
+	: SEMICOLON
 	;
 
 Expression
 	: AddExpression
-	| ConcatinationExpression
+	| FuncLiteral
 	;
 
-ConcatinationExpression
-	: STRING
-	| ConcatinationExpression PLUS STRING {
-		var expr = (Ast.InfixExpression)$2;
-
-		expr.setLeft((Ast.Expression)$1);
-		expr.setRight((Ast.Expression)$3);
-
-		$$ = expr;
+FuncLiteral
+	: FUNCTION LPAREN FuncDeclarationParameters RPAREN IS BlockStatement ReturnStatement END {
+		var func = (Ast.FunctionLiteral) $3;
+		var body = (Ast.BlockStatement) $6;
+		body.addStatement((Ast.ReturnStatement) $7);
+		func.setBody(body);
+		$$ = func;
 	}
+	| FUNCTION LPAREN FuncDeclarationParameters RPAREN ARROW Expression {
+		var func = (Ast.FunctionLiteral) $3;
+		var statements = new ArrayList<Ast.Statement>();
+		statements.add(new Ast.ReturnStatement((Ast.Expression) $6));
+		func.setBody(new Ast.BlockStatement(statements));
+		$$ = func;
+	}
+	;
+
+FuncDeclarationParameters
+	: %empty {$$ = new Ast.FunctionLiteral(new ArrayList<Ast.Identifier>());}
+	| IDENT	{
+		var idt = new ArrayList<Ast.Identifier>();
+		idt.add((Ast.Identifier) $1);
+		$$ = new Ast.FunctionLiteral(idt);
+	}
+	| FuncDeclarationParameters COMMA IDENT {
+		var func = (Ast.FunctionLiteral) $1;
+		func.addParameter((Ast.Identifier) $3);
+		$$ = func;
+	}
+	;
+
+
+BlockStatement
+	: Statement {
+		var statements = new ArrayList<Ast.Statement>();
+		var stmt = (Ast.Statement) $1;
+		statements.add(stmt);
+
+		$$ = new Ast.BlockStatement(statements);
+	}
+	| BlockStatement Statement {
+		var blockStatement = (Ast.BlockStatement) $1;
+		blockStatement.addStatement((Ast.Statement) $2);
+
+		$$ = blockStatement;
+	}
+	;
+
+ReturnStatement
+	: RETURN LineBreak {$$ = new Ast.ReturnStatement(null);}
+	| RETURN Expression LineBreak {$$ = new Ast.ReturnStatement((Ast.Expression) $2);}
 	;
 
 AddExpression
@@ -171,6 +233,8 @@ UnaryExpression
 Term
 	: INT
 	| REAL
+	| IDENT
+	| STRING
 	;
 
 %%
@@ -199,13 +263,16 @@ class ParserLexer implements Parser.Lexer {
 			case TokenType.STRING:
 				this.value = new Ast.StringLiteral(tok, literal);
 				return Parser.Lexer.STRING;
+			case TokenType.IDENT:
+				this.value = new Ast.Identifier(tok, literal);
+				return Parser.Lexer.IDENT;
 			
 			// operators
 			case TokenType.PLUS:
 				this.value = new Ast.InfixExpression("+");
 				return Parser.Lexer.PLUS;
 			case TokenType.MINUS:
-				if (this.value instanceof Ast.IntegerLiteral)
+				if (this.value instanceof Ast.Expression)
 					this.value = new Ast.InfixExpression("-");
 				else 
 					this.value = new Ast.PrefixExpression("-");
@@ -216,18 +283,52 @@ class ParserLexer implements Parser.Lexer {
 			case TokenType.SLASH:
 				this.value = new Ast.InfixExpression("/");
 				return Parser.Lexer.DIVIDE;
+			case TokenType.ASSIGN:
+				this.value = null;
+				return Parser.Lexer.ASSIGN;
 			
 			// delimiters
 			case TokenType.SEMICOLON:
+				this.value = new Ast.Semicolon();
 				return Parser.Lexer.SEMICOLON;
 			case TokenType.NEWLINE:
-				return Parser.Lexer.NEWLINE;
+				if (!(this.value instanceof Ast.Semicolon)){
+					this.value = new Ast.Semicolon();
+					return Parser.Lexer.SEMICOLON;
+				} else {
+					return this.yylex();
+				}
 			case TokenType.LPAREN:
+				this.value = null;
 				return Parser.Lexer.LPAREN;
 			case TokenType.RPAREN:
+				this.value = null;
 				return Parser.Lexer.RPAREN;
+			case TokenType.COMMA:
+				this.value = null;
+				return Parser.Lexer.COMMA;
+
+			case TokenType.VAR:
+				this.value = null;
+				return Parser.Lexer.VAR;
+			case TokenType.RETURN:
+				this.value = null;
+				return Parser.Lexer.RETURN;
+			case TokenType.FUNCTION:
+				this.value = null;
+				return Parser.Lexer.FUNCTION;
+			case TokenType.ARROW:
+				this.value = null;
+				return Parser.Lexer.ARROW;
+			case TokenType.IS:
+				this.value = null;
+				return Parser.Lexer.IS;
+			case TokenType.END:
+				this.value = null;
+				return Parser.Lexer.END;
 			
 			case TokenType.EOF:
+				this.value = null;
 				return Parser.Lexer.EOF;
 
 		}
