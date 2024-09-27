@@ -34,7 +34,7 @@
 	// Run command:
 	// java app/src/main/java/org/projectD/interpreter/parser/Parser.java 
 	public static void main (String args[]) throws IOException {
-		ParserLexer l = new ParserLexer("(1.1 + 2) / 3 * (4 + 5);");
+		ParserLexer l = new ParserLexer("\"1\" + \"1\" + \"1\";");
 		Parser p = new Parser(l);
 		p.parse();
 
@@ -47,6 +47,7 @@
 // literals
 %token INT
 %token REAL
+%token STRING
 
 // operators
 %token PLUS
@@ -101,6 +102,19 @@ ExpressionStatement
 
 Expression
 	: AddExpression
+	| ConcatinationExpression
+	;
+
+ConcatinationExpression
+	: STRING
+	| ConcatinationExpression PLUS STRING {
+		var expr = (Ast.InfixExpression)$2;
+
+		expr.setLeft((Ast.Expression)$1);
+		expr.setRight((Ast.Expression)$3);
+
+		$$ = expr;
+	}
 	;
 
 AddExpression
@@ -112,7 +126,6 @@ AddExpression
 		expr.setRight((Ast.Expression)$3);
 
 		$$ = expr;
-
 	}
 	| AddExpression MINUS MultExpression {
 		var expr = (Ast.InfixExpression)$2;
@@ -146,17 +159,13 @@ MultExpression
 
 UnaryExpression
 	: Term 
-	| ParenthesisExpression
+	| LPAREN AddExpression RPAREN {$$ = $2;}
 	| MINUS Term {
 		var expr = (Ast.PrefixExpression) $1;
 
 		expr.setRight((Ast.Expression)$2);
 		$$ = expr;
 	}
-	;
-
-ParenthesisExpression
-	: LPAREN Expression RPAREN {$$ = $2;}
 	;
 
 Term
@@ -187,6 +196,9 @@ class ParserLexer implements Parser.Lexer {
 			case TokenType.REAL:
 				this.value = new Ast.RealLiteral(tok, literal);
 				return Parser.Lexer.REAL;
+			case TokenType.STRING:
+				this.value = new Ast.StringLiteral(tok, literal);
+				return Parser.Lexer.STRING;
 			
 			// operators
 			case TokenType.PLUS:

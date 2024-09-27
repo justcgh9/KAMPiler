@@ -281,6 +281,11 @@ public class Ast {
         Token token;
         String value;
 
+        public StringLiteral(Token token, String value) {
+            this.token = token;
+            this.value = value;
+        }
+
         public void expressionNode() {
         };
 
