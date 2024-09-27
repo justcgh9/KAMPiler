@@ -19,6 +19,16 @@
 }
 
 %code {
+	Ast.Node root;
+
+	public void setRoot(Ast.Node root) {
+		this.root = root;
+	}
+	
+	public Ast.Node getRoot() {
+		return this.root;
+	}
+
 	// TODO: remove main function.
 	// This function must be used only for debugging purposes.
 	// Run command:
@@ -27,6 +37,8 @@
 		ParserLexer l = new ParserLexer("1.1 + 2 / 3 * 4 + 5;");
 		Parser p = new Parser(l);
 		p.parse();
+
+		System.out.println(p.getRoot());
 	}
 }
 
@@ -54,8 +66,7 @@ CompilationUnit
 	: %empty {$$ = null;}
 	| Statements {
 		var prog = (Ast.Program)$1;
-		System.out.println(prog.toString());
-		$$ = prog;
+		this.setRoot(prog);
 	}
 	;
 
