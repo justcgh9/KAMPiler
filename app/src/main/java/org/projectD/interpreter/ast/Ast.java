@@ -31,6 +31,10 @@ public class Ast {
             this.statements = statements;
         }
 
+        public List<Statement> getStatements() {
+            return this.statements;
+        }
+
         public String tokenLiteral() {
             return this.statements.size() > 0 ? this.statements.get(0).tokenLiteral() : "";
         }
@@ -288,12 +292,26 @@ public class Ast {
         Token token;
         String operator;
         Expression right;
+        
+
+        public PrefixExpression(String operator) {
+            this.operator = operator;
+        }
+
+        public PrefixExpression(String operator, Expression right) {
+            this.operator = operator;
+            this.right = right;
+        }
 
         public void expressionNode() {
         };
 
         public String tokenLiteral() {
             return this.token.gLiteral();
+        }
+
+        public void setRight(Expression right) {
+            this.right = right;
         }
 
         public String toString() {
