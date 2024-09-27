@@ -24,7 +24,7 @@
 	// Run command:
 	// java app/src/main/java/org/projectD/interpreter/parser/Parser.java 
 	public static void main (String args[]) throws IOException {
-		ParserLexer l = new ParserLexer("1 + 2 + 3 + 4 + 5");
+		ParserLexer l = new ParserLexer("1 + 2 / 3 * 4 + 5;");
 		Parser p = new Parser(l);
 		p.parse();
 	}
@@ -37,6 +37,14 @@
 
 // operators
 %token PLUS
+%token MINUS
+%token MULTIPLY
+%token DIVIDE
+
+// delimeters
+
+%token SEMICOLON
+%token NEWLINE
 
 %start CompilationUnit
 
@@ -44,27 +52,96 @@
 
 CompilationUnit
 	: %empty {$$ = null;}
-	| AddUnit { 
-		List<Ast.Statement> statements = new ArrayList<>();
-		var exprStmt = new Ast.ExpressionStatement((Ast.Expression)$1);
+	| Statements {
+		var prog = (Ast.Program)$1;
+		System.out.println(prog.toString());
+		$$ = prog;
+	}
+	;
+
+
+Statements
+	: Statement {
+		var statements = new ArrayList<Ast.Statement>();
+		var exprStmt = (Ast.Statement)$1;
 		statements.add(exprStmt);
-		
-		// TODO: remove, added for debugging
-		System.out.println(statements);
+
+		$$ = new Ast.Program(statements);
+	}
+	| Statements Statement {
+		var program = (Ast.Program)$1;
+		var statements = program.getStatements();              
+		var exprStmt = (Ast.Statement)$2; 
+		statements.add(exprStmt);                                  
+
 		$$ = new Ast.Program(statements);
 	}
 	;
 
-AddUnit
-	: AddUnit PLUS Term {
-		var infix = (Ast.InfixExpression)$2;
+Statement
+	: ExpressionStatement
+	;
+	
 
-		infix.setLeft((Ast.Expression)$1);
-		infix.setRight((Ast.IntegerLiteral)$3);
+ExpressionStatement
+	: Expression SEMICOLON { $$ = new Ast.ExpressionStatement((Ast.Expression)$1); }
+	| Expression NEWLINE { $$ = new Ast.ExpressionStatement((Ast.Expression)$1); }
+	;
 
-        $$ = infix;
+
+Expression
+	: AddExpression {$$ = (Ast.Expression) $1;}
+	;
+
+AddExpression
+	: MultExpression {$$ = (Ast.Expression) $1;}
+	| AddExpression PLUS MultExpression {
+		var expr = (Ast.InfixExpression)$2;
+
+		expr.setLeft((Ast.Expression)$1);
+		expr.setRight((Ast.Expression)$3);
+
+		$$ = expr;
+
 	}
-	| Term 
+	| AddExpression MINUS MultExpression {
+		var expr = (Ast.InfixExpression)$2;
+
+		expr.setLeft((Ast.Expression)$1);
+		expr.setRight((Ast.Expression)$3);
+
+		$$ = expr;
+	}
+	;
+
+MultExpression
+	: UnaryExpression 
+	| MultExpression MULTIPLY UnaryExpression {
+		var expr = (Ast.InfixExpression)$2;
+
+		expr.setLeft((Ast.Expression)$1);
+		expr.setRight((Ast.Expression)$3);
+
+		$$ = expr;
+	}
+	| MultExpression DIVIDE UnaryExpression {
+		var expr = (Ast.InfixExpression)$2;
+
+		expr.setLeft((Ast.Expression)$1);
+		expr.setRight((Ast.Expression)$3);
+
+		$$ = expr;
+	}
+	;
+
+UnaryExpression
+	: Term 
+	| MINUS Term {
+		var expr = (Ast.PrefixExpression) $1;
+
+		expr.setRight((Ast.Expression)$2);
+		$$ = expr;
+	}
 	;
 
 Term
@@ -95,6 +172,24 @@ class ParserLexer implements Parser.Lexer {
 			case TokenType.INT:
 				this.value = new Ast.IntegerLiteral(tok, literal);
 				return Parser.Lexer.INT;
+			case TokenType.MINUS:
+				if (this.value instanceof Ast.IntegerLiteral)
+					this.value = new Ast.InfixExpression("-");
+				else 
+					this.value = new Ast.PrefixExpression("-");
+				return Parser.Lexer.MINUS;
+			case TokenType.ASTERISK:
+				this.value = new Ast.InfixExpression("*");
+				return Parser.Lexer.MULTIPLY;
+			case TokenType.SLASH:
+				this.value = new Ast.InfixExpression("/");
+				return Parser.Lexer.DIVIDE;
+			case TokenType.SEMICOLON:
+				return Parser.Lexer.SEMICOLON;
+			case TokenType.NEWLINE:
+				return Parser.Lexer.NEWLINE;
+			
+
 		}
 
 		return Parser.Lexer.YYerror;
