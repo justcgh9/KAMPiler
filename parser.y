@@ -34,7 +34,7 @@
 	// Run command:
 	// java app/src/main/java/org/projectD/interpreter/parser/Parser.java 
 	public static void main (String args[]) throws IOException {
-		ParserLexer l = new ParserLexer("1.1 + 2 / 3 * 4 + 5;");
+		ParserLexer l = new ParserLexer("(1.1 + 2) / 3 * (4 + 5);");
 		Parser p = new Parser(l);
 		p.parse();
 
@@ -57,6 +57,8 @@
 // delimeters
 %token SEMICOLON
 %token NEWLINE
+%token LPAREN
+%token RPAREN
 
 %start CompilationUnit
 
@@ -69,7 +71,6 @@ CompilationUnit
 		this.setRoot(prog);
 	}
 	;
-
 
 Statements
 	: Statement {
@@ -93,19 +94,17 @@ Statement
 	: ExpressionStatement
 	;
 	
-
 ExpressionStatement
 	: Expression SEMICOLON { $$ = new Ast.ExpressionStatement((Ast.Expression)$1); }
 	| Expression NEWLINE { $$ = new Ast.ExpressionStatement((Ast.Expression)$1); }
 	;
 
-
 Expression
-	: AddExpression {$$ = (Ast.Expression) $1;}
+	: AddExpression
 	;
 
 AddExpression
-	: MultExpression {$$ = (Ast.Expression) $1;}
+	: MultExpression
 	| AddExpression PLUS MultExpression {
 		var expr = (Ast.InfixExpression)$2;
 
@@ -146,8 +145,9 @@ MultExpression
 	;
 
 UnaryExpression
-	: NumericalTerm 
-	| MINUS NumericalTerm {
+	: Term 
+	| ParenthesisExpression
+	| MINUS Term {
 		var expr = (Ast.PrefixExpression) $1;
 
 		expr.setRight((Ast.Expression)$2);
@@ -155,7 +155,11 @@ UnaryExpression
 	}
 	;
 
-NumericalTerm
+ParenthesisExpression
+	: LPAREN Expression RPAREN {$$ = $2;}
+	;
+
+Term
 	: INT
 	| REAL
 	;
@@ -176,17 +180,18 @@ class ParserLexer implements Parser.Lexer {
 		
 		String literal = tok.gLiteral();
 		switch (tok.gTokenType()) {
-			case TokenType.EOF:
-				return Parser.Lexer.EOF;
-			case TokenType.PLUS:
-				this.value = new Ast.InfixExpression("+");
-				return Parser.Lexer.PLUS;
+			// literals
 			case TokenType.INT:
 				this.value = new Ast.IntegerLiteral(tok, literal);
 				return Parser.Lexer.INT;
 			case TokenType.REAL:
 				this.value = new Ast.RealLiteral(tok, literal);
 				return Parser.Lexer.REAL;
+			
+			// operators
+			case TokenType.PLUS:
+				this.value = new Ast.InfixExpression("+");
+				return Parser.Lexer.PLUS;
 			case TokenType.MINUS:
 				if (this.value instanceof Ast.IntegerLiteral)
 					this.value = new Ast.InfixExpression("-");
@@ -199,11 +204,19 @@ class ParserLexer implements Parser.Lexer {
 			case TokenType.SLASH:
 				this.value = new Ast.InfixExpression("/");
 				return Parser.Lexer.DIVIDE;
+			
+			// delimiters
 			case TokenType.SEMICOLON:
 				return Parser.Lexer.SEMICOLON;
 			case TokenType.NEWLINE:
 				return Parser.Lexer.NEWLINE;
+			case TokenType.LPAREN:
+				return Parser.Lexer.LPAREN;
+			case TokenType.RPAREN:
+				return Parser.Lexer.RPAREN;
 			
+			case TokenType.EOF:
+				return Parser.Lexer.EOF;
 
 		}
 
