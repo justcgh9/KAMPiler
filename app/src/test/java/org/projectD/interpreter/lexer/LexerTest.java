@@ -29,7 +29,12 @@ public class LexerTest {
             arguments("do", TokenType.DO),
             arguments("loop", TokenType.LOOP),
             arguments("in", TokenType.IN),
-            arguments("is", TokenType.IS)
+            arguments("is", TokenType.IS),
+            arguments("then", TokenType.THEN),
+            arguments("and", TokenType.AND),
+            arguments("or", TokenType.OR),
+            arguments("xor", TokenType.XOR),
+            arguments("print", TokenType.PRINT)
         );
     }
 
