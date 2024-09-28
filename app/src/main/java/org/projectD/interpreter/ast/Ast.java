@@ -413,16 +413,26 @@ public class Ast {
         }
     }
 
-    public static class IfExpression implements Expression {
-        Token token;
+    public static class IfStatement implements Statement {
         Expression predicate;
         BlockStatement ifBlock, elseBlock;
 
-        public void expressionNode() {
+        public IfStatement(Expression predicate, BlockStatement ifBlock) {
+            this.predicate = predicate;
+            this.ifBlock = ifBlock;
+        }
+
+        public IfStatement(Expression predicate, BlockStatement ifBlock, BlockStatement elseBlock) {
+            this.predicate = predicate;
+            this.ifBlock = ifBlock;
+            this.elseBlock = elseBlock;
+        }
+
+        public void statementNode() {
         };
 
         public String tokenLiteral() {
-            return this.token.gLiteral();
+            return "if statement";
         }
 
         public String toString() {
