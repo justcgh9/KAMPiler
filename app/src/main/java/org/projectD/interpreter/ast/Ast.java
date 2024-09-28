@@ -605,12 +605,20 @@ public class Ast {
         }
     }
 
-    public class PrintLiteral implements Expression {
+    public static class PrintLiteral implements Statement {
         Token token;
         List<Expression> arguments;
 
+        public PrintLiteral(List<Expression> arguments) {
+            this.token = new Token("print", TokenType.PRINT);
+            this.arguments = arguments;
+        }
 
-        public void expressionNode() {};
+        public void addArgument(Expression arg) {
+            this.arguments.add(arg);
+        }
+
+        public void statementNode() {};
 
         public String tokenLiteral() {
             return this.token.gLiteral();
@@ -625,9 +633,9 @@ public class Ast {
             }
 
             out
-            .append("print(")
+            .append("print ")
             .append(joiner.toString())
-            .append(")");
+            .append(";");
             
 
             return out.toString();
