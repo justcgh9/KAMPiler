@@ -163,7 +163,7 @@ public class Ast {
         public String toString() {
             StringBuilder out = new StringBuilder();
 
-            out.append(" {\n");
+            out.append("{\n");
             
             for(Statement s: this.statements) {
                 out.append(s.toString());
@@ -441,12 +441,11 @@ public class Ast {
             out
                     .append("if")
                     .append(this.predicate.toString())
-                    .append(" ")
                     .append(this.ifBlock.toString());
 
             if (Objects.nonNull(this.elseBlock)) {
                 out
-                        .append("else ")
+                        .append("else")
                         .append(this.elseBlock.toString());
             }
 
