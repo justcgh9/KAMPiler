@@ -53,6 +53,20 @@ public class Ast {
 
             return out.toString();
         }
+
+        @Override
+        public boolean equals(Object obj) {
+            if (obj == null) {
+                return false;
+            }
+
+            if (obj.getClass() != this.getClass()) {
+                return false;
+            }
+
+            var program = (Program) obj;
+            return this.statements.equals(program.statements);
+        }
     }
 
     public static class VarStatement implements Statement {
@@ -89,6 +103,19 @@ public class Ast {
             return out.toString();
         }
 
+        @Override
+        public boolean equals(Object obj) {
+            if (obj == null) {
+                return false;
+            }
+
+            if (obj.getClass() != this.getClass()) {
+                return false;
+            }
+
+            var statement = (VarStatement) obj;
+            return (this.name.equals(statement.name) && this.value.equals(statement.value));
+        }
     }
 
     public static class ReturnStatement implements Statement {
@@ -121,6 +148,19 @@ public class Ast {
             return out.toString();
         }
 
+        @Override
+        public boolean equals(Object obj) {
+            if (obj == null) {
+                return false;
+            }
+
+            if (obj.getClass() != this.getClass()) {
+                return false;
+            }
+
+            var statement = (ReturnStatement) obj;
+            return this.returnValue.equals(statement.returnValue);
+        }
     }
 
     public static class ExpressionStatement implements Statement {
@@ -140,6 +180,19 @@ public class Ast {
             return Objects.nonNull(expression) ? this.expression.toString() : "";
         }
         
+        @Override
+        public boolean equals(Object obj) {
+            if (obj == null) {
+                return false;
+            }
+
+            if (obj.getClass() != this.getClass()) {
+                return false;
+            }
+
+            var statement = (ExpressionStatement) obj;
+            return this.expression.equals(statement.expression);
+        }
     }
 
     public static class BlockStatement implements Statement {
@@ -174,6 +227,19 @@ public class Ast {
             return out.toString();
         }
         
+        @Override
+        public boolean equals(Object obj) {
+            if (obj == null) {
+                return false;
+            }
+
+            if (obj.getClass() != this.getClass()) {
+                return false;
+            }
+
+            var statement = (BlockStatement) obj;
+            return this.statements.equals(statement.statements);
+        }
     }
     
     public class ForLiteral implements Statement {
@@ -203,6 +269,24 @@ public class Ast {
             
             return out.toString();
         } 
+
+        @Override
+        public boolean equals(Object obj) {
+            if (obj == null) {
+                return false;
+            }
+
+            if (obj.getClass() != this.getClass()) {
+                return false;
+            }
+
+            var literal = (ForLiteral) obj;
+            return (
+                this.loopBody.equals(literal.loopBody)
+                && this.loopVariable.equals(literal.loopVariable)
+                && this.typeIndicator.equals(literal.typeIndicator)
+            );
+        }
     }
 
     public class WhileLiteral implements Statement {
@@ -229,6 +313,20 @@ public class Ast {
             
             return out.toString();
         }
+
+        @Override
+        public boolean equals(Object obj) {
+            if (obj == null) {
+                return false;
+            }
+
+            if (obj.getClass() != this.getClass()) {
+                return false;
+            }
+
+            var literal = (WhileLiteral) obj;
+            return this.loopBody.equals(literal.loopBody) && this.predicate.equals(literal.predicate);
+        }
     }
 
     public static class Identifier implements Expression {
@@ -250,6 +348,20 @@ public class Ast {
         public String toString() {
             return value;
         }
+
+        @Override
+        public boolean equals(Object obj) {
+            if (obj == null) {
+                return false;
+            }
+
+            if (obj.getClass() != this.getClass()) {
+                return false;
+            }
+
+            var ident = (Identifier) obj;
+            return this.value.equals(ident.value);
+        }
     }
 
     public static class BooleanLiteral implements Expression {
@@ -265,6 +377,20 @@ public class Ast {
 
         public String toString() {
             return this.token.gLiteral();
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            if (obj == null) {
+                return false;
+            }
+
+            if (obj.getClass() != this.getClass()) {
+                return false;
+            }
+
+            var literal = (BooleanLiteral) obj;
+            return this.value.equals(literal.value);
         }
     }
 
@@ -287,6 +413,20 @@ public class Ast {
         public String toString() {
             return this.token.gLiteral();
         }
+
+        @Override
+        public boolean equals(Object obj) {
+            if (obj == null) {
+                return false;
+            }
+
+            if (obj.getClass() != this.getClass()) {
+                return false;
+            }
+
+            var literal = (IntegerLiteral) obj;
+            return this.value.equals(literal.value);
+        }
     }
 
     public static class RealLiteral implements Expression {
@@ -308,6 +448,20 @@ public class Ast {
         public String toString() {
             return this.token.gLiteral();
         }
+
+        @Override
+        public boolean equals(Object obj) {
+            if (obj == null) {
+                return false;
+            }
+
+            if (obj.getClass() != this.getClass()) {
+                return false;
+            }
+
+            var literal = (RealLiteral) obj;
+            return this.value.equals(literal.value);
+        }
     }
 
     public static class StringLiteral implements Expression {
@@ -328,6 +482,20 @@ public class Ast {
 
         public String toString() {
             return this.token.gLiteral();
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            if (obj == null) {
+                return false;
+            }
+
+            if (obj.getClass() != this.getClass()) {
+                return false;
+            }
+
+            var literal = (StringLiteral) obj;
+            return this.value.equals(literal.value);
         }
     }
 
@@ -367,6 +535,20 @@ public class Ast {
                     .append(")");
 
             return out.toString();
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            if (obj == null) {
+                return false;
+            }
+
+            if (obj.getClass() != this.getClass()) {
+                return false;
+            }
+
+            var prefix = (PrefixExpression) obj;
+            return this.operator.equals(prefix.operator) && this.right.equals(prefix.right);
         }
     }
 
@@ -411,6 +593,24 @@ public class Ast {
 
             return out.toString();
         }
+
+        @Override
+        public boolean equals(Object obj) {
+            if (obj == null) {
+                return false;
+            }
+
+            if (obj.getClass() != this.getClass()) {
+                return false;
+            }
+
+            var infix = (InfixExpression) obj;
+            return (
+                this.operator.equals(infix.operator) 
+                && this.right.equals(infix.right)
+                && this.left.equals(infix.left)
+            );
+        }
     }
 
     public static class IfStatement implements Statement {
@@ -450,6 +650,30 @@ public class Ast {
             }
 
             return out.toString();
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            if (obj == null) {
+                return false;
+            }
+
+            if (obj.getClass() != this.getClass()) {
+                return false;
+            }
+
+            var ifstmt = (IfStatement) obj;
+
+            var predIfBlock = this.predicate.equals(ifstmt.predicate) && this.ifBlock.equals(ifstmt.ifBlock);
+            
+            if (this.elseBlock == null) {
+                if (ifstmt.elseBlock != null) {
+                    return false;
+                }
+                return predIfBlock;
+            } 
+
+            return predIfBlock && this.elseBlock.equals(ifstmt.elseBlock);
         }
     }
 
@@ -501,6 +725,20 @@ public class Ast {
         public String tokenLiteral() {
             return this.token.gLiteral();
         }
+
+        @Override
+        public boolean equals(Object obj) {
+            if (obj == null) {
+                return false;
+            }
+
+            if (obj.getClass() != this.getClass()) {
+                return false;
+            }
+
+            var funcLiteral = (FunctionLiteral) obj;
+            return this.parameters.equals(funcLiteral.parameters) && this.body.equals(funcLiteral.body);
+        }
     }
 
     public static class CallExpression implements Expression {
@@ -531,6 +769,20 @@ public class Ast {
 
             return out.toString();
         }
+
+        @Override
+        public boolean equals(Object obj) {
+            if (obj == null) {
+                return false;
+            }
+
+            if (obj.getClass() != this.getClass()) {
+                return false;
+            }
+
+            var callExpr = (CallExpression) obj;
+            return this.function.equals(callExpr.function) && this.arguments.equals(callExpr.arguments);
+        }
     }
 
     public static class ArrayLiteral implements Expression {
@@ -559,6 +811,20 @@ public class Ast {
 
             return out.toString();
         }
+
+        @Override
+        public boolean equals(Object obj) {
+            if (obj == null) {
+                return false;
+            }
+
+            if (obj.getClass() != this.getClass()) {
+                return false;
+            }
+
+            var arrayLiteral = (ArrayLiteral) obj;
+            return this.elements.equals(arrayLiteral.elements);
+        }
     }
 
     public static class IndexLiteral implements Expression {
@@ -583,6 +849,20 @@ public class Ast {
                     .append("])");
 
             return out.toString();
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            if (obj == null) {
+                return false;
+            }
+
+            if (obj.getClass() != this.getClass()) {
+                return false;
+            }
+
+            var indexLiteral = (IndexLiteral) obj;
+            return this.left.equals(indexLiteral.left) && this.index.equals(indexLiteral.index);
         }
     }
 
@@ -611,6 +891,20 @@ public class Ast {
                     .append("}");
 
             return out.toString();
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            if (obj == null) {
+                return false;
+            }
+
+            if (obj.getClass() != this.getClass()) {
+                return false;
+            }
+
+            var tupleLiteral = (TupleLiteral) obj;
+            return this.pairs.equals(tupleLiteral.pairs);
         }
     }
 
@@ -648,6 +942,20 @@ public class Ast {
             
 
             return out.toString();
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            if (obj == null) {
+                return false;
+            }
+
+            if (obj.getClass() != this.getClass()) {
+                return false;
+            }
+
+            var printLiteral = (PrintLiteral) obj;
+            return this.arguments.equals(printLiteral.arguments);
         }
     }
 
