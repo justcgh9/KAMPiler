@@ -34,7 +34,7 @@
 	// Run command:
 	// java app/src/main/java/org/projectD/interpreter/parser/Parser.java 
 	public static void main (String args[]) throws IOException {
-		ParserLexer l = new ParserLexer("var a\nvar b := (1 + 1) * 3;");
+		ParserLexer l = new ParserLexer("print 1, a, b, c, \"cat\", 2 / 3  + 2 * 2;");
 		Parser p = new Parser(l);
 		p.parse();
 
@@ -56,6 +56,14 @@
 %token MULTIPLY
 %token DIVIDE
 %token ASSIGN
+%token AND
+%token OR
+%token XOR
+%token GT
+%token LT
+%token GEQ
+%token LEQ
+%token EQ
 
 // delimeters
 %token SEMICOLON
@@ -70,6 +78,7 @@
 %token ARROW
 %token IS
 %token END
+%token PRINT
 
 %start CompilationUnit
 
@@ -104,6 +113,7 @@ Statements
 Statement
 	: ExpressionStatement
 	| VarStatement
+	| PrintStatement
 	;
 
 VarStatement
@@ -111,6 +121,23 @@ VarStatement
 		$$ = new Ast.VarStatement((Ast.Identifier) $2, null);
 		}
 	| VAR IDENT ASSIGN Expression LineBreak {$$ = new Ast.VarStatement((Ast.Identifier) $2, (Ast.Expression) $4);}
+	;
+
+PrintStatement
+	: PRINT PrintArgs LineBreak {$$ = $2;}
+	;
+
+PrintArgs
+	: Expression {
+		var args = new ArrayList<Ast.Expression>();
+		args.add((Ast.Expression) $1);
+		$$ = new Ast.PrintLiteral(args);
+	}
+	| PrintArgs COMMA Expression {
+		var stmt = (Ast.PrintLiteral) $1;
+		stmt.addArgument((Ast.Expression) $3);
+		$$ = stmt;
+	}
 	;
 
 ExpressionStatement
@@ -122,6 +149,16 @@ LineBreak
 	;
 
 Expression
+	: Relation
+	| Relation BoolOp Relation {var exp = (Ast.InfixExpression) $2; exp.setLeft((Ast.Expression) $1); exp.setRight((Ast.Expression) $3); $$ = exp;}
+	;
+
+Relation
+	: Factor 
+	| Factor Compare Factor {var exp = (Ast.InfixExpression) $2; exp.setLeft((Ast.Expression) $1); exp.setRight((Ast.Expression) $3); $$ = exp;}
+	;
+
+Factor
 	: AddExpression
 	| FuncLiteral
 	;
@@ -134,7 +171,7 @@ FuncLiteral
 		func.setBody(body);
 		$$ = func;
 	}
-	| FUNCTION LPAREN FuncDeclarationParameters RPAREN ARROW Expression {
+	| FUNCTION LPAREN FuncDeclarationParameters RPAREN ARROW Expression LineBreak {
 		var func = (Ast.FunctionLiteral) $3;
 		var statements = new ArrayList<Ast.Statement>();
 		statements.add(new Ast.ReturnStatement((Ast.Expression) $6));
@@ -237,6 +274,20 @@ Term
 	| STRING
 	;
 
+BoolOp
+	: AND {$$ = new Ast.InfixExpression("and");}
+	| OR {$$ = new Ast.InfixExpression("or");}
+	| XOR {$$ = new Ast.InfixExpression("xor");}
+	;
+
+Compare
+	: LT {$$ = new Ast.InfixExpression("<");}
+	| GT {$$ = new Ast.InfixExpression(">");}
+	| LEQ {$$ = new Ast.InfixExpression("<=");}
+	| GEQ {$$ = new Ast.InfixExpression(">=");}
+	| EQ {$$ = new Ast.InfixExpression("=");}
+	;
+
 %%
 
 class ParserLexer implements Parser.Lexer {
@@ -286,6 +337,33 @@ class ParserLexer implements Parser.Lexer {
 			case TokenType.ASSIGN:
 				this.value = null;
 				return Parser.Lexer.ASSIGN;
+			case TokenType.PRINT:
+				this.value = new Ast.PrintLiteral(new ArrayList<Ast.Expression>());
+				return Parser.Lexer.PRINT;
+			case TokenType.LT:
+				this.value = null;
+				return Parser.Lexer.LT;
+			case TokenType.GT:
+				this.value = null;
+				return Parser.Lexer.GT;
+			case TokenType.LEQ:
+				this.value = null;
+				return Parser.Lexer.LEQ;
+			case TokenType.GEQ:
+				this.value = null;
+				return Parser.Lexer.GEQ;
+			case TokenType.EQ:
+				this.value = null;
+				return Parser.Lexer.EQ;
+			case TokenType.AND:
+				this.value = null;
+				return Parser.Lexer.AND;
+			case TokenType.OR:
+				this.value = null;
+				return Parser.Lexer.OR;
+			case TokenType.XOR:
+				this.value = null;
+				return Parser.Lexer.XOR;
 			
 			// delimiters
 			case TokenType.SEMICOLON:

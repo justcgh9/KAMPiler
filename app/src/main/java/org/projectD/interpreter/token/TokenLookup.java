@@ -30,6 +30,9 @@ public class TokenLookup {
         keywords.put("empty", TokenType.TYPE);
         keywords.put("print", TokenType.PRINT);
         keywords.put("then", TokenType.THEN);
+        keywords.put("and", TokenType.AND);
+        keywords.put("or", TokenType.OR);
+        keywords.put("xor", TokenType.XOR);
     }
 
     public static TokenType lookupIdent(String ident) {

@@ -58,6 +58,9 @@ public enum TokenType {
     IN("IN"),
     IS("IS"),
     THEN("THEN"),
+    AND("AND"),
+    OR("OR"),
+    XOR("XOR"),
     PRINT("PRINT");
     
     private final String value;
