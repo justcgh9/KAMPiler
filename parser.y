@@ -34,15 +34,13 @@
 	// Run command:
 	// java app/src/main/java/org/projectD/interpreter/parser/Parser.java 
 	public static void main (String args[]) throws IOException {
-		ParserLexer l = new ParserLexer("print 1, a, b, c, \"cat\", 2 / 3  + 2 * 2;");
+		ParserLexer l = new ParserLexer("if 1 + 2 then 1 + 3; end\n");
 		Parser p = new Parser(l);
 		p.parse();
 
 		System.out.println(p.getRoot());
 	}
 }
-
-// Tokens must be declared in the TokenType enum!
 
 // literals
 %token INT
@@ -72,6 +70,7 @@
 %token RPAREN
 %token COMMA
 
+// keywords
 %token VAR
 %token RETURN
 %token FUNCTION
@@ -79,6 +78,9 @@
 %token IS
 %token END
 %token PRINT
+%token IF
+%token THEN
+%token ELSE
 
 %start CompilationUnit
 
@@ -114,6 +116,16 @@ Statement
 	: ExpressionStatement
 	| VarStatement
 	| PrintStatement
+	| IfStatement
+	;
+
+IfStatement
+	: IF Expression THEN BlockStatement END LineBreak {
+		$$ = new Ast.IfStatement((Ast.Expression)$2, (Ast.BlockStatement)$4);
+	}
+	| IF Expression THEN BlockStatement ELSE BlockStatement END LineBreak {
+		$$ = new Ast.IfStatement((Ast.Expression)$2, (Ast.BlockStatement)$4, (Ast.BlockStatement)$6);
+	}
 	;
 
 VarStatement
@@ -146,6 +158,7 @@ ExpressionStatement
 
 LineBreak
 	: SEMICOLON
+	| NEWLINE
 	;
 
 Expression
@@ -386,6 +399,7 @@ class ParserLexer implements Parser.Lexer {
 				this.value = null;
 				return Parser.Lexer.COMMA;
 
+			// keywords
 			case TokenType.VAR:
 				this.value = null;
 				return Parser.Lexer.VAR;
@@ -404,6 +418,15 @@ class ParserLexer implements Parser.Lexer {
 			case TokenType.END:
 				this.value = null;
 				return Parser.Lexer.END;
+			case TokenType.IF:
+				this.value = null;
+				return Parser.Lexer.IF;
+			case TokenType.THEN:
+				this.value = null;
+				return Parser.Lexer.THEN;
+			case TokenType.ELSE:
+				this.value = null;
+				return Parser.Lexer.ELSE;
 			
 			case TokenType.EOF:
 				this.value = null;
