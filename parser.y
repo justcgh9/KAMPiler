@@ -158,7 +158,6 @@ ExpressionStatement
 
 LineBreak
 	: SEMICOLON
-	| NEWLINE
 	;
 
 Expression
