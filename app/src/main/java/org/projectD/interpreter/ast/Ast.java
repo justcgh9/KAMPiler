@@ -159,6 +159,11 @@ public class Ast {
             }
 
             var statement = (ReturnStatement) obj;
+
+            if (this.returnValue == null) {
+                return this.returnValue == null;
+            }
+
             return this.returnValue.equals(statement.returnValue);
         }
     }
@@ -685,6 +690,13 @@ public class Ast {
         public FunctionLiteral(List<Identifier> parameters) {
             this.token = new Token("func", TokenType.FUNCTION);
             this.parameters = parameters;
+        }
+
+        public FunctionLiteral(List<Identifier> parameters, BlockStatement body) {
+            this.token = new Token("func", TokenType.FUNCTION);
+            this.parameters = parameters;
+            this.body = body;
+            
         }
 
         public void setBody(BlockStatement body) {
