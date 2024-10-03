@@ -294,15 +294,19 @@ public class Ast {
         }
     }
 
-    public class WhileLiteral implements Statement {
-        Token token;
+    public static class WhileStatement implements Statement {
         Expression predicate;
         BlockStatement loopBody;
+
+        public WhileStatement(Expression predicate, BlockStatement loopBody) {
+            this.predicate = predicate;
+            this.loopBody = loopBody;
+        }
 
         public void statementNode() {};
 
         public String tokenLiteral() {
-            return this.token.gLiteral();
+            return "while statement";
         }
         
         public String toString() {
@@ -329,7 +333,7 @@ public class Ast {
                 return false;
             }
 
-            var literal = (WhileLiteral) obj;
+            var literal = (WhileStatement) obj;
             return this.loopBody.equals(literal.loopBody) && this.predicate.equals(literal.predicate);
         }
     }
@@ -372,6 +376,11 @@ public class Ast {
     public static class BooleanLiteral implements Expression {
         Token token;
         String value;
+
+        public BooleanLiteral(Token token, String value) {
+            this.token = token;
+            this.value = value;
+        }
 
         public void expressionNode() {
         };

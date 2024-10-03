@@ -81,6 +81,10 @@
 %token IF
 %token THEN
 %token ELSE
+%token TRUE
+%token FALSE
+%token WHILE
+%token LOOP
 
 %start CompilationUnit
 
@@ -117,6 +121,7 @@ Statement
 	| VarStatement
 	| PrintStatement
 	| IfStatement
+	| WhileStatement
 	;
 
 IfStatement
@@ -125,6 +130,12 @@ IfStatement
 	}
 	| IF Expression THEN BlockStatement ELSE BlockStatement END LineBreak {
 		$$ = new Ast.IfStatement((Ast.Expression)$2, (Ast.BlockStatement)$4, (Ast.BlockStatement)$6);
+	}
+	;
+
+WhileStatement
+	: WHILE Expression LOOP BlockStatement END LineBreak {
+		$$ = new Ast.WhileStatement((Ast.Expression)$2, (Ast.BlockStatement)$4);
 	}
 	;
 
@@ -284,6 +295,8 @@ Term
 	| REAL
 	| IDENT
 	| STRING
+	| TRUE
+	| FALSE
 	;
 
 BoolOp
@@ -426,6 +439,18 @@ class ParserLexer implements Parser.Lexer {
 			case TokenType.ELSE:
 				this.value = null;
 				return Parser.Lexer.ELSE;
+			case TokenType.TRUE:
+				this.value = new Ast.BooleanLiteral(tok, literal);
+				return Parser.Lexer.TRUE;
+			case TokenType.FALSE:
+				this.value = new Ast.BooleanLiteral(tok, literal);
+				return Parser.Lexer.FALSE;
+			case TokenType.WHILE:
+				this.value = null;
+				return Parser.Lexer.WHILE;
+			case TokenType.LOOP:
+				this.value = null;
+				return Parser.Lexer.LOOP;
 			
 			case TokenType.EOF:
 				this.value = null;

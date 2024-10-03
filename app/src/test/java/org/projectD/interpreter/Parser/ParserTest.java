@@ -139,7 +139,9 @@ public class ParserTest {
                         )
                     )
                 )
-            )
+            ),
+            arguments("true;", "true", (new Ast.BooleanLiteral(new Token("true", TokenType.TRUE), "true"))),
+            arguments("false;", "false", (new Ast.BooleanLiteral(new Token("false", TokenType.FALSE), "false")))
         );
     }
 
@@ -219,6 +221,28 @@ public class ParserTest {
                 new Ast.VarStatement(
                     new Ast.Identifier(new Token("a", TokenType.IDENT), "a"),
                     new Ast.IntegerLiteral(new Token("2", TokenType.INT), "2"))
+            ),
+            arguments(
+                "while 3 = 2 loop 1 + 2; end;", 
+                "while(3 = 2)loop{\n(1 + 2)\n}end",
+                new Ast.WhileStatement(
+                    new Ast.InfixExpression(
+                        "=",
+                        new Ast.IntegerLiteral(new Token("3", TokenType.INT), "3"),
+                        new Ast.IntegerLiteral(new Token("2", TokenType.INT), "2")
+                    ),
+                    new Ast.BlockStatement(
+                        Arrays.asList(
+                            new Ast.ExpressionStatement(
+                                new Ast.InfixExpression(
+                                    "+", 
+                                    new Ast.IntegerLiteral(new Token("1", TokenType.INT), "1"),
+                                    new Ast.IntegerLiteral(new Token("2", TokenType.INT), "2")
+                                ) 
+                            )
+                        )
+                    )
+                )
             )
         );
     }
