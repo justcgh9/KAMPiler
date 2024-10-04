@@ -2,9 +2,12 @@ package org.projectD.interpreter.parser;
 
 import java.util.stream.Stream;
 import java.util.Arrays;
+import java.util.Map;
+import java.util.List;
 import java.io.IOException;
 
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -138,7 +141,17 @@ public class ParserTest {
                 )
             ),
             arguments("true;", "true", (new Ast.BooleanLiteral(new Token("true", TokenType.TRUE), "true"))),
-            arguments("false;", "false", (new Ast.BooleanLiteral(new Token("false", TokenType.FALSE), "false")))
+            arguments("false;", "false", (new Ast.BooleanLiteral(new Token("false", TokenType.FALSE), "false"))),
+            arguments(
+                "[1, 2];", 
+                "(1, 2)",
+                new Ast.ArrayLiteral(
+                    Arrays.asList(
+                        new Ast.IntegerLiteral(new Token("1", TokenType.INT), "1"),
+                        new Ast.IntegerLiteral(new Token("2", TokenType.INT), "2")
+                    )
+                )
+            )
         );
     }
 
@@ -244,6 +257,51 @@ public class ParserTest {
         );
     }
 
+    static Stream<Arguments> statementsProvider() {
+        return Stream.of(
+            arguments(
+                "var f := func(x) => x;; f(x);", 
+                "var f = func(x) {\nreturn x;\n};f(x)",
+                Arrays.asList(
+                    new Ast.VarStatement(
+                        new Ast.Identifier(new Token("f", TokenType.IDENT), "f"),
+                        new Ast.FunctionLiteral(
+                            Arrays.asList(
+                                new Ast.Identifier(new Token("x", TokenType.IDENT), "x")
+                            ),
+                            new Ast.BlockStatement(
+                                Arrays.asList(
+                                    new Ast.ReturnStatement(
+                                        new Ast.Identifier(new Token("x", TokenType.IDENT), "x")
+                                    )
+                                )
+                            )
+                        )
+                    ),
+                    new Ast.ExpressionStatement(
+                        new Ast.CallExpression(
+                            new Ast.FunctionLiteral(
+                                Arrays.asList(
+                                    new Ast.Identifier(new Token("x", TokenType.IDENT), "x")
+                                ),
+                                new Ast.BlockStatement(
+                                    Arrays.asList(
+                                        new Ast.ReturnStatement(
+                                            new Ast.Identifier(new Token("x", TokenType.IDENT), "x")
+                                        )
+                                    )
+                                )
+                            ),
+                            Arrays.asList(
+                                new Ast.Identifier(new Token("x", TokenType.IDENT), "x")
+                            )
+                        )
+                    )
+                )
+            )
+        );
+    }
+
     static Stream<Arguments> badSyntaxProvider() {
         return Stream.of(
             // no expression
@@ -271,9 +329,9 @@ public class ParserTest {
         var issuccess = parser.parse();
         var root = parser.getRoot();
 
-        Assertions.assertEquals(true, issuccess);
-        Assertions.assertEquals(root.toString(), expectedStr);
-        Assertions.assertEquals(root, new Ast.Program(Arrays.asList(new Ast.ExpressionStatement(expectedExpr))));
+        Assertions.assertEquals(issuccess, true);
+        Assertions.assertEquals(expectedStr, root.toString());
+        Assertions.assertEquals(new Ast.Program(Arrays.asList(new Ast.ExpressionStatement(expectedExpr))), root);
     }
 
     @ParameterizedTest
@@ -285,8 +343,44 @@ public class ParserTest {
         var issuccess = parser.parse();
         var root = parser.getRoot();
 
-        Assertions.assertEquals(true, issuccess);
-        Assertions.assertEquals(root.toString(), expectedStr);
-        Assertions.assertEquals(root, new Ast.Program(Arrays.asList(expectedStmt)));
+        Assertions.assertEquals(issuccess, true);
+        Assertions.assertEquals(expectedStr, root.toString());
+        Assertions.assertEquals(new Ast.Program(Arrays.asList(expectedStmt)), root);
+    }
+
+    @ParameterizedTest
+    @MethodSource("statementsProvider")
+    void testStatements(String statement, String expectedStr, List<Ast.Statement> expectedStmts) throws IOException {
+        var lexer = new ParserLexer(statement);
+        var parser = new Parser(lexer);
+        
+        var issuccess = parser.parse();
+        var root = parser.getRoot();
+
+        Assertions.assertEquals(issuccess, true);
+        Assertions.assertEquals(expectedStr, root.toString());
+        Assertions.assertEquals(new Ast.Program(expectedStmts), root);
+    }
+
+    //TODO: fix tuple test
+    void testTuple() throws IOException {
+        var lexer = new ParserLexer("{a:=1};");
+        var parser = new Parser(lexer);
+        var expectedStr = "{0:1, a:1}";
+        var expectedExpr = new Ast.TupleLiteral(
+            Map.of(
+                new Ast.Identifier(new Token("a", TokenType.IDENT), "a"),
+                new Ast.IntegerLiteral(new Token("1", TokenType.INT), "1"),
+                new Ast.StringLiteral(new Token("0", TokenType.STRING), "0"),
+                new Ast.IntegerLiteral(new Token("1", TokenType.INT), "1")
+            )
+        );
+        
+        var issuccess = parser.parse();
+        var root = parser.getRoot();
+
+        Assertions.assertEquals(issuccess, true);
+        Assertions.assertEquals(expectedStr, root.toString());
+        Assertions.assertEquals(new Ast.Program(Arrays.asList(new Ast.ExpressionStatement(expectedExpr))), root);
     }
 }

@@ -181,6 +181,10 @@ public class Ast {
         public String tokenLiteral() {
             return "expression statement";
         }
+
+        public Expression getExpression() {
+            return this.expression;
+        }
         
         public String toString() {
             return Objects.nonNull(expression) ? this.expression.toString() : "";
@@ -773,12 +777,21 @@ public class Ast {
             this.function = null;
         }
 
+        public CallExpression(Expression function, List<Expression> arguments) {
+            this.arguments = arguments;
+            this.function = function;
+        }
+
         public void addArgument(Expression argument) {
             this.arguments.add(argument);
         }
 
         public void addFunction(Expression function) {
             this.function = function;
+        }
+
+        public Expression getFunction() {
+            return this.function;
         }
 
         public void expressionNode() {
@@ -829,6 +842,10 @@ public class Ast {
 
         public ArrayLiteral() {
             this.elements = new ArrayList<>();
+        }
+        
+        public ArrayLiteral(List<Expression> elements) {
+            this.elements = elements;
         }
 
         public void addExpression(Expression exp) {
@@ -925,6 +942,11 @@ public class Ast {
         public TupleLiteral() {
             this.pairs = new HashMap<>();
             this.size = 0;
+        }
+
+        public TupleLiteral(Map<Expression, Expression> pairs) {
+            this.pairs = pairs;
+            this.size = pairs.size();
         }
 
         public void addExpression(Expression exp) {
