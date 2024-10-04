@@ -128,6 +128,7 @@ Statement
 	| PrintStatement
 	| IfStatement
 	| WhileStatement
+	| ReturnStatement
 	;
 
 IfStatement
@@ -180,6 +181,7 @@ LineBreak
 Expression
 	: Relation
 	| Relation BoolOp Relation {var exp = (Ast.InfixExpression) $2; exp.setLeft((Ast.Expression) $1); exp.setRight((Ast.Expression) $3); $$ = exp;}
+	| FuncLiteral
 	;
 
 Relation
@@ -189,18 +191,16 @@ Relation
 
 Factor
 	: AddExpression
-	| FuncLiteral
 	;
 
 FuncLiteral
-	: FUNCTION LPAREN FuncDeclarationParameters RPAREN IS BlockStatement ReturnStatement END {
+	: FUNCTION LPAREN FuncDeclarationParameters RPAREN IS BlockStatement END {
 		var func = (Ast.FunctionLiteral) $3;
 		var body = (Ast.BlockStatement) $6;
-		body.addStatement((Ast.ReturnStatement) $7);
 		func.setBody(body);
 		$$ = func;
 	}
-	| FUNCTION LPAREN FuncDeclarationParameters RPAREN ARROW Expression LineBreak {
+	| FUNCTION LPAREN FuncDeclarationParameters RPAREN ARROW Expression {
 		var func = (Ast.FunctionLiteral) $3;
 		var statements = new ArrayList<Ast.Statement>();
 		statements.add(new Ast.ReturnStatement((Ast.Expression) $6));
