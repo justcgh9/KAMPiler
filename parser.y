@@ -69,6 +69,11 @@
 %token LPAREN
 %token RPAREN
 %token COMMA
+%token DOT
+%token LBRACE
+%token RBRACE
+%token LBRACKET
+%token RBRACKET
 
 // keywords
 %token VAR
@@ -293,11 +298,75 @@ UnaryExpression
 Term
 	: INT
 	| REAL
-	| IDENT
+	| IDENT Tail {
+		try {
+			var idx = (Ast.IndexLiteral) $2;
+			idx.setLeft((Ast.Identifier) $1);
+			$$ = idx; 
+		} catch(Exception e) {
+			$$ = $1;
+		}
+	}
 	| STRING
 	| TRUE
 	| FALSE
+	| Array
+	| Tuple
 	;
+
+Tail 
+	: %empty
+	| ArrayTail
+	| TupleTail
+
+ArrayTail
+	: LBRACKET INT RBRACKET {$$ = new Ast.IndexLiteral((Ast.IntegerLiteral) $2);}
+
+TupleTail
+	: DOT INT {$$ = new Ast.IndexLiteral((Ast.IntegerLiteral) $2);}
+	| DOT IDENT {$$ = new Ast.IndexLiteral((Ast.Identifier) $2);}
+
+Array
+	: LBRACKET RBRACKET {$$ = new Ast.ArrayLiteral();}
+	| LBRACKET ArrayContent RBRACKET {$$ = (Ast.ArrayLiteral) $2;}
+
+ArrayContent
+	: Expression {
+		var arr = new Ast.ArrayLiteral();
+		arr.addExpression((Ast.Expression) $1);
+		$$ = arr;
+	}
+	| ArrayContent COMMA Expression {
+		var arr = (Ast.ArrayLiteral) $1;
+		arr.addExpression((Ast.Expression) $3);
+		$$ = arr;
+	}
+
+Tuple
+	: LBRACE RBRACE {$$ = new Ast.TupleLiteral();}
+	| LBRACE TupleContent RBRACE {$$ = (Ast.TupleLiteral) $2;}
+
+TupleContent
+	: Expression {
+		var tpl = new Ast.TupleLiteral();
+		tpl.addExpression((Ast.Expression) $1);
+		$$ = tpl;
+	}
+	| IDENT ASSIGN Expression {
+		var tpl = new Ast.TupleLiteral();
+		tpl.addAssignment((Ast.Identifier) $1, (Ast.Expression) $3);
+		$$ = tpl;
+	}
+	| TupleContent COMMA Expression {
+		var tpl = (Ast.TupleLiteral) $1;
+		tpl.addExpression((Ast.Expression) $3);
+		$$ = tpl;
+	}
+	| TupleContent COMMA IDENT ASSIGN Expression {
+		var tpl = (Ast.TupleLiteral) $1;
+		tpl.addAssignment((Ast.Identifier) $3, (Ast.Expression) $5);
+		$$ = tpl;
+	}
 
 BoolOp
 	: AND {$$ = new Ast.InfixExpression("and");}
@@ -410,6 +479,21 @@ class ParserLexer implements Parser.Lexer {
 			case TokenType.COMMA:
 				this.value = null;
 				return Parser.Lexer.COMMA;
+			case TokenType.DOT:
+				this.value = null;
+				return Parser.Lexer.DOT;
+			case TokenType.LBRACE:
+				this.value = null;
+				return Parser.Lexer.LBRACE;
+			case TokenType.RBRACE:
+				this.value = null;
+				return Parser.Lexer.RBRACE;
+			case TokenType.LBRACKET:
+				this.value = null;
+				return Parser.Lexer.LBRACKET;
+			case TokenType.RBRACKET:
+				this.value = null;
+				return Parser.Lexer.RBRACKET;
 
 			// keywords
 			case TokenType.VAR:

@@ -1,6 +1,7 @@
 package org.projectD.interpreter.ast;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -813,6 +814,14 @@ public class Ast {
         public void expressionNode() {
         };
 
+        public ArrayLiteral() {
+            this.elements = new ArrayList<>();
+        }
+
+        public void addExpression(Expression exp) {
+            this.elements.add(exp);
+        }
+
         public String tokenLiteral() {
             return this.token.gLiteral();
         }
@@ -855,6 +864,14 @@ public class Ast {
         public void expressionNode() {
         };
 
+        public IndexLiteral(Expression index) {
+            this.index = index;
+        }
+
+        public void setLeft(Identifier left) {
+            this.left = left;
+        }
+
         public String tokenLiteral() {
             return this.token.gLiteral();
         }
@@ -890,6 +907,23 @@ public class Ast {
     public static class TupleLiteral implements Expression {
         Token token;
         Map<Expression, Expression> pairs;
+        int size;
+
+        public TupleLiteral() {
+            this.pairs = new HashMap<>();
+            this.size = 0;
+        }
+
+        public void addExpression(Expression exp) {
+            pairs.put(new IntegerLiteral(new Token(String.valueOf(size), TokenType.INT), String.valueOf(this.size)), exp);
+            this.size++;
+        }
+
+        public void addAssignment(Identifier name, Expression exp) {
+            pairs.put(name, exp);
+            pairs.put(new IntegerLiteral(new Token(String.valueOf(size), TokenType.INT), String.valueOf(this.size)), exp);
+            this.size++;
+        }
 
         public void expressionNode() {
         };
