@@ -304,7 +304,13 @@ Term
 			idx.setLeft((Ast.Identifier) $1);
 			$$ = idx; 
 		} catch(Exception e) {
-			$$ = $1;
+			try {
+				var callExp = (Ast.CallExpression) $2;
+				callExp.addFunction((Ast.Identifier) $1);
+				$$ = callExp;
+			} catch (Exception f) {
+				$$ = $1;
+			}
 		}
 	}
 	| STRING
@@ -318,6 +324,7 @@ Tail
 	: %empty
 	| ArrayTail
 	| TupleTail
+	| FuncTail
 
 ArrayTail
 	: LBRACKET INT RBRACKET {$$ = new Ast.IndexLiteral((Ast.IntegerLiteral) $2);}
@@ -325,6 +332,22 @@ ArrayTail
 TupleTail
 	: DOT INT {$$ = new Ast.IndexLiteral((Ast.IntegerLiteral) $2);}
 	| DOT IDENT {$$ = new Ast.IndexLiteral((Ast.Identifier) $2);}
+
+FuncTail
+	: LPAREN CallArgs RPAREN {$$ = (Ast.CallExpression) $2;}
+
+CallArgs
+	: %empty {$$ = new Ast.CallExpression();}
+	| Expression {
+		var callExp = new Ast.CallExpression();
+		callExp.addArgument((Ast.Expression) $1);
+		$$ = callExp;
+	}
+	| CallArgs COMMA Expression {
+		var callExp = (Ast.CallExpression) $1;
+		callExp.addArgument((Ast.Expression) $3);
+		$$ = callExp;
+	}
 
 Array
 	: LBRACKET RBRACKET {$$ = new Ast.ArrayLiteral();}
