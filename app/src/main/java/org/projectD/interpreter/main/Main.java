@@ -6,8 +6,8 @@ import java.io.IOException;
 import java.nio.file.Paths;
 import java.nio.file.Files;
 
+import org.projectD.interpreter.lexer.ParserLexer;
 import org.projectD.interpreter.parser.Parser;
-import org.projectD.interpreter.parser.ParserLexer;
 import org.projectD.interpreter.repl.Repl;
 
 public class Main {

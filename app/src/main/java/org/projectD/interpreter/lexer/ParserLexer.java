@@ -1,8 +1,8 @@
-package org.projectD.interpreter.parser;
+package org.projectD.interpreter.lexer;
 import java.util.ArrayList;
 
 import org.projectD.interpreter.ast.Ast;
-import org.projectD.interpreter.lexer.Lexer;
+import org.projectD.interpreter.parser.Parser;
 import org.projectD.interpreter.token.Token;
 import org.projectD.interpreter.token.TokenType;
 

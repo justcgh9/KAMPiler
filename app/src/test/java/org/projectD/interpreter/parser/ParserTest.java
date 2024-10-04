@@ -1,12 +1,10 @@
 package org.projectD.interpreter.parser;
 
 import java.util.stream.Stream;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.io.IOException;
 
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -14,9 +12,8 @@ import static org.junit.jupiter.params.provider.Arguments.arguments;
 
 import org.projectD.interpreter.token.TokenType;
 import org.projectD.interpreter.token.Token;
-import org.projectD.interpreter.parser.ParserLexer;
-import org.projectD.interpreter.parser.Parser;
 import org.projectD.interpreter.ast.Ast;
+import org.projectD.interpreter.lexer.ParserLexer;
 
 public class ParserTest {
     static Stream<Arguments> expressionProvider() {
