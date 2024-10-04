@@ -14,6 +14,7 @@
 
 	import org.projectD.interpreter.ast.Ast;
 	import org.projectD.interpreter.lexer.Lexer;
+	import org.projectD.interpreter.lexer.ParserLexer;
 	import org.projectD.interpreter.token.Token;	
 	import org.projectD.interpreter.token.TokenType;
 }
