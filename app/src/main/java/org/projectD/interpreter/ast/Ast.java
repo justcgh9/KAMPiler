@@ -768,6 +768,19 @@ public class Ast {
         Expression function;
         List<Expression> arguments;
 
+        public CallExpression() {
+            this.arguments = new ArrayList<>();
+            this.function = null;
+        }
+
+        public void addArgument(Expression argument) {
+            this.arguments.add(argument);
+        }
+
+        public void addFunction(Expression function) {
+            this.function = function;
+        }
+
         public void expressionNode() {
         };
 
