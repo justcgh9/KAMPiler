@@ -20,6 +20,7 @@ public enum TokenType {
     ASTERISK("*"),
     SLASH("/"),
     DOT("."),
+    DOTDOT(".."),
     
     LT("<"),
     GT(">"),

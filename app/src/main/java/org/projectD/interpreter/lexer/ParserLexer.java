@@ -80,6 +80,12 @@ public class ParserLexer implements Parser.Lexer {
 			case TokenType.XOR:
 				this.value = null;
 				return Parser.Lexer.XOR;
+			case TokenType.IN:
+				this.value = null;
+				return Parser.Lexer.IN;
+			case TokenType.DOTDOT:
+				this.value = null;
+				return Parser.Lexer.DOTDOT;
 			
 			// delimiters
 			case TokenType.SEMICOLON:
@@ -157,6 +163,9 @@ public class ParserLexer implements Parser.Lexer {
 			case TokenType.LOOP:
 				this.value = null;
 				return Parser.Lexer.LOOP;
+			case TokenType.FOR:
+				this.value = null;
+				return Parser.Lexer.FOR;
 			
 			case TokenType.EOF:
 				this.value = null;
