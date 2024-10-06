@@ -71,10 +71,12 @@
 %token RPAREN
 %token COMMA
 %token DOT
+%token DOTDOT
 %token LBRACE
 %token RBRACE
 %token LBRACKET
 %token RBRACKET
+
 
 // keywords
 %token VAR
@@ -90,7 +92,9 @@
 %token TRUE
 %token FALSE
 %token WHILE
+%token FOR
 %token LOOP
+%token IN
 
 %start CompilationUnit
 
@@ -129,6 +133,7 @@ Statement
 	| IfStatement
 	| WhileStatement
 	| ReturnStatement
+	| ForStatement
 	;
 
 IfStatement
@@ -143,6 +148,12 @@ IfStatement
 WhileStatement
 	: WHILE Expression LOOP BlockStatement END LineBreak {
 		$$ = new Ast.WhileStatement((Ast.Expression)$2, (Ast.BlockStatement)$4);
+	}
+	;
+
+ForStatement
+	: FOR IDENT IN Expression DOTDOT Expression LOOP BlockStatement END LineBreak {
+		$$ = new Ast.ForLiteral((Ast.Identifier) $2, new Ast.InfixExpression("..", (Ast.Expression) $4, (Ast.Expression) $6), (Ast.BlockStatement) $8);
 	}
 	;
 
@@ -326,16 +337,20 @@ Tail
 	| ArrayTail
 	| TupleTail
 	| FuncTail
+	;
 
 ArrayTail
 	: LBRACKET INT RBRACKET {$$ = new Ast.IndexLiteral((Ast.IntegerLiteral) $2);}
+	;
 
 TupleTail
 	: DOT INT {$$ = new Ast.IndexLiteral((Ast.IntegerLiteral) $2);}
 	| DOT IDENT {$$ = new Ast.IndexLiteral((Ast.Identifier) $2);}
+	;
 
 FuncTail
 	: LPAREN CallArgs RPAREN {$$ = (Ast.CallExpression) $2;}
+	;
 
 CallArgs
 	: %empty {$$ = new Ast.CallExpression();}
@@ -349,10 +364,12 @@ CallArgs
 		callExp.addArgument((Ast.Expression) $3);
 		$$ = callExp;
 	}
+	;
 
 Array
 	: LBRACKET RBRACKET {$$ = new Ast.ArrayLiteral();}
 	| LBRACKET ArrayContent RBRACKET {$$ = (Ast.ArrayLiteral) $2;}
+	;
 
 ArrayContent
 	: Expression {
@@ -365,10 +382,12 @@ ArrayContent
 		arr.addExpression((Ast.Expression) $3);
 		$$ = arr;
 	}
+	;
 
 Tuple
 	: LBRACE RBRACE {$$ = new Ast.TupleLiteral();}
 	| LBRACE TupleContent RBRACE {$$ = (Ast.TupleLiteral) $2;}
+	;
 
 TupleContent
 	: Expression {
@@ -391,6 +410,7 @@ TupleContent
 		tpl.addAssignment((Ast.Identifier) $3, (Ast.Expression) $5);
 		$$ = tpl;
 	}
+	;
 
 BoolOp
 	: AND {$$ = new Ast.InfixExpression("and");}

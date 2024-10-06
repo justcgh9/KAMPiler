@@ -99,7 +99,7 @@ public class Ast {
                 out.append(value.toString());
             }
 
-            out.append(";");
+            out.append(";\n");
 
             return out.toString();
         }
@@ -144,7 +144,7 @@ public class Ast {
                 out.append(returnValue.toString());
             }
 
-            out.append(";");
+            out.append(";\n");
 
             return out.toString();
         }
@@ -187,7 +187,7 @@ public class Ast {
         }
         
         public String toString() {
-            return Objects.nonNull(expression) ? this.expression.toString() : "";
+            return Objects.nonNull(expression) ? this.expression.toString() + ";\n" : "";
         }
         
         @Override
@@ -232,7 +232,7 @@ public class Ast {
                 out.append(s.toString());
             }
 
-            out.append("\n}");
+            out.append("\n}\n");
             
             return out.toString();
         }
@@ -252,11 +252,17 @@ public class Ast {
         }
     }
     
-    public class ForLiteral implements Statement {
+    public static class ForLiteral implements Statement {
         Token token;
         BlockStatement loopBody;
         Identifier  loopVariable;
         Expression typeIndicator;
+        
+        public ForLiteral(Identifier loopVariable, Expression typeIndicator, BlockStatement loopBody) {
+            this.typeIndicator = typeIndicator;
+            this.loopVariable = loopVariable;
+            this.loopBody = loopBody;
+        }
 
         public void statementNode() {
         };
@@ -269,13 +275,13 @@ public class Ast {
             StringBuilder out = new StringBuilder();
             
             out
-            .append("for")
+            .append("for ")
             .append(loopVariable.toString())
-            .append("in")
+            .append(" in ")
             .append(typeIndicator.toString())
-            .append("loop")
+            .append(" loop ")
             .append(loopBody.toString())
-            .append("end");
+            .append("\nend;\n");
             
             return out.toString();
         } 
@@ -322,7 +328,7 @@ public class Ast {
             .append(predicate.toString())
             .append("loop")
             .append(loopBody.toString())
-            .append("end");
+            .append("end;\n");
 
             
             return out.toString();
@@ -1028,7 +1034,7 @@ public class Ast {
             out
             .append("print ")
             .append(joiner.toString())
-            .append(";");
+            .append(";\n");
             
 
             return out.toString();
