@@ -358,6 +358,10 @@ public class Ast {
             this.value = value;
         }
 
+        public Token getToken() {
+            return this.token;
+        }
+
         public void expressionNode() {
         };
 
@@ -381,6 +385,11 @@ public class Ast {
 
             var ident = (Identifier) obj;
             return this.value.equals(ident.value);
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(this.value);
         }
     }
 
@@ -417,6 +426,11 @@ public class Ast {
             var literal = (BooleanLiteral) obj;
             return this.value.equals(literal.value);
         }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(this.value);
+        }
     }
 
     public static class IntegerLiteral implements Expression {
@@ -451,6 +465,11 @@ public class Ast {
 
             var literal = (IntegerLiteral) obj;
             return this.value.equals(literal.value);
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(this.value);
         }
     }
 
@@ -487,6 +506,11 @@ public class Ast {
             var literal = (RealLiteral) obj;
             return this.value.equals(literal.value);
         }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(this.value);
+        }
     }
 
     public static class StringLiteral implements Expression {
@@ -521,6 +545,11 @@ public class Ast {
 
             var literal = (StringLiteral) obj;
             return this.value.equals(literal.value);
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(this.value);
         }
     }
 
@@ -783,6 +812,11 @@ public class Ast {
             this.function = null;
         }
 
+        public CallExpression(Expression function) {
+            this.arguments = new ArrayList<>();
+            this.function = function;
+        }
+
         public CallExpression(Expression function, List<Expression> arguments) {
             this.arguments = arguments;
             this.function = function;
@@ -953,6 +987,10 @@ public class Ast {
         public TupleLiteral(Map<Expression, Expression> pairs) {
             this.pairs = pairs;
             this.size = pairs.size();
+        }
+
+        public Map<Expression, Expression> getPairs() {
+            return this.pairs;
         }
 
         public void addExpression(Expression exp) {
