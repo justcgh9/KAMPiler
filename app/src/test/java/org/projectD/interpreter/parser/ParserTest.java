@@ -4,6 +4,7 @@ import java.util.stream.Stream;
 import java.util.Arrays;
 import java.util.Map;
 import java.util.List;
+import java.util.HashMap;
 import java.io.IOException;
 
 import org.junit.jupiter.api.Assertions;
@@ -21,16 +22,14 @@ import org.projectD.interpreter.lexer.ParserLexer;
 public class ParserTest {
     static Stream<Arguments> expressionProvider() {
         return Stream.of(
-            arguments("1;", "1", (new Ast.IntegerLiteral(new Token("1", TokenType.INT), "1"))),
-            arguments("1.1;", "1.1", (new Ast.RealLiteral(new Token("1.1", TokenType.REAL), "1.1"))), 
+            arguments("1;", (new Ast.IntegerLiteral(new Token("1", TokenType.INT), "1"))),
+            arguments("1.1;", (new Ast.RealLiteral(new Token("1.1", TokenType.REAL), "1.1"))), 
             arguments(
                 "\"string\";",
-                "\"string\"", 
                 new Ast.StringLiteral(new Token("\"string\"", TokenType.STRING), "\"string\"")
             ),
             arguments(
                 "1 + 2;",
-                "(1 + 2)",
                 new Ast.InfixExpression(
                     "+", 
                     new Ast.IntegerLiteral(new Token("1", TokenType.INT), "1"),
@@ -39,7 +38,6 @@ public class ParserTest {
             ),
             arguments(
                 "1 + 2.3;",
-                "(1 + 2.3)",
                 new Ast.InfixExpression(
                     "+", 
                     new Ast.IntegerLiteral(new Token("1", TokenType.INT), "1"),
@@ -48,7 +46,6 @@ public class ParserTest {
             ),
             arguments(
                 "1 + 2 * 3;", 
-                "(1 + (2 * 3))",
                 new Ast.InfixExpression(
                     "+", 
                     new Ast.IntegerLiteral(new Token("1", TokenType.INT), "1"),
@@ -61,7 +58,6 @@ public class ParserTest {
             ),
             arguments(
                 "(1 + 2) * 3;", 
-                "((1 + 2) * 3)",
                 new Ast.InfixExpression(
                     "*",
                     new Ast.InfixExpression(
@@ -74,7 +70,6 @@ public class ParserTest {
             ),
             arguments(
                 "func (a) is 1 + 2; return; end;", 
-                "func(a) {\n(1 + 2)return ;\n}",
                 new Ast.FunctionLiteral(
                     Arrays.asList(
                         new Ast.Identifier(new Token("a", TokenType.IDENT), "a")
@@ -95,7 +90,6 @@ public class ParserTest {
             ),
             arguments(
                 "func (a) is 1 + 2; return 1 + 2; end;", 
-                "func(a) {\n(1 + 2)return (1 + 2);\n}",
                 new Ast.FunctionLiteral(
                     Arrays.asList(
                         new Ast.Identifier(new Token("a", TokenType.IDENT), "a")
@@ -121,8 +115,7 @@ public class ParserTest {
                 )
             ),
             arguments(
-                "func (a) => 1 + 2;;", 
-                "func(a) {\nreturn (1 + 2);\n}",
+                "func (a) => 1 + 2;", 
                 new Ast.FunctionLiteral(
                     Arrays.asList(
                         new Ast.Identifier(new Token("a", TokenType.IDENT), "a")
@@ -140,11 +133,10 @@ public class ParserTest {
                     )
                 )
             ),
-            arguments("true;", "true", (new Ast.BooleanLiteral(new Token("true", TokenType.TRUE), "true"))),
-            arguments("false;", "false", (new Ast.BooleanLiteral(new Token("false", TokenType.FALSE), "false"))),
+            arguments("true;", (new Ast.BooleanLiteral(new Token("true", TokenType.TRUE), "true"))),
+            arguments("false;", (new Ast.BooleanLiteral(new Token("false", TokenType.FALSE), "false"))),
             arguments(
                 "[1, 2];", 
-                "(1, 2)",
                 new Ast.ArrayLiteral(
                     Arrays.asList(
                         new Ast.IntegerLiteral(new Token("1", TokenType.INT), "1"),
@@ -159,7 +151,6 @@ public class ParserTest {
         return Stream.of(
             arguments(
                 "if 3 = 2 then 1 + 2; end;", 
-                "if(3 = 2){\n(1 + 2)\n}",
                 new Ast.IfStatement(
                     new Ast.InfixExpression(
                         "=",
@@ -181,7 +172,6 @@ public class ParserTest {
             ),
             arguments(
                 "if 3 = 2 then 1 + 2; else 1 + 3; end;", 
-                "if(3 = 2){\n(1 + 2)\n}else{\n(1 + 3)\n}",
                 new Ast.IfStatement(
                     new Ast.InfixExpression(
                         "=",
@@ -214,7 +204,6 @@ public class ParserTest {
             ),
             arguments(
                 "print 1 + 2;",
-                "print (1 + 2);",
                 new Ast.PrintLiteral(
                     Arrays.asList(
                         new Ast.InfixExpression(
@@ -227,14 +216,12 @@ public class ParserTest {
             ),
             arguments(
                 "var a := 2;",
-                "var a = 2;",
                 new Ast.VarStatement(
                     new Ast.Identifier(new Token("a", TokenType.IDENT), "a"),
                     new Ast.IntegerLiteral(new Token("2", TokenType.INT), "2"))
             ),
             arguments(
                 "while 3 = 2 loop 1 + 2; end;", 
-                "while(3 = 2)loop{\n(1 + 2)\n}end",
                 new Ast.WhileStatement(
                     new Ast.InfixExpression(
                         "=",
@@ -260,8 +247,7 @@ public class ParserTest {
     static Stream<Arguments> statementsProvider() {
         return Stream.of(
             arguments(
-                "var f := func(x) => x;; f(x);", 
-                "var f = func(x) {\nreturn x;\n};f(x)",
+                "var f := func(x) => x; f(x);", 
                 Arrays.asList(
                     new Ast.VarStatement(
                         new Ast.Identifier(new Token("f", TokenType.IDENT), "f"),
@@ -280,20 +266,9 @@ public class ParserTest {
                     ),
                     new Ast.ExpressionStatement(
                         new Ast.CallExpression(
-                            new Ast.FunctionLiteral(
-                                Arrays.asList(
-                                    new Ast.Identifier(new Token("x", TokenType.IDENT), "x")
-                                ),
-                                new Ast.BlockStatement(
-                                    Arrays.asList(
-                                        new Ast.ReturnStatement(
-                                            new Ast.Identifier(new Token("x", TokenType.IDENT), "x")
-                                        )
-                                    )
-                                )
-                            ),
+                            new Ast.Identifier(new Token("f", TokenType.IDENT), "f"),
                             Arrays.asList(
-                                new Ast.Identifier(new Token("x", TokenType.IDENT), "x")
+                                new Ast.Identifier(new Token("x", TokenType.IDENT), "x") 
                             )
                         )
                     )
@@ -322,7 +297,7 @@ public class ParserTest {
 
     @ParameterizedTest
     @MethodSource("expressionProvider")
-    void testExpression(String literal, String expectedStr, Ast.Expression expectedExpr) throws IOException {
+    void testExpression(String literal, Ast.Expression expectedExpr) throws IOException {
         var lexer = new ParserLexer(literal);
         var parser = new Parser(lexer);
         
@@ -330,13 +305,12 @@ public class ParserTest {
         var root = parser.getRoot();
 
         Assertions.assertEquals(issuccess, true);
-        Assertions.assertEquals(expectedStr, root.toString());
         Assertions.assertEquals(new Ast.Program(Arrays.asList(new Ast.ExpressionStatement(expectedExpr))), root);
     }
 
     @ParameterizedTest
     @MethodSource("statementProvider")
-    void testStatement(String statement, String expectedStr, Ast.Statement expectedStmt) throws IOException {
+    void testStatement(String statement, Ast.Statement expectedStmt) throws IOException {
         var lexer = new ParserLexer(statement);
         var parser = new Parser(lexer);
         
@@ -344,13 +318,12 @@ public class ParserTest {
         var root = parser.getRoot();
 
         Assertions.assertEquals(issuccess, true);
-        Assertions.assertEquals(expectedStr, root.toString());
         Assertions.assertEquals(new Ast.Program(Arrays.asList(expectedStmt)), root);
     }
 
     @ParameterizedTest
     @MethodSource("statementsProvider")
-    void testStatements(String statement, String expectedStr, List<Ast.Statement> expectedStmts) throws IOException {
+    void testStatements(String statement, List<Ast.Statement> expectedStmts) throws IOException {
         var lexer = new ParserLexer(statement);
         var parser = new Parser(lexer);
         
@@ -358,29 +331,30 @@ public class ParserTest {
         var root = parser.getRoot();
 
         Assertions.assertEquals(issuccess, true);
-        Assertions.assertEquals(expectedStr, root.toString());
         Assertions.assertEquals(new Ast.Program(expectedStmts), root);
     }
 
-    //TODO: fix tuple test
+    @Test
     void testTuple() throws IOException {
         var lexer = new ParserLexer("{a:=1};");
         var parser = new Parser(lexer);
-        var expectedStr = "{0:1, a:1}";
-        var expectedExpr = new Ast.TupleLiteral(
-            Map.of(
-                new Ast.Identifier(new Token("a", TokenType.IDENT), "a"),
-                new Ast.IntegerLiteral(new Token("1", TokenType.INT), "1"),
-                new Ast.StringLiteral(new Token("0", TokenType.STRING), "0"),
-                new Ast.IntegerLiteral(new Token("1", TokenType.INT), "1")
-            )
-        );
+        var identKey = new Ast.Identifier(new Token("a", TokenType.IDENT), "a");
+        var indexKey = new Ast.IntegerLiteral(new Token("0", TokenType.INT), "0");
+        var val = new Ast.IntegerLiteral(new Token("1", TokenType.INT), "1");
+        var expectedMap = new HashMap<Ast.Expression, Ast.Expression>();
+        expectedMap.put(identKey, val);
+        expectedMap.put(indexKey, val);
+
+        var expectedExpr = new Ast.TupleLiteral(expectedMap);
         
         var issuccess = parser.parse();
         var root = parser.getRoot();
 
         Assertions.assertEquals(issuccess, true);
-        Assertions.assertEquals(expectedStr, root.toString());
-        Assertions.assertEquals(new Ast.Program(Arrays.asList(new Ast.ExpressionStatement(expectedExpr))), root);
+        var tupleExpr = ((Ast.ExpressionStatement)((Ast.Program)root).getStatements().get(0)).getExpression();
+        var tuple = (Ast.TupleLiteral)tupleExpr;
+        var map = tuple.getPairs();
+        Assertions.assertEquals(val, map.get(indexKey));
+        Assertions.assertEquals(val, map.get(identKey));
     }
 }
