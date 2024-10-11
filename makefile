@@ -1,5 +1,5 @@
 test:
-	./gradlew clean test
+	./gradlew test
 
 test-info:
 	./gradlew test --info
