@@ -938,6 +938,11 @@ public class Ast {
             this.index = index;
         }
 
+        public IndexLiteral(Expression index, Expression left) {
+            this.index = index;
+            this.left = left;
+        }
+
         public void setLeft(Identifier left) {
             this.left = left;
         }
