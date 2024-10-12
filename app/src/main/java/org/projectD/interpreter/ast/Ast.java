@@ -473,6 +473,46 @@ public class Ast {
         }
     }
 
+    public static class TypeLiteral implements Expression {
+        Token token;
+        String value;
+
+        public TypeLiteral(Token token, String value) {
+            this.token = token;
+            this.value = value;
+        }
+
+        public void expressionNode() {
+        };
+
+        public String tokenLiteral() {
+            return this.token.gLiteral();
+        }
+
+        public String toString() {
+            return this.token.gLiteral();
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            if (obj == null) {
+                return false;
+            }
+
+            if (obj.getClass() != this.getClass()) {
+                return false;
+            }
+
+            var literal = (TypeLiteral) obj;
+            return this.value.equals(literal.value);
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(this.value);
+        }
+    }
+
     public static class RealLiteral implements Expression {
         Token token;
         String value;

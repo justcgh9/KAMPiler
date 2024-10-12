@@ -30,6 +30,9 @@ public class ParserLexer implements Parser.Lexer {
 			case TokenType.STRING:
 				this.value = new Ast.StringLiteral(tok, literal);
 				return Parser.Lexer.STRING;
+			case TokenType.TYPE:
+				this.value = new Ast.TypeLiteral(tok, literal);
+				return Parser.Lexer.TYPE;
 			case TokenType.IDENT:
 				this.value = new Ast.Identifier(tok, literal);
 				return Parser.Lexer.IDENT;

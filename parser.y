@@ -48,6 +48,7 @@
 %token REAL
 %token STRING
 %token IDENT
+%token TYPE
 
 // operators
 %token PLUS
@@ -310,7 +311,18 @@ UnaryExpression
 Term
 	: INT
 	| REAL
-	| IDENT Tail {
+	| Reference
+	| Reference IS TYPE {$$ = new Ast.InfixExpression("is", (Ast.Expression) $1, (Ast.TypeLiteral) $3);}
+	| STRING
+	| TRUE
+	| FALSE
+	| Array
+	| Tuple
+	;
+
+Reference
+	:
+	IDENT Tail {
 		try {
 			var idx = (Ast.IndexLiteral) $2;
 			idx.setLeft((Ast.Identifier) $1);
@@ -325,12 +337,6 @@ Term
 			}
 		}
 	}
-	| STRING
-	| TRUE
-	| FALSE
-	| Array
-	| Tuple
-	;
 
 Tail 
 	: %empty
