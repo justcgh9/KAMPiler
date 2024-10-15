@@ -14,7 +14,7 @@ public class Ast {
 
     public interface Node {
         String tokenLiteral();
-
+        void accept(TreePrinter visitor);
         String toString();
     }
 
@@ -27,6 +27,11 @@ public class Ast {
     }
 
     public static class Program implements Node {
+        @Override
+        public void accept(TreePrinter visitor) {
+            visitor.visit(this);
+        }
+
         List<Statement> statements;
 
         public Program(List<Statement> statements) {
@@ -71,6 +76,11 @@ public class Ast {
     }
 
     public static class VarStatement implements Statement {
+        @Override
+        public void accept(TreePrinter visitor) {
+            visitor.visit(this);
+        }
+
         Token token;
         Identifier name;
         Expression value;
@@ -120,6 +130,11 @@ public class Ast {
     }
 
     public static class ReturnStatement implements Statement {
+        @Override
+        public void accept(TreePrinter visitor) {
+            visitor.visit(this);
+        }
+
         Token token;
         Expression returnValue;
 
@@ -170,6 +185,11 @@ public class Ast {
     }
 
     public static class ExpressionStatement implements Statement {
+        @Override
+        public void accept(TreePrinter visitor) {
+            visitor.visit(this);
+        }
+
         Expression expression;
 
         public ExpressionStatement(Expression expression) {
@@ -206,6 +226,11 @@ public class Ast {
     }
 
     public static class BlockStatement implements Statement {
+        @Override
+        public void accept(TreePrinter visitor) {
+            visitor.visit(this);
+        }
+
         Token token;
         List<Statement> statements;
         
@@ -229,10 +254,11 @@ public class Ast {
             out.append("{\n");
             
             for(Statement s: this.statements) {
+                out.append("    ");
                 out.append(s.toString());
             }
 
-            out.append("\n}\n");
+            out.append("} ");
             
             return out.toString();
         }
@@ -253,6 +279,11 @@ public class Ast {
     }
     
     public static class ForLiteral implements Statement {
+        @Override
+        public void accept(TreePrinter visitor) {
+            visitor.visit(this);
+        }
+
         Token token;
         BlockStatement loopBody;
         Identifier  loopVariable;
@@ -281,7 +312,7 @@ public class Ast {
             .append(typeIndicator.toString())
             .append(" loop ")
             .append(loopBody.toString())
-            .append("\nend;\n");
+            .append("end;\n");
             
             return out.toString();
         } 
@@ -306,6 +337,11 @@ public class Ast {
     }
 
     public static class WhileStatement implements Statement {
+        @Override
+        public void accept(TreePrinter visitor) {
+            visitor.visit(this);
+        }
+
         Expression predicate;
         BlockStatement loopBody;
 
@@ -350,6 +386,11 @@ public class Ast {
     }
 
     public static class Identifier implements Expression {
+        @Override
+        public void accept(TreePrinter visitor) {
+            visitor.visit(this);
+        }
+
         Token token;
         String value;
 
@@ -394,6 +435,11 @@ public class Ast {
     }
 
     public static class BooleanLiteral implements Expression {
+        @Override
+        public void accept(TreePrinter visitor) {
+            visitor.visit(this);
+        }
+
         Token token;
         String value;
 
@@ -434,6 +480,11 @@ public class Ast {
     }
 
     public static class IntegerLiteral implements Expression {
+        @Override
+        public void accept(TreePrinter visitor) {
+            visitor.visit(this);
+        }
+
         Token token;
         String value;
 
@@ -474,6 +525,11 @@ public class Ast {
     }
 
     public static class TypeLiteral implements Expression {
+        @Override
+        public void accept(TreePrinter visitor) {
+            visitor.visit(this);
+        }
+
         Token token;
         String value;
 
@@ -514,6 +570,11 @@ public class Ast {
     }
 
     public static class RealLiteral implements Expression {
+        @Override
+        public void accept(TreePrinter visitor) {
+            visitor.visit(this);
+        }
+
         Token token;
         String value;
 
@@ -554,6 +615,11 @@ public class Ast {
     }
 
     public static class StringLiteral implements Expression {
+        @Override
+        public void accept(TreePrinter visitor) {
+            visitor.visit(this);
+        }
+
         Token token;
         String value;
 
@@ -594,6 +660,11 @@ public class Ast {
     }
 
     public static class PrefixExpression implements Expression {
+        @Override
+        public void accept(TreePrinter visitor) {
+            visitor.visit(this);
+        }
+
         Token token;
         String operator;
         Expression right;
@@ -647,6 +718,11 @@ public class Ast {
     }
 
     public static class InfixExpression implements Expression {
+        @Override
+        public void accept(TreePrinter visitor) {
+            visitor.visit(this);
+        }
+
         String operator;
         Expression left, right;
 
@@ -708,6 +784,11 @@ public class Ast {
     }
 
     public static class IfStatement implements Statement {
+        @Override
+        public void accept(TreePrinter visitor) {
+            visitor.visit(this);
+        }
+
         Expression predicate;
         BlockStatement ifBlock, elseBlock;
 
@@ -772,6 +853,11 @@ public class Ast {
     }
 
     public static class FunctionLiteral implements Expression {
+        @Override
+        public void accept(TreePrinter visitor) {
+            visitor.visit(this);
+        }
+
         Token token;
         BlockStatement body;
         List<Identifier> parameters;
@@ -843,6 +929,11 @@ public class Ast {
     }
 
     public static class CallExpression implements Expression {
+        @Override
+        public void accept(TreePrinter visitor) {
+            visitor.visit(this);
+        }
+
         Token token;
         Expression function;
         List<Expression> arguments;
@@ -914,6 +1005,11 @@ public class Ast {
     }
 
     public static class ArrayLiteral implements Expression {
+        @Override
+        public void accept(TreePrinter visitor) {
+            visitor.visit(this);
+        }
+
         Token token;
         List<Expression> elements;
 
@@ -968,6 +1064,11 @@ public class Ast {
     }
 
     public static class IndexLiteral implements Expression {
+        @Override
+        public void accept(TreePrinter visitor) {
+            visitor.visit(this);
+        }
+
         Token token;
         Expression left, index;
 
@@ -1024,6 +1125,11 @@ public class Ast {
     }
 
     public static class TupleLiteral implements Expression {
+        @Override
+        public void accept(TreePrinter visitor) {
+            visitor.visit(this);
+        }
+
         Token token;
         Map<Expression, Expression> pairs;
         int size;
@@ -1092,6 +1198,11 @@ public class Ast {
     }
 
     public static class PrintLiteral implements Statement {
+        @Override
+        public void accept(TreePrinter visitor) {
+            visitor.visit(this);
+        }
+
         Token token;
         List<Expression> arguments;
 
@@ -1143,6 +1254,11 @@ public class Ast {
     }
 
     public static class Semicolon implements Node {
+        @Override
+        public void accept(TreePrinter visitor) {
+            
+        }
+
 
         public Semicolon(){}
 
