@@ -17,6 +17,7 @@
 	import org.projectD.interpreter.lexer.ParserLexer;
 	import org.projectD.interpreter.token.Token;	
 	import org.projectD.interpreter.token.TokenType;
+	import java.lang.IllegalArgumentException;
 }
 
 %code {
@@ -135,6 +136,7 @@ Statement
 	| WhileStatement
 	| ReturnStatement
 	| ForStatement
+	| AssignmentStatement
 	;
 
 IfStatement
@@ -145,6 +147,20 @@ IfStatement
 		$$ = new Ast.IfStatement((Ast.Expression)$2, (Ast.BlockStatement)$4, (Ast.BlockStatement)$6);
 	}
 	;
+
+AssignmentStatement
+	: Reference ASSIGN Expression LineBreak {
+		if ($1 instanceof Ast.CallExpression) throw new IllegalArgumentException("Cannot Assign to a function call");
+		if ($1 instanceof Ast.Identifier) $$ = new Ast.ExpressionStatement(new Ast.InfixExpression(":=", (Ast.Identifier) $1, (Ast.Expression) $3));
+		var ref = (Ast.IndexLiteral) $1;
+		try {
+			if (ref.tokenLiteral().equals("[]")) { $$ = new Ast.ExpressionStatement(new Ast.InfixExpression(":=", (Ast.Expression) $1, (Ast.Expression) $3));}
+			else {throw new IllegalArgumentException();}
+		} catch (Exception e) {
+			throw new IllegalArgumentException("Assignment is only available to variables and array elements");
+		}
+
+	}
 
 WhileStatement
 	: WHILE Expression LOOP BlockStatement END LineBreak {
@@ -312,7 +328,7 @@ Term
 	: INT
 	| REAL
 	| Reference
-	| Reference IS TYPE {$$ = new Ast.InfixExpression("is", (Ast.Expression) $1, (Ast.TypeLiteral) $3);}
+	| Reference IS TypeLiteral {$$ = new Ast.InfixExpression("is", (Ast.Expression) $1, (Ast.TypeLiteral) $3);}
 	| STRING
 	| TRUE
 	| FALSE
@@ -320,17 +336,23 @@ Term
 	| Tuple
 	;
 
+TypeLiteral
+	: TYPE
+	| FUNCTION {$$ = new Ast.TypeLiteral(new Token("func", TokenType.TYPE), "func");}
+	| LBRACKET RBRACKET {$$ = new Ast.TypeLiteral(new Token("[]", TokenType.TYPE), "array");}
+	| LBRACE RBRACE {$$ = new Ast.TypeLiteral(new Token("{}", TokenType.TYPE), "tuple");}
+
 Reference
-	:
-	IDENT Tail {
+	: IDENT
+	| Reference Tail {
 		try {
 			var idx = (Ast.IndexLiteral) $2;
-			idx.setLeft((Ast.Identifier) $1);
+			idx.setLeft((Ast.Expression) $1);
 			$$ = idx; 
 		} catch(Exception e) {
 			try {
 				var callExp = (Ast.CallExpression) $2;
-				callExp.addFunction((Ast.Identifier) $1);
+				callExp.addFunction((Ast.Expression) $1);
 				$$ = callExp;
 			} catch (Exception f) {
 				$$ = $1;
@@ -339,14 +361,13 @@ Reference
 	}
 
 Tail 
-	: %empty
-	| ArrayTail
+	: ArrayTail
 	| TupleTail
 	| FuncTail
 	;
 
 ArrayTail
-	: LBRACKET INT RBRACKET {$$ = new Ast.IndexLiteral((Ast.IntegerLiteral) $2);}
+	: LBRACKET INT RBRACKET {var idx = new Ast.IndexLiteral((Ast.IntegerLiteral) $2); idx.setToken(new Token("[]", TokenType.LBRACKET)); $$ = idx;}
 	;
 
 TupleTail

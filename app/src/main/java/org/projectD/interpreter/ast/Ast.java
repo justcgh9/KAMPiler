@@ -983,8 +983,12 @@ public class Ast {
             this.left = left;
         }
 
-        public void setLeft(Identifier left) {
+        public void setLeft(Expression left) {
             this.left = left;
+        }
+
+        public void setToken(Token token) {
+            this.token = token;
         }
 
         public String tokenLiteral() {

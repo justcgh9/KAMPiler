@@ -1,1 +1,1 @@
-print a[5] is int;
+var f := func(x)=>x+1
