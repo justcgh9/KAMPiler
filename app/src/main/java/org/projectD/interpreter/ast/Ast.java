@@ -46,6 +46,10 @@ public class Ast {
             this.statements.add(statement);
         }
 
+        public void setStatements(List<Statement> statements) {
+            this.statements = statements;
+        }
+
         public String tokenLiteral() {
             return this.statements.size() > 0 ? this.statements.get(0).tokenLiteral() : "";
         }
@@ -93,6 +97,18 @@ public class Ast {
 
         public void statementNode() {
         };
+
+        public Identifier getIdentifier() {
+            return this.name;
+        }
+
+        public Expression getExpression() {
+            return this.value;
+        }
+
+        public void setExpression(Expression expr) {
+            this.value = expr;
+        }
 
         public String tokenLiteral() {
             return this.token.gLiteral();
@@ -148,6 +164,14 @@ public class Ast {
 
         public String tokenLiteral() {
             return this.token.gLiteral();
+        }
+
+        public void setExpression(Expression expression) {
+            this.returnValue = expression;
+        }
+
+        public Expression getExpression() {
+            return this.returnValue;
         }
 
         public String toString() {
@@ -242,6 +266,14 @@ public class Ast {
             this.statements.add(statement);
         }
 
+        public List<Statement> getStatements() {
+            return this.statements;
+        }
+
+        public void setStatements(List<Statement> statements) {
+            this.statements = statements;
+        }
+
         public void statementNode() {};
 
         public String tokenLiteral() {
@@ -293,6 +325,10 @@ public class Ast {
             this.typeIndicator = typeIndicator;
             this.loopVariable = loopVariable;
             this.loopBody = loopBody;
+        }
+
+        public BlockStatement getBody() {
+            return this.loopBody;
         }
 
         public void statementNode() {
@@ -355,6 +391,18 @@ public class Ast {
         public String tokenLiteral() {
             return "while statement";
         }
+
+        public void setCondition(Expression expression) {
+            this.predicate = expression;
+        }
+
+        public Expression getCondition() {
+            return this.predicate;
+        }
+
+        public BlockStatement getBody(){
+            return this.loopBody;
+        }
         
         public String toString() {
             StringBuilder out = new StringBuilder();
@@ -397,6 +445,10 @@ public class Ast {
         public Identifier(Token token, String value) {
             this.token = token;
             this.value = value;
+        }
+
+        public String getName() {
+            return this.value;
         }
 
         public Token getToken() {
@@ -492,6 +544,11 @@ public class Ast {
             this.token = token;
             this.value = value;
         }
+
+        public int getValue() {
+            return Integer.parseInt(this.value);
+        }
+        
 
         public void expressionNode() {
         };
@@ -726,6 +783,18 @@ public class Ast {
         String operator;
         Expression left, right;
 
+        public Expression getLeft() {
+            return this.left;
+        }
+
+        public Expression getRight() {
+            return this.right;
+        }
+
+        public String getOperator() {
+            return this.operator;
+        }
+        
         public InfixExpression(String operator) {
             this.operator = operator;
         }
@@ -803,6 +872,22 @@ public class Ast {
             this.elseBlock = elseBlock;
         }
 
+        public void setCondition(Expression expression) {
+            this.predicate = expression;
+        }
+
+        public Expression getCondition() {
+            return this.predicate;
+        }
+
+        public BlockStatement getThenBlock() {
+            return this.ifBlock;
+        }
+
+        public BlockStatement getElseBlock() {
+            return this.elseBlock;
+        }
+
         public void statementNode() {
         };
 
@@ -872,6 +957,14 @@ public class Ast {
             this.parameters = parameters;
             this.body = body;
             
+        }
+
+        public List<Identifier> getParameters() {
+            return this.parameters;
+        }
+
+        public BlockStatement getBody() {
+            return this.body;
         }
 
         public void setBody(BlockStatement body) {
@@ -963,6 +1056,10 @@ public class Ast {
 
         public Expression getFunction() {
             return this.function;
+        }
+
+        public List<Expression> getArguments() {
+            return this.arguments;
         }
 
         public void expressionNode() {
@@ -1216,6 +1313,14 @@ public class Ast {
         }
 
         public void statementNode() {};
+
+        public List<Expression> getArguments() {
+            return this.arguments;
+        }
+
+        public void setArguments(List<Expression> expressions) {
+            this.arguments = expressions;
+        }
 
         public String tokenLiteral() {
             return this.token.gLiteral();
