@@ -65,35 +65,101 @@ public class SemanticAnalyzer {
         return expr;
     }
 
-     
-    private Ast.Expression simplifyInfixExpression(Ast.InfixExpression infix) {
-        if (infix.getLeft() instanceof Ast.IntegerLiteral && infix.getRight() instanceof Ast.IntegerLiteral) {
-            int left = ((Ast.IntegerLiteral) infix.getLeft()).getValue();
-            int right = ((Ast.IntegerLiteral) infix.getRight()).getValue();
-            int result;
-            switch (infix.getOperator()) {
-                case "+":
-                    result = left + right;
-                    
-                    break;
-                case "-":
-                    result = left - right;
-                    break;
-                case "*":
-                    result = left * right;
-                    break;
-                case "/":
-                    if (right == 0) return null;
-                    result = left / right;
-                    break;
-                default:
-                    
-                    return null;
-            }
-            return new Ast.IntegerLiteral(new Token(String.valueOf(result), TokenType.INT), String.valueOf(result));
-        }
-        return infix;
+    private boolean isNumber(Ast.Expression expr) {
+        return expr instanceof Ast.IntegerLiteral || expr instanceof Ast.RealLiteral;
+    } 
+
+    private boolean isArithmeticOperator(String operator) {
+        return operator == "+" || operator == "-" || operator == "/" || operator == "*";
     }
+
+    private boolean isBoolOperator(String operator) {
+        return operator == ">" || operator == "<" || operator == "=" || operator == "!=";
+    }
+
+    private double convertDouple(Ast.Expression number) {
+        if (number instanceof Ast.IntegerLiteral) {
+            return ((Ast.IntegerLiteral) number).getValue(); 
+        }
+        return ((Ast.RealLiteral) number).getValue(); 
+    }
+
+    private Ast.Expression simplifyNumberLogic(Ast.InfixExpression infix) {
+        double left = convertDouple(infix.getLeft());
+        double right = convertDouple(infix.getRight());
+        boolean result;
+
+        switch (infix.getOperator()) {
+            case ">":
+                result = left > right;
+                break;
+            case "<":
+                result = left < right;
+                break;
+            case "!=":
+                result = left != right;
+                break;
+            case "=":
+                result = left == right;
+                break;
+            default:
+                return null;
+        }
+
+        TokenType type = TokenType.FALSE;
+        if (result) {
+            type = TokenType.TRUE;
+        }
+
+        return new Ast.BooleanLiteral(new Token(String.valueOf(result), type), String.valueOf(result));
+    }
+
+    private Ast.Expression simplifyNumberArithmetic(Ast.InfixExpression infix) {
+        double left = convertDouple(infix.getLeft());
+        double right = convertDouple(infix.getRight());
+        double result = 0;
+        boolean boolRes = false;
+        boolean isBooleanRes = false;
+
+        switch (infix.getOperator()) {
+            case "+":
+                result = left + right;
+                break;
+            case "-":
+                result = left - right;
+                break;
+            case "*":
+                result = left * right;
+                break;
+            case "/":
+                if (right == 0) return null; 
+                result = left / right;
+                break;
+            default:
+                return null;
+        }
+
+        if (result % 1 == 0) { 
+            return new Ast.IntegerLiteral(new Token(String.valueOf((int) result), TokenType.INT), String.valueOf((int) result));
+        }
+        return new Ast.RealLiteral(new Token(String.valueOf(result), TokenType.REAL), String.valueOf(result));
+    }
+
+
+    private Ast.Expression simplifyInfixExpression(Ast.InfixExpression infix) {
+        if (isArithmeticOperator(infix.getOperator())) {
+            if (isNumber(infix.getLeft()) && isNumber(infix.getRight())) {
+                return simplifyNumberArithmetic(infix);
+            }
+        }
+
+        if (isBoolOperator(infix.getOperator())) {
+            if (isNumber(infix.getLeft()) && isNumber(infix.getRight())) {
+                return simplifyNumberLogic(infix);
+            }
+        }
+    return infix;
+}
 
 
     

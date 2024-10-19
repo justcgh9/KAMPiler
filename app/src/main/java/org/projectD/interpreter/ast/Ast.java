@@ -500,6 +500,10 @@ public class Ast {
             this.value = value;
         }
 
+        public boolean getValue() {
+            return Boolean.parseBoolean(this.value);
+        }
+
         public void expressionNode() {
         };
 
@@ -649,6 +653,10 @@ public class Ast {
         
         public String toString() {
             return this.token.gLiteral();
+        }
+
+        public double getValue() {
+            return Double.parseDouble(this.value);
         }
 
         @Override
