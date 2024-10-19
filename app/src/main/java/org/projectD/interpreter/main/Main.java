@@ -11,6 +11,7 @@ import org.projectD.interpreter.ast.TreePrinter;
 import org.projectD.interpreter.lexer.ParserLexer;
 import org.projectD.interpreter.parser.Parser;
 import org.projectD.interpreter.repl.Repl;
+import org.projectD.interpreter.semantic.SemanticAnalyzer;
 
 public class Main {
 
@@ -33,7 +34,7 @@ public class Main {
 
         // String fileName = "./examples/first.d";
            
-        if (args.length >= 0) {
+        if (args.length > 0) {
             for (String fileName : args) {
                 if (fileName.endsWith(".d")) {
                     try {
@@ -43,10 +44,12 @@ public class Main {
 
                         parser.parse();
                         var parsedResult = parser.getRoot();
-                        var some = parsedResult.toString();
                         // System.out.println(parsedResult);
                         TreePrinter tp = new TreePrinter();
-                        parsedResult.accept(tp);
+                        SemanticAnalyzer sm = new SemanticAnalyzer();
+                        sm.analyze(parsedResult);
+                        var some = parsedResult.toString();
+                        // parsedResult.accept(tp);
 
                         String outputFileName = fileName.replace(".d", ".o");
 
