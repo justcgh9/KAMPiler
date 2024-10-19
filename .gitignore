@@ -8,5 +8,4 @@ build
 
 # Parser is bison-generated
 Parser.java
-app/src/main/java/org/projectD/interpreter/semantic/SemanticAnalyzer.java
 examples
