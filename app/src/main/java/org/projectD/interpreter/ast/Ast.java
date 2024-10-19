@@ -693,6 +693,10 @@ public class Ast {
             this.value = value;
         }
 
+        public String getValue() {
+            return this.value;
+        }
+
         public void expressionNode() {
         };
 

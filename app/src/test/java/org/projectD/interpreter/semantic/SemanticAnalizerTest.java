@@ -55,4 +55,26 @@ class SemanticAnalizerTest {
         });
         Assertions.assertEquals("Division by 0", exp.getMessage());
     }
+
+    @Test
+    void testUnsuppStringOperation() throws IOException {
+        var root = this.getRoot("\"test\" - \"test\";");
+        var analyzer = new SemanticAnalyzer();
+
+        var exp = Assertions.assertThrows(UnsupportedOperationException.class, () -> {
+            analyzer.analyze(root);
+        });
+        Assertions.assertEquals("Illigal operation for strings", exp.getMessage());
+    }
+
+    @Test
+    void testUnsuppBoolOperation() throws IOException {
+        var root = this.getRoot("true - true;");
+        var analyzer = new SemanticAnalyzer();
+
+        var exp = Assertions.assertThrows(UnsupportedOperationException.class, () -> {
+            analyzer.analyze(root);
+        });
+        Assertions.assertEquals("Illigal operation for bools", exp.getMessage());
+    }
 }

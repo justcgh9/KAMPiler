@@ -44,9 +44,6 @@ public class SemanticAnalyzer {
             infix.setLeft(analyzeExpression(infix.getLeft()));
             infix.setRight(analyzeExpression(infix.getRight()));
             var res = simplifyInfixExpression(infix);
-            if (res == null) {
-                throw new IllegalArgumentException("Division by 0");
-            }
             return res;
         } else if (expr instanceof Ast.PrefixExpression) {
 
@@ -84,18 +81,28 @@ public class SemanticAnalyzer {
         return ((Ast.RealLiteral) number).getValue(); 
     }
 
-    private Ast.Expression simplifyNumberLogic(Ast.InfixExpression infix) {
-        double left = convertDouple(infix.getLeft());
-        double right = convertDouple(infix.getRight());
+    private Ast.Expression simplifyStrings(Ast.InfixExpression infix) {
+        String left = ((Ast.StringLiteral)infix.getLeft()).getValue();
+        String right = ((Ast.StringLiteral)infix.getRight()).getValue();
+        String result;
+
+         switch (infix.getOperator()) {
+            case "+":
+                result = left + right;
+                break;
+            default:
+                throw new UnsupportedOperationException("Illigal operation for strings");
+        }
+
+        return new Ast.StringLiteral(new Token(result, TokenType.STRING), result);
+    }
+
+    private Ast.Expression simplifyBools(Ast.InfixExpression infix) {
+        boolean left = ((Ast.BooleanLiteral)infix.getLeft()).getValue();
+        boolean right = ((Ast.BooleanLiteral)infix.getRight()).getValue();
         boolean result;
 
-        switch (infix.getOperator()) {
-            case ">":
-                result = left > right;
-                break;
-            case "<":
-                result = left < right;
-                break;
+         switch (infix.getOperator()) {
             case "!=":
                 result = left != right;
                 break;
@@ -103,7 +110,7 @@ public class SemanticAnalyzer {
                 result = left == right;
                 break;
             default:
-                return null;
+                throw new UnsupportedOperationException("Illigal operation for bools");
         }
 
         TokenType type = TokenType.FALSE;
@@ -114,7 +121,7 @@ public class SemanticAnalyzer {
         return new Ast.BooleanLiteral(new Token(String.valueOf(result), type), String.valueOf(result));
     }
 
-    private Ast.Expression simplifyNumberArithmetic(Ast.InfixExpression infix) {
+    private Ast.Expression simplifyNumbers(Ast.InfixExpression infix) {
         double left = convertDouple(infix.getLeft());
         double right = convertDouple(infix.getRight());
         double result = 0;
@@ -132,13 +139,41 @@ public class SemanticAnalyzer {
                 result = left * right;
                 break;
             case "/":
-                if (right == 0) return null; 
+                if (right == 0) {
+                    throw new IllegalArgumentException("Division by 0");
+                }; 
                 result = left / right;
                 break;
+            case ">":
+                boolRes = left > right;
+                isBooleanRes = true;
+                break;
+            case "<":
+                boolRes = left < right;
+                isBooleanRes = true;
+                break;
+            case "!=":
+                boolRes = left != right;
+                isBooleanRes = true;
+                break;
+            case "=":
+                boolRes = left == right;
+                isBooleanRes = true;
+                break;
             default:
-                return null;
+                throw new UnsupportedOperationException("Illigal operation for numbers");
+        }
+        
+        // for logical expression
+        if (isBooleanRes) {
+            TokenType boolType = TokenType.FALSE;
+            if (boolRes) {
+                boolType = TokenType.TRUE;
+            }
+            return new Ast.BooleanLiteral(new Token(String.valueOf(boolRes), boolType), String.valueOf(boolRes));
         }
 
+        // for arithmetic experssion
         if (result % 1 == 0) { 
             return new Ast.IntegerLiteral(new Token(String.valueOf((int) result), TokenType.INT), String.valueOf((int) result));
         }
@@ -147,22 +182,20 @@ public class SemanticAnalyzer {
 
 
     private Ast.Expression simplifyInfixExpression(Ast.InfixExpression infix) {
-        if (isArithmeticOperator(infix.getOperator())) {
-            if (isNumber(infix.getLeft()) && isNumber(infix.getRight())) {
-                return simplifyNumberArithmetic(infix);
-            }
+        if (isNumber(infix.getLeft()) && isNumber(infix.getRight())) {
+            return simplifyNumbers(infix);
+        } 
+
+        if (infix.getLeft() instanceof Ast.StringLiteral && infix.getRight() instanceof Ast.StringLiteral) {
+            return simplifyStrings(infix);
         }
 
-        if (isBoolOperator(infix.getOperator())) {
-            if (isNumber(infix.getLeft()) && isNumber(infix.getRight())) {
-                return simplifyNumberLogic(infix);
-            }
+        if (infix.getLeft() instanceof Ast.BooleanLiteral && infix.getRight() instanceof Ast.BooleanLiteral) {
+            return simplifyBools(infix);
         }
-    return infix;
-}
+        return infix;
+    }
 
-
-    
     private void analyzeStatement(Ast.Statement stmt) {
         if (stmt instanceof Ast.VarStatement) {
             analyzeVarStatement((Ast.VarStatement) stmt);
