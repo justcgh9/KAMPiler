@@ -84,17 +84,34 @@ public class SemanticAnalyzer {
     private Ast.Expression simplifyStrings(Ast.InfixExpression infix) {
         String left = ((Ast.StringLiteral)infix.getLeft()).getValue();
         String right = ((Ast.StringLiteral)infix.getRight()).getValue();
-        String result;
+        var result = new StringBuilder();
 
          switch (infix.getOperator()) {
             case "+":
-                result = left + right;
+                if (left.equals("") && right.equals("")){
+                    break;
+                }
+                
+                if (left.equals("")) {
+                    result.append(right);
+                    break;
+                }
+
+                if (right.equals("")) {
+                    result.append(left);
+                }
+
+                // remove quates to concatinate
+                var leftTrancated = left.substring(0, left.length() - 1);
+                var rightTrancated = right.substring(1, right.length());
+                result.append(leftTrancated);
+                result.append(rightTrancated);
                 break;
             default:
                 throw new UnsupportedOperationException("Illigal operation for strings");
         }
 
-        return new Ast.StringLiteral(new Token(result, TokenType.STRING), result);
+        return new Ast.StringLiteral(new Token(result.toString(), TokenType.STRING), result.toString());
     }
 
     private Ast.Expression simplifyBools(Ast.InfixExpression infix) {
