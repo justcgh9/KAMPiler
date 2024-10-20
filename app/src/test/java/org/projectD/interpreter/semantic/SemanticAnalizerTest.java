@@ -45,6 +45,17 @@ class SemanticAnalizerTest {
     }
 
     @Test
+    void testReturnOutsideFunction() throws IOException {
+        var root = this.getRoot("var b := 3; return a; end;");
+        var analyzer = new SemanticAnalyzer();
+
+        var exp = Assertions.assertThrows(IllegalStateException.class, () -> {
+            analyzer.analyze(root);
+        });
+        Assertions.assertEquals("Return statement used outside of a function", exp.getMessage());
+    }
+
+    @Test
     void testDivisionByZero() throws IOException {
         var root = this.getRoot("1 / 0;");
         var analyzer = new SemanticAnalyzer();
