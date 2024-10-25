@@ -52,11 +52,13 @@ public class SemanticAnalyzer {
             return expr;
         } else if (expr instanceof Ast.CallExpression) {
             // TODO: Check out this one, because I skipped it
-            analyzeExpression(((Ast.CallExpression) expr).getFunction());
+            ((Ast.CallExpression) expr).addFunction(analyzeExpression(((Ast.CallExpression) expr).getFunction()));
             
+            List<Ast.Expression> expressions = new ArrayList<>();
             for (Ast.Expression exp : ((Ast.CallExpression) expr).getArguments()) {
-                analyzeExpression(exp);
+                expressions.add(analyzeExpression(exp));
             }
+            ((Ast.CallExpression) expr).setArguments(expressions);
         }
 
         return expr;
@@ -99,6 +101,7 @@ public class SemanticAnalyzer {
 
                 if (right.equals("")) {
                     result.append(left);
+                    break;
                 }
 
                 // remove quates to concatinate
@@ -217,7 +220,7 @@ public class SemanticAnalyzer {
         if (stmt instanceof Ast.VarStatement) {
             analyzeVarStatement((Ast.VarStatement) stmt);
         } else if (stmt instanceof Ast.ExpressionStatement) {
-            analyzeExpression(((Ast.ExpressionStatement) stmt).getExpression());
+            ((Ast.ExpressionStatement) stmt).setExpression(analyzeExpression(((Ast.ExpressionStatement) stmt).getExpression()));
         } else if (stmt instanceof Ast.IfStatement) {
             analyzeIfStatement((Ast.IfStatement) stmt);
         } else if (stmt instanceof Ast.WhileStatement) {

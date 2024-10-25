@@ -229,6 +229,10 @@ public class Ast {
         public Expression getExpression() {
             return this.expression;
         }
+
+        public void setExpression(Expression expression) {
+            this.expression = expression;
+        }
         
         public String toString() {
             return Objects.nonNull(expression) ? this.expression.toString() + ";\n" : "";
@@ -1064,6 +1068,10 @@ public class Ast {
 
         public void addFunction(Expression function) {
             this.function = function;
+        }
+
+        public void setArguments(List<Expression> arguments) {
+            this.arguments = arguments;
         }
 
         public Expression getFunction() {
