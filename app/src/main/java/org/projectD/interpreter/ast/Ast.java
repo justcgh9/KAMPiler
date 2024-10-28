@@ -50,6 +50,18 @@ public class Ast {
             this.statements = statements;
         }
 
+        public void replaceWith(Statement stmt, List<Statement> statements) {
+            for (int i = 0; i < this.statements.size(); i++ ) {
+                
+                if (this.statements.get(i) != stmt) continue;
+
+                this.statements.remove(i);
+                for (int j = 0; j < statements.size(); j++ ) {
+                    this.statements.add(j + i, statements.get(j));
+                }
+            }
+        }
+
         public String tokenLiteral() {
             return this.statements.size() > 0 ? this.statements.get(0).tokenLiteral() : "";
         }
@@ -282,6 +294,18 @@ public class Ast {
 
         public String tokenLiteral() {
             return this.token.gLiteral();
+        }
+
+        public void replaceWith(Statement stmt, List<Statement> statements) {
+            for (int i = 0; i < this.statements.size(); i++ ) {
+                
+                if (this.statements.get(i) != stmt) continue;
+
+                this.statements.remove(i);
+                for (int j = 0; j < statements.size(); j++ ) {
+                    this.statements.add(j + i, statements.get(j));
+                }
+            }
         }
         
         public String toString() {

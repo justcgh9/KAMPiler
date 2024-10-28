@@ -16,11 +16,15 @@ public class SemanticAnalyzer {
     private final Stack<Map<String, Pair<Ast.VarStatement, String>>> functionContext = new Stack<>();
     
     private final Set<String> usedVariables = new HashSet<>();
+
+    private Stack<Ast.Node> parentContext = new Stack<>();
     
     
     public void analyze(Ast.Node node) {
         if (node instanceof Ast.Program) {
+            parentContext.push(node);
             analyzeProgram((Ast.Program) node);
+            parentContext.pop();
         } else {
             throw new IllegalArgumentException("Invalid root node type for semantic analysis");
         }
@@ -28,7 +32,8 @@ public class SemanticAnalyzer {
 
     
     private void analyzeProgram(Ast.Program program) {
-        for (Ast.Statement stmt : program.getStatements()) {
+        var iterator = new ArrayList<Ast.Statement>(program.getStatements());
+        for (Ast.Statement stmt : iterator) {
             analyzeStatement(stmt);
         }
         removeUnusedVariables(program);
@@ -325,7 +330,41 @@ public class SemanticAnalyzer {
     }
     
     private void analyzeIfStatement(Ast.IfStatement stmt) {
+        
         stmt.setCondition(analyzeExpression(stmt.getCondition()));
+
+        if (stmt.getCondition() instanceof Ast.BooleanLiteral) {
+         
+            var blck = parentContext.peek();
+            
+            List<Ast.Statement> replacement = new ArrayList<>();
+         
+            if (((Ast.BooleanLiteral) stmt.getCondition()).getValue()) {
+
+                analyzeBlock(stmt.getThenBlock());
+                replacement = stmt.getThenBlock().getStatements();
+
+            } else if (stmt.getElseBlock() != null) {
+
+                analyzeBlock(stmt.getElseBlock());
+                replacement = stmt.getElseBlock().getStatements();
+
+            } 
+
+            
+
+            if (blck instanceof Ast.Program) {
+
+                ((Ast.Program) blck).replaceWith(stmt, replacement);
+
+            } else if (blck instanceof Ast.BlockStatement){
+
+                ((Ast.BlockStatement) blck).replaceWith(stmt, replacement);
+
+            }
+
+            return;
+        }
         analyzeBlock(stmt.getThenBlock());
         if (stmt.getElseBlock() != null) {
             analyzeBlock(stmt.getElseBlock());
@@ -366,9 +405,11 @@ public class SemanticAnalyzer {
 
     
     private void analyzeBlock(Ast.BlockStatement block) {
-        for (Ast.Statement stmt : block.getStatements()) {
+        parentContext.push(block);
+        for (Ast.Statement stmt : new ArrayList<Ast.Statement>(block.getStatements())) {
             analyzeStatement(stmt);
         }
+        parentContext.pop();
     }
 
     private void checkExistence(String name) {
