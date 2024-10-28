@@ -74,6 +74,9 @@ public class ParserLexer implements Parser.Lexer {
 			case TokenType.EQ:
 				this.value = null;
 				return Parser.Lexer.EQ;
+			case TokenType.NOT_EQ:
+				this.value = null;
+				return Parser.Lexer.NOT_EQ;
 			case TokenType.AND:
 				this.value = null;
 				return Parser.Lexer.AND;

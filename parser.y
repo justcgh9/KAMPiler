@@ -65,6 +65,7 @@
 %token GEQ
 %token LEQ
 %token EQ
+%token NOT_EQ
 
 // delimeters
 %token SEMICOLON
@@ -443,6 +444,7 @@ BoolOp
 	: AND {$$ = new Ast.InfixExpression("and");}
 	| OR {$$ = new Ast.InfixExpression("or");}
 	| XOR {$$ = new Ast.InfixExpression("xor");}
+	| NOT_EQ {$$ = new Ast.InfixExpression("!=");}
 	;
 
 Compare

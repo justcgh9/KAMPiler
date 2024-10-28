@@ -1,11 +1,15 @@
 package org.projectD.interpreter.semantic;
 
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Stream;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.params.provider.Arguments;
 import static org.junit.jupiter.params.provider.Arguments.arguments;
 
 import org.projectD.interpreter.token.TokenType;
@@ -21,6 +25,91 @@ class SemanticAnalizerTest {
         parser.parse();
 		return (Ast.Program)parser.getRoot();
 	}
+
+    static Stream<Arguments> getBoolsSimplification() {
+        return Stream.of(
+            arguments(
+                "var a := true = true; a = false;", 
+                Arrays.asList(
+                    new Ast.VarStatement(
+                        new Ast.Identifier(new Token("a", TokenType.IDENT), "a"),
+                        new Ast.BooleanLiteral(new Token("true", TokenType.TRUE), "true")
+                    ),
+                    new Ast.ExpressionStatement(
+                        new Ast.InfixExpression(
+                            "=", 
+                            new Ast.Identifier(new Token("a", TokenType.IDENT), "a"),
+                            new Ast.BooleanLiteral(new Token("false", TokenType.FALSE), "false")
+                        )
+                    )
+                )
+            ),
+            arguments(
+                "var a := true != true; a = false;", 
+                Arrays.asList(
+                    new Ast.VarStatement(
+                        new Ast.Identifier(new Token("a", TokenType.IDENT), "a"),
+                        new Ast.BooleanLiteral(new Token("false", TokenType.FALSE), "false")
+                    ),
+                    new Ast.ExpressionStatement(
+                        new Ast.InfixExpression(
+                            "=", 
+                            new Ast.Identifier(new Token("a", TokenType.IDENT), "a"),
+                            new Ast.BooleanLiteral(new Token("false", TokenType.FALSE), "false")
+                        )
+                    )
+                )
+            ),
+            arguments(
+                "var a := true and true; a = false;", 
+                Arrays.asList(
+                    new Ast.VarStatement(
+                        new Ast.Identifier(new Token("a", TokenType.IDENT), "a"),
+                        new Ast.BooleanLiteral(new Token("true", TokenType.TRUE), "true")
+                    ),
+                    new Ast.ExpressionStatement(
+                        new Ast.InfixExpression(
+                            "=", 
+                            new Ast.Identifier(new Token("a", TokenType.IDENT), "a"),
+                            new Ast.BooleanLiteral(new Token("false", TokenType.FALSE), "false")
+                        )
+                    )
+                )
+            ),
+            arguments(
+                "var a := true or false; a = false;", 
+                Arrays.asList(
+                    new Ast.VarStatement(
+                        new Ast.Identifier(new Token("a", TokenType.IDENT), "a"),
+                        new Ast.BooleanLiteral(new Token("true", TokenType.TRUE), "true")
+                    ),
+                    new Ast.ExpressionStatement(
+                        new Ast.InfixExpression(
+                            "=", 
+                            new Ast.Identifier(new Token("a", TokenType.IDENT), "a"),
+                            new Ast.BooleanLiteral(new Token("false", TokenType.FALSE), "false")
+                        )
+                    )
+                )
+            ),
+            arguments(
+                "var a := true xor true; a = false;", 
+                Arrays.asList(
+                    new Ast.VarStatement(
+                        new Ast.Identifier(new Token("a", TokenType.IDENT), "a"),
+                        new Ast.BooleanLiteral(new Token("false", TokenType.FALSE), "false")
+                    ),
+                    new Ast.ExpressionStatement(
+                        new Ast.InfixExpression(
+                            "=", 
+                            new Ast.Identifier(new Token("a", TokenType.IDENT), "a"),
+                            new Ast.BooleanLiteral(new Token("false", TokenType.FALSE), "false")
+                        )
+                    )
+                )
+            )
+        );
+    }
 
     @Test
     void testVarWhenVariableExists() throws IOException {
@@ -98,17 +187,15 @@ class SemanticAnalizerTest {
         Assertions.assertEquals(0, root.getStatements().size());
     }
 
-    @Test
-    void testSimplifyBoolOperation() throws IOException {
-        var root = this.getRoot("var a := true = true; a = false;");
-        var expectedExpr = new Ast.BooleanLiteral(new Token("true", TokenType.TRUE), "true");
-        var expectedStmt = new Ast.VarStatement(new Ast.Identifier(new Token("a", TokenType.IDENT), "a"), expectedExpr);
+    @ParameterizedTest
+    @MethodSource("getBoolsSimplification")
+    void testSimplifyBoolOperation(String stmt, List<Ast.Statement> expectedStmts) throws IOException {
+        var root = this.getRoot(stmt);
         var analyzer = new SemanticAnalyzer();
 
         analyzer.analyze(root);
 
-        var varStmt = (Ast.VarStatement)(root.getStatements().get(0));
-        Assertions.assertEquals(expectedStmt, varStmt);
+        Assertions.assertEquals(new Ast.Program(expectedStmts), root);
     }
 
     @Test

@@ -129,6 +129,15 @@ public class SemanticAnalyzer {
             case "=":
                 result = left == right;
                 break;
+            case "and":
+                result = left && right;
+                break;
+            case "or":
+                result = left || right;
+                break;
+            case "xor":
+                result = left ^ right;
+                break;
             default:
                 throw new UnsupportedOperationException("Illigal operation for bools");
         }
