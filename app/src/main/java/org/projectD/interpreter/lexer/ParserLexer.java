@@ -92,6 +92,9 @@ public class ParserLexer implements Parser.Lexer {
 			case TokenType.DOTDOT:
 				this.value = null;
 				return Parser.Lexer.DOTDOT;
+			case TokenType.NOT:
+				this.value = null;
+				return Parser.Lexer.NOT;
 			
 			// delimiters
 			case TokenType.SEMICOLON:

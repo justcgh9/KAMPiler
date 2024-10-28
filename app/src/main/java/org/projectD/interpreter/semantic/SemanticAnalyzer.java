@@ -46,12 +46,13 @@ public class SemanticAnalyzer {
             var res = simplifyInfixExpression(infix);
             return res;
         } else if (expr instanceof Ast.PrefixExpression) {
-
+            Ast.PrefixExpression prefix = (Ast.PrefixExpression) expr;
+            prefix.setRight(analyzeExpression(prefix.getRight()));
+            return simplifyPrefixExpression(prefix);
         } else if (expr instanceof Ast.FunctionLiteral) {
             analyzeFunction((Ast.FunctionLiteral) expr);
             return expr;
         } else if (expr instanceof Ast.CallExpression) {
-            // TODO: Check out this one, because I skipped it
             ((Ast.CallExpression) expr).addFunction(analyzeExpression(((Ast.CallExpression) expr).getFunction()));
             
             List<Ast.Expression> expressions = new ArrayList<>();
@@ -117,6 +118,26 @@ public class SemanticAnalyzer {
         return new Ast.StringLiteral(new Token(result.toString(), TokenType.STRING), result.toString());
     }
 
+    private Ast.Expression simplifyBool(Ast.PrefixExpression prefix) {
+        boolean right = ((Ast.BooleanLiteral) prefix.getRight()).getValue();
+        boolean result;
+        switch (prefix.getOperator()) {
+            case "not":
+                result = !right;
+                break;
+        
+            default:
+                throw new UnsupportedOperationException("Illigal operation for bools");
+        }
+
+        TokenType type = TokenType.FALSE;
+        if (result) {
+            type = TokenType.TRUE;
+        }
+
+        return new Ast.BooleanLiteral(new Token(String.valueOf(result), type), String.valueOf(result));
+    }
+
     private Ast.Expression simplifyBools(Ast.InfixExpression infix) {
         boolean left = ((Ast.BooleanLiteral)infix.getLeft()).getValue();
         boolean right = ((Ast.BooleanLiteral)infix.getRight()).getValue();
@@ -148,6 +169,26 @@ public class SemanticAnalyzer {
         }
 
         return new Ast.BooleanLiteral(new Token(String.valueOf(result), type), String.valueOf(result));
+    }
+
+    private Ast.Expression simplifyNumber(Ast.PrefixExpression prefix) {
+        double right = convertDouple(prefix.getRight());
+        double result = 0;
+
+        switch (prefix.getOperator()) {
+            case "-":
+                result = right * -1;
+                break;
+            default:
+                throw new UnsupportedOperationException("Illigal operation for numbers");
+        }
+
+        if (result % 1 == 0) { 
+            return new Ast.IntegerLiteral(new Token(String.valueOf((int) result), TokenType.INT), String.valueOf((int) result));
+        }
+        return new Ast.RealLiteral(new Token(String.valueOf(result), TokenType.REAL), String.valueOf(result));
+
+
     }
 
     private Ast.Expression simplifyNumbers(Ast.InfixExpression infix) {
@@ -223,6 +264,16 @@ public class SemanticAnalyzer {
             return simplifyBools(infix);
         }
         return infix;
+    }
+
+    private Ast.Expression simplifyPrefixExpression(Ast.PrefixExpression prefix) {
+        if (isNumber(prefix.getRight())) {
+            return simplifyNumber(prefix);
+        }
+        if (prefix.getRight() instanceof Ast.BooleanLiteral) {
+            return simplifyBool(prefix);
+        }
+        return prefix;
     }
 
     private void analyzeStatement(Ast.Statement stmt) {

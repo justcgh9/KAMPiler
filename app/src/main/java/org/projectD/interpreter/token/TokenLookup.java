@@ -33,6 +33,7 @@ public class TokenLookup {
         keywords.put("and", TokenType.AND);
         keywords.put("or", TokenType.OR);
         keywords.put("xor", TokenType.XOR);
+        keywords.put("not", TokenType.NOT);
     }
 
     public static TokenType lookupIdent(String ident) {

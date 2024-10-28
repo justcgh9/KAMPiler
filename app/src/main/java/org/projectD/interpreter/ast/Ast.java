@@ -752,13 +752,22 @@ public class Ast {
             this.right = right;
         }
 
+        
         public void expressionNode() {
         };
-
+        
         public String tokenLiteral() {
             return this.token.gLiteral();
         }
 
+        public Expression getRight() {
+            return this.right;
+        }
+
+        public String getOperator() {
+            return this.operator;
+        }
+        
         public void setRight(Expression right) {
             this.right = right;
         }
@@ -1393,5 +1402,7 @@ public class Ast {
         }
 
     }
+
+
 
 }

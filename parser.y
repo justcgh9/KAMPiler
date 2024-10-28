@@ -98,6 +98,7 @@
 %token FOR
 %token LOOP
 %token IN
+%token NOT
 
 %start CompilationUnit
 
@@ -152,15 +153,16 @@ IfStatement
 AssignmentStatement
 	: Reference ASSIGN Expression LineBreak {
 		if ($1 instanceof Ast.CallExpression) throw new IllegalArgumentException("Cannot Assign to a function call");
-		if ($1 instanceof Ast.Identifier) $$ = new Ast.ExpressionStatement(new Ast.InfixExpression(":=", (Ast.Identifier) $1, (Ast.Expression) $3));
-		var ref = (Ast.IndexLiteral) $1;
-		try {
-			if (ref.tokenLiteral().equals("[]")) { $$ = new Ast.ExpressionStatement(new Ast.InfixExpression(":=", (Ast.Expression) $1, (Ast.Expression) $3));}
-			else {throw new IllegalArgumentException();}
-		} catch (Exception e) {
-			throw new IllegalArgumentException("Assignment is only available to variables and array elements");
-		}
-
+		if ($1 instanceof Ast.Identifier){ $$ = new Ast.ExpressionStatement(new Ast.InfixExpression(":=", (Ast.Identifier) $1, (Ast.Expression) $3));}
+		else {
+			var ref = (Ast.IndexLiteral) $1;
+			try {
+				if (ref.tokenLiteral().equals("[]")) { $$ = new Ast.ExpressionStatement(new Ast.InfixExpression(":=", (Ast.Expression) $1, (Ast.Expression) $3));}
+				else {throw new IllegalArgumentException();}
+			} catch (Exception e) {
+				throw new IllegalArgumentException("Assignment is only available to variables and array elements");
+			}
+	}
 	}
 
 WhileStatement
@@ -322,6 +324,9 @@ UnaryExpression
 
 		expr.setRight((Ast.Expression)$2);
 		$$ = expr;
+	}
+	| NOT Term {
+		$$ = new Ast.PrefixExpression("not", ((Ast.Expression) $2));
 	}
 	;
 

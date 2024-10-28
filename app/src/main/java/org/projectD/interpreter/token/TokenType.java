@@ -62,6 +62,7 @@ public enum TokenType {
     AND("AND"),
     OR("OR"),
     XOR("XOR"),
+    NOT("NOT"),
     PRINT("PRINT");
     
     private final String value;
