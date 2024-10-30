@@ -1,9 +1,11 @@
 print "something";
+var b := 5
 
-var f := func() is if true then var a
-    a := 5
+var f := func() is if b xor true then var a
+    a := 0
+    10 / a
     print a
-    else var b
+    else var a
     end
 end
 

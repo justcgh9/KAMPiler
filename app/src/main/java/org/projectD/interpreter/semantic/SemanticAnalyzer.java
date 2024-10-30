@@ -13,9 +13,11 @@ public class SemanticAnalyzer {
     
     private final Map<String, Ast.VarStatement> symbolTable = new HashMap<>();
     
-    private final Stack<Map<String, Pair<Ast.VarStatement, String>>> functionContext = new Stack<>();
+    private final Stack<Map<String, Pair<Ast.VarStatement, String>>> nestedContext = new Stack<>();
     
     private final Set<String> usedVariables = new HashSet<>();
+
+    private final Stack<String> functionalContext= new Stack<>();
 
     private Stack<Ast.Node> parentContext = new Stack<>();
     
@@ -301,7 +303,7 @@ public class SemanticAnalyzer {
     
     private void analyzeVarStatement(Ast.VarStatement stmt) {
         String varName = stmt.getIdentifier().getName();
-        if (functionContext.isEmpty()) {
+        if (nestedContext.isEmpty()) {
             var val = symbolTable.get(varName);
             if(val != null) {
                 throw new IllegalArgumentException(varName + " is redefined in this scope");
@@ -309,7 +311,7 @@ public class SemanticAnalyzer {
             symbolTable.put(varName, stmt);
             usedVariables.remove(varName);  
         } else {
-            var context = functionContext.peek();
+            var context = nestedContext.peek();
             var val = context.get(varName);
             if(val != null) {
                 throw new IllegalArgumentException(varName + " is redefined in this scope");
@@ -340,13 +342,14 @@ public class SemanticAnalyzer {
             List<Ast.Statement> replacement = new ArrayList<>();
          
             if (((Ast.BooleanLiteral) stmt.getCondition()).getValue()) {
-
-                analyzeBlock(stmt.getThenBlock());
+                
+                
+                analyzeBlock(stmt.getThenBlock(), new HashMap<String, Pair<Ast.VarStatement, String>>());
                 replacement = stmt.getThenBlock().getStatements();
 
             } else if (stmt.getElseBlock() != null) {
 
-                analyzeBlock(stmt.getElseBlock());
+                analyzeBlock(stmt.getElseBlock(), new HashMap<String, Pair<Ast.VarStatement, String>>());
                 replacement = stmt.getElseBlock().getStatements();
 
             } 
@@ -365,25 +368,25 @@ public class SemanticAnalyzer {
 
             return;
         }
-        analyzeBlock(stmt.getThenBlock());
+        analyzeBlock(stmt.getThenBlock(), new HashMap<String, Pair<Ast.VarStatement, String>>());
         if (stmt.getElseBlock() != null) {
-            analyzeBlock(stmt.getElseBlock());
+            analyzeBlock(stmt.getElseBlock(), new HashMap<String, Pair<Ast.VarStatement, String>>());
         }
     }
 
     
     private void analyzeWhileStatement(Ast.WhileStatement stmt) {
         stmt.setCondition(analyzeExpression(stmt.getCondition()));
-        analyzeBlock(stmt.getBody());
+        analyzeBlock(stmt.getBody(), new HashMap<String, Pair<Ast.VarStatement, String>>());
     }
 
     private void analyzeForStatement(Ast.ForLiteral stmt) {
-        analyzeBlock(stmt.getBody());
+        analyzeBlock(stmt.getBody(), new HashMap<String, Pair<Ast.VarStatement, String>>());
     }
 
     
     private void analyzeReturnStatement(Ast.ReturnStatement stmt) {
-        if (functionContext.isEmpty()) {
+        if (functionalContext.isEmpty()) {
             throw new IllegalStateException("Return statement used outside of a function");
         }
         if (stmt.getExpression() != null) {
@@ -394,29 +397,31 @@ public class SemanticAnalyzer {
     
     private void analyzeFunction(Ast.FunctionLiteral func) {
         Map<String, Pair<Ast.VarStatement, String>> context = new HashMap<>();
-        functionContext.push(context);
+        functionalContext.push("");
         for (Ast.Identifier param : func.getParameters()) {
             context.put(param.getName(), new Pair<Ast.VarStatement,String>(new Ast.VarStatement(param, null), "unused"));
         }
-        analyzeBlock(func.getBody());
-        removeUnusedVariables(func.getBody());
-        functionContext.pop();
+        analyzeBlock(func.getBody(), context);
+        functionalContext.pop();
     }
 
     
-    private void analyzeBlock(Ast.BlockStatement block) {
+    private void analyzeBlock(Ast.BlockStatement block, Map<String, Pair<Ast.VarStatement, String>> context) {
+        nestedContext.push(context);
         parentContext.push(block);
         for (Ast.Statement stmt : new ArrayList<Ast.Statement>(block.getStatements())) {
             analyzeStatement(stmt);
         }
         parentContext.pop();
+        removeUnusedVariables(block);
+        nestedContext.pop();
     }
 
     private void checkExistence(String name) {
         Stack<Map<String, Pair<Ast.VarStatement, String>>> newStack = new Stack<>();
 
-        while (!functionContext.isEmpty()) {
-            var context = functionContext.pop();
+        while (!nestedContext.isEmpty()) {
+            var context = nestedContext.pop();
             newStack.push(context);
             var val = context.get(name);
             if (val != null) {
@@ -437,7 +442,7 @@ public class SemanticAnalyzer {
 
     private void putContextsBack(Stack<Map<String, Pair<Ast.VarStatement, String>>> contexts) {
         while(!contexts.isEmpty()) {
-            functionContext.push(contexts.pop());
+            nestedContext.push(contexts.pop());
         }
     }
     
@@ -455,15 +460,16 @@ public class SemanticAnalyzer {
         }
         program.setStatements(newStatements);
     }
-
+    
     private void removeUnusedVariables(Ast.BlockStatement block) {
         List<Ast.Statement> newStatements = new ArrayList<>();
         for (Ast.Statement stmt : block.getStatements()) {
             if (stmt instanceof Ast.VarStatement) {
                 Ast.VarStatement varStmt = (Ast.VarStatement) stmt;
-                if (!functionContext.isEmpty()) {
-                    var context = functionContext.peek();
+                if (!nestedContext.isEmpty()) {
+                    var context = nestedContext.peek();
                     var val = context.get(varStmt.getIdentifier().getName());
+                    if (val == null) return;
                     if (val.getRight().equals("used")) {
                         newStatements.add(varStmt);
                     }
