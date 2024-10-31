@@ -15,7 +15,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
 public class ObjectTypeDemo {
-    interface Object {
+    public static interface Object {
         ObjectType getType();
         String inspect();
     }
@@ -45,6 +45,10 @@ public class ObjectTypeDemo {
             this.value = value;
         }
 
+        public long getValue() {
+            return this.value;
+        }
+
         @Override
         public ObjectType getType() {
             return ObjectType.INTEGER_OBJ;
@@ -66,6 +70,10 @@ public class ObjectTypeDemo {
 
         public Double(double value) {
             this.value = value;
+        }
+
+        public double getValue() {
+            return this.value;
         }
 
         @Override
@@ -124,6 +132,10 @@ public class ObjectTypeDemo {
 
         public ReturnValue(Object value) {
             this.value = value;
+        }
+
+        public Object getValue() {
+            return this.value;
         }
 
         @Override
