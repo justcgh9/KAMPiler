@@ -88,7 +88,11 @@ public class Evaluator {
             (right.getType() == ObjectType.INTEGER_OBJ || right.getType() == ObjectType.DOUBLE_OBJ)
 
         ) {
-            return evalNumericInfixExpression(operator, left,right);
+            return evalNumericInfixExpression(operator, left, right);
+        }
+
+        if (left.getType() == ObjectType.STRING_OBJ && right.getType() == ObjectType.STRING_OBJ) {
+            return evalStringInfixExpression(operator, left, right);
         }
         
         return NULL;
@@ -159,6 +163,18 @@ public class Evaluator {
         }
     }
     
+    private ObjectTypeDemo.Object evalStringInfixExpression(String operator, ObjectTypeDemo.Object left, ObjectTypeDemo.Object right) {
+        switch (operator) {
+            case "+":
+                return new ObjectTypeDemo.StringObject(
+                    ((ObjectTypeDemo.StringObject) left).getValue() + ((ObjectTypeDemo.StringObject) right).getValue()
+                );
+        
+            default:
+                return newError("Unknown operator: %s %s %s", left.getType(), operator, right.getType());
+        }
+    }
+
     private ObjectTypeDemo.Object evalPrefixExpression(String operator, ObjectTypeDemo.Object right) {
         switch (operator) {
             case "-":

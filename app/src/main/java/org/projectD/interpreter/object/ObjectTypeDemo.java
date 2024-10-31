@@ -199,6 +199,10 @@ public class ObjectTypeDemo {
             this.value = value;
         }
 
+        public String getValue() {
+            return this.value;
+        }
+
         @Override
         public ObjectType getType() {
             return ObjectType.STRING_OBJ;
