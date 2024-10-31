@@ -12,8 +12,87 @@ public class Evaluator {
     final ObjectTypeDemo.Boolean FALSE = new ObjectTypeDemo.Boolean(false);
 
     // Общая функция для Эвала объекта, когда мы не знаем его тип заранее
-    // TODO: реализовать.
     public ObjectTypeDemo.Object eval(Ast.Node node, Environment environment) {
+        
+        if (node instanceof Ast.Program) return evalProgram((Ast.Program) node, environment);
+
+        //Statements
+        if (node instanceof Ast.BlockStatement) return evalBlockStatement((Ast.BlockStatement) node, environment);
+
+        if (node instanceof Ast.ExpressionStatement) return eval(((Ast.ExpressionStatement) node).getExpression(), environment);
+    
+        if (node instanceof Ast.ReturnStatement) {
+            var val = eval(((Ast.ReturnStatement) node).getExpression(), environment);
+            return isError(val) ? val : new ObjectTypeDemo.ReturnValue(val);
+        }
+
+        if (node instanceof Ast.VarStatement) {
+            var stmt = (Ast.VarStatement) node;
+            var val = eval(stmt.getExpression(), environment);
+            if (isError(val)) {
+                return val;
+            }
+            environment.set(stmt.getIdentifier().getName(), val);
+            return null;
+        }
+
+        if (node instanceof Ast.IfStatement) {
+            return evalIfStatement((Ast.IfStatement) node, environment);
+        }
+
+        // TODO: Print, For, While
+
+        //Expressions
+        if (node instanceof Ast.IntegerLiteral) {
+            return new ObjectTypeDemo.Integer((long)((Ast.IntegerLiteral) node).getValue());
+        }
+
+        if (node instanceof Ast.RealLiteral) {
+            return new ObjectTypeDemo.Double((double)((Ast.RealLiteral) node).getValue());
+        }
+
+        if (node instanceof Ast.StringLiteral) {
+            return new ObjectTypeDemo.StringObject(((Ast.StringLiteral) node).getValue());
+        }
+
+        if (node instanceof Ast.BooleanLiteral) {
+            return nativeBooleanToBooleanObject(((Ast.BooleanLiteral) node).getValue());
+        }
+
+        if (node instanceof Ast.PrefixExpression) {
+            Ast.PrefixExpression stmt = (Ast.PrefixExpression) node;
+            var right = eval(stmt.getRight(), environment);
+            if (isError(right)) {
+                return right;
+            }
+            return evalPrefixExpression(stmt.getOperator(), right);
+        }
+
+        if (node instanceof Ast.InfixExpression) {
+            Ast.InfixExpression stmt = (Ast.InfixExpression) node;
+            
+            var left = eval(stmt.getLeft(), environment);
+            if (isError(left)) {
+                return left;
+            }
+            
+            var right = eval(stmt.getRight(), environment);
+            if (isError(right)) {
+                return right;
+            }
+
+            return evalInfixExpression(stmt.getOperator(), left, right);
+        }
+
+        if (node instanceof Ast.Identifier) {
+            Ast.Identifier expr = (Ast.Identifier) node;
+            var value = environment.get(expr.getName());
+            if (value == null) return newError("identifier not found: " + expr.getName());
+            return value;
+        }
+
+
+
         return NULL;
     }
 
@@ -61,6 +140,24 @@ public class Evaluator {
         return result;
     }
 
+    private ObjectTypeDemo.Object evalIfStatement(Ast.IfStatement stmt, Environment environment) {
+        var predicate = eval(stmt.getCondition(), environment);
+        if (isError(predicate)) {
+            return predicate;
+        }
+
+        if (isTruthy(predicate)) {
+            return eval(stmt.getThenBlock(), new Environment(environment));
+        } 
+
+        var elseBlock = stmt.getElseBlock();
+        if (elseBlock != null) {
+            return eval(elseBlock, new Environment(environment));
+        }
+
+        return NULL;
+    }
+
     private ObjectTypeDemo.Boolean nativeBooleanToBooleanObject(boolean inp) {
         /**
          * Конвертим булы в булевые объекты
@@ -94,8 +191,22 @@ public class Evaluator {
         if (left.getType() == ObjectType.STRING_OBJ && right.getType() == ObjectType.STRING_OBJ) {
             return evalStringInfixExpression(operator, left, right);
         }
+
+        if (left.getType() == ObjectType.ARRAY_OBJ && right.getType() == ObjectType.ARRAY_OBJ) {
+            return evalArrayInfixExpression(operator, left, right);
+        }
+        //TODO: refine the tuple specifics, implement tuple operations.
+
+        //TODO: equals method for all the object types
+        if (operator.equals("==")) {
+            return nativeBooleanToBooleanObject(left.equals(right));
+        }
+
+        if (operator.equals("!=")) {
+            return nativeBooleanToBooleanObject(!left.equals(right));
+        }
         
-        return NULL;
+        return newError("unknown operator: %s %s %s", operator, right.getType());
     }
 
     private ObjectTypeDemo.Object evalNumericInfixExpression(String operator, ObjectTypeDemo.Object left, ObjectTypeDemo.Object right) {
@@ -164,12 +275,45 @@ public class Evaluator {
     }
     
     private ObjectTypeDemo.Object evalStringInfixExpression(String operator, ObjectTypeDemo.Object left, ObjectTypeDemo.Object right) {
+        String leftValue = ((ObjectTypeDemo.StringObject) left).getValue();
+        String rightValue = ((ObjectTypeDemo.StringObject) right).getValue();
+        var result = new StringBuilder();
+
+         switch (operator) {
+            case "+":
+                if (leftValue.equals("") && rightValue.equals("")){
+                    break;
+                }
+                
+                if (leftValue.equals("")) {
+                    result.append(rightValue);
+                    break;
+                }
+
+                if (rightValue.equals("")) {
+                    result.append(leftValue);
+                    break;
+                }
+
+                // remove quates to concatinate
+                var leftTrancated = leftValue.substring(0, leftValue.length() - 1);
+                var rightTrancated = rightValue.substring(1, rightValue.length());
+                result.append(leftTrancated);
+                result.append(rightTrancated);
+                break;
+            default:
+                return newError("Unknown operator: %s %s %s", left.getType(), operator, right.getType());
+            }
+        return new ObjectTypeDemo.StringObject(result.toString());
+
+    }
+
+    private ObjectTypeDemo.Object evalArrayInfixExpression(String operator, ObjectTypeDemo.Object left, ObjectTypeDemo.Object right) {
         switch (operator) {
             case "+":
-                return new ObjectTypeDemo.StringObject(
-                    ((ObjectTypeDemo.StringObject) left).getValue() + ((ObjectTypeDemo.StringObject) right).getValue()
-                );
-        
+                var leftVal = ((ObjectTypeDemo.ArrayObject) left).getValue();
+                leftVal.addAll(((ObjectTypeDemo.ArrayObject) right).getValue());
+                return new ObjectTypeDemo.ArrayObject(leftVal);
             default:
                 return newError("Unknown operator: %s %s %s", left.getType(), operator, right.getType());
         }
@@ -215,8 +359,19 @@ public class Evaluator {
         }
     }
 
+    private boolean isTruthy(ObjectTypeDemo.Object obj) {
+        if (obj == NULL || obj == FALSE) {
+            return false;
+        }
+        return true;
+    }
+
     private ObjectTypeDemo.Error newError(String format, Object... args) {
         String message = String.format(format, args);
         return new ObjectTypeDemo.Error(message);
+    }
+
+    private boolean isError(ObjectTypeDemo.Object obj) {
+        return obj != null ? obj.getType() == ObjectType.ERROR_OBJ : false;
     }
 }

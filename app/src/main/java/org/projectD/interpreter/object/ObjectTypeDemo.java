@@ -203,6 +203,10 @@ public class ObjectTypeDemo {
             return this.value;
         }
 
+        public String toString() {
+            return this.value;
+        }
+
         @Override
         public ObjectType getType() {
             return ObjectType.STRING_OBJ;
@@ -249,6 +253,10 @@ public class ObjectTypeDemo {
 
         public ArrayObject(List<Object> elements) {
             this.elements = elements;
+        }
+
+        public List<Object> getValue() {
+            return this.elements;
         }
 
         @Override

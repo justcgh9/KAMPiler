@@ -8,7 +8,9 @@ import java.nio.file.Files;
 
 import org.projectD.interpreter.ast.Ast;
 import org.projectD.interpreter.ast.TreePrinter;
+import org.projectD.interpreter.evaluator.Evaluator;
 import org.projectD.interpreter.lexer.ParserLexer;
+import org.projectD.interpreter.object.Environment;
 import org.projectD.interpreter.parser.Parser;
 import org.projectD.interpreter.repl.Repl;
 import org.projectD.interpreter.semantic.SemanticAnalyzer;
@@ -48,6 +50,8 @@ public class Main {
                         SemanticAnalyzer sm = new SemanticAnalyzer();
                         sm.analyze(parsedResult);
                         var some = parsedResult.toString();
+                        Evaluator evaluator = new Evaluator();
+                        System.out.println(evaluator.eval(parsedResult, new Environment()));
                         // parsedResult.accept(tp);
 
                         String outputFileName = fileName.replace(".d", ".o");

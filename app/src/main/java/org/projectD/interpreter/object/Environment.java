@@ -2,6 +2,7 @@ package org.projectD.interpreter.object;
 
 import java.util.HashMap;
 import java.util.Map;
+import org.projectD.interpreter.object.ObjectTypeDemo.Object;
 
 public class Environment {
     Map<String, Object> store;
@@ -17,7 +18,7 @@ public class Environment {
         this.outer = outer;
     }
 
-    Object get(String name) {
+    public Object get(String name) {
         Object obj = this.store.get(name);
         if (obj == null && outer != null) {
             outer.get(name);
@@ -25,7 +26,7 @@ public class Environment {
         return obj;
     }
 
-    Object set(String name, Object val) {
+    public Object set(String name, Object val) {
         this.store.put(name, val);
         return val;
     }
