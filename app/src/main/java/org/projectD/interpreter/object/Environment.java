@@ -21,7 +21,7 @@ public class Environment {
     public Object get(String name) {
         Object obj = this.store.get(name);
         if (obj == null && outer != null) {
-            outer.get(name);
+            obj = outer.get(name);
         }
         return obj;
     }

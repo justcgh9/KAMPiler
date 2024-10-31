@@ -51,7 +51,8 @@ public class Main {
                         sm.analyze(parsedResult);
                         var some = parsedResult.toString();
                         Evaluator evaluator = new Evaluator();
-                        System.out.println(evaluator.eval(parsedResult, new Environment()));
+                        var result = evaluator.eval(parsedResult, new Environment());
+                        System.out.println(result);
                         // parsedResult.accept(tp);
 
                         String outputFileName = fileName.replace(".d", ".o");

@@ -156,6 +156,10 @@ public class ObjectTypeDemo {
             this.message = message;
         }
 
+        public String toString() {
+            return "err: " + message;
+        }
+
         @Override
         public ObjectType getType() {
             return ObjectType.ERROR_OBJ;
