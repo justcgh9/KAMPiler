@@ -33,10 +33,10 @@ public class Main {
     // }
 
     public static void main(String[] args) {
-        String fileName = "./examples/first.d";
+        // String fileName = "./examples/first.d";
            
-        // if (args.length >= 0) {
-            // for (String fileName : args) {
+        if (args.length >= 0) {
+            for (String fileName : args) {
                 if (fileName.endsWith(".d")) {
                     try {
                         String content = new String(Files.readAllBytes(Paths.get(fileName)));
@@ -70,9 +70,9 @@ public class Main {
                 } else {
                     System.err.println("File does not have the .d extension: " + fileName);
                 }
-            // }
-        // } else {
-        //     Repl.start();
-        // }
+            }
+        } else {
+            Repl.start();
+        }
     }
 }

@@ -101,7 +101,27 @@ public class Evaluator {
             return NULL;
         }
 
-        // TODO: For, While
+        if (node instanceof Ast.WhileStatement) {
+            var stmt = (Ast.WhileStatement) node;
+            var pred = stmt.getCondition();
+            var env = new Environment(environment);
+            var evaluatedPred = eval(pred, env);
+            while(evaluatedPred == TRUE) {
+                var result = eval(stmt.getBody(), env);
+
+                if (result != null) {
+                    var resultType = result.getType();
+                    if (resultType == ObjectType.RETURN_VALUE_OBJ || resultType == ObjectType.ERROR_OBJ) {
+                        return result;
+                    } 
+                }
+                evaluatedPred = eval(pred, env);
+            }
+
+            return NULL;
+        }
+
+        // TODO: While
 
         //Expressions
         if (node instanceof Ast.IntegerLiteral) {
@@ -209,6 +229,8 @@ public class Evaluator {
 
         if (node instanceof Ast.InfixExpression) {
             Ast.InfixExpression stmt = (Ast.InfixExpression) node;
+
+            if (stmt.getOperator().equals(":=")) {return evalAssignmentOperation(stmt, environment);}
             
             var left = eval(stmt.getLeft(), environment);
             if (isError(left)) {
@@ -373,6 +395,45 @@ public class Evaluator {
             throw new IllegalArgumentException("Unsupported types for comparison");
         }
     }
+
+    private ObjectTypeDemo.Object evalAssignmentOperation(Ast.InfixExpression expr, Environment environment) {
+        var left = expr.getLeft();
+        var indices = new ArrayList<Long>();
+        while(left instanceof Ast.IndexLiteral) {
+            var evaluated = eval(((Ast.IndexLiteral) left).getIndex(), environment);
+            if (evaluated.getType() != ObjectType.INTEGER_OBJ) {return newError("Incorrect index type: %s", evaluated.getType());}
+            indices.add(((ObjectTypeDemo.Integer) evaluated).getValue());
+            left = ((Ast.IndexLiteral) left).getLeft();
+        }
+
+        if(!(left instanceof Ast.Identifier)) {return newError("Exprected Identifier, got %s", left);}
+
+        var ident = (Ast.Identifier) left;
+
+        if (indices.isEmpty()) {
+            return environment.set(ident.getName(), eval(expr.getRight(), environment));
+        }
+
+        var current = environment.get(ident.getName());
+        if (current == null) {return newError("%s is not defined", ident.getName());}
+
+        if (!(current instanceof ObjectTypeDemo.ArrayObject)) {return newError("%s is not a list", current);}
+
+        List<ObjectTypeDemo.Object> result = new ArrayList<>(((ObjectTypeDemo.ArrayObject) current).getValue());
+        for (int i = 0; i < indices.size(); i++) {
+            if(i == indices.size() - 1) {
+                result.set(i, eval(expr.getRight(), environment));
+                return environment.set(ident.getName(), current);
+            }
+
+            var temp = result.get(i);
+            if (!(temp instanceof ObjectTypeDemo.ArrayObject)) {return newError("%s is not a list", current);}
+
+            result = ((ObjectTypeDemo.ArrayObject) temp).getValue();
+        }
+        
+        return NULL;
+    }
     
 
     private ObjectTypeDemo.Object evalInfixExpression(String operator, ObjectTypeDemo.Object left, ObjectTypeDemo.Object right) {
@@ -434,8 +495,8 @@ public class Evaluator {
                 return isDouble
                     ? new ObjectTypeDemo.Double(leftVal.doubleValue() / rightVal.doubleValue())
                     : new ObjectTypeDemo.Integer(leftVal.longValue() / rightVal.longValue());
-                    case "=":
-                    return nativeBooleanToBooleanObject(leftVal == rightVal);
+            case "=":
+                return nativeBooleanToBooleanObject(leftVal == rightVal);
                 
             case "!=":
                 return nativeBooleanToBooleanObject(leftVal != rightVal);
