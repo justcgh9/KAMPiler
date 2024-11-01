@@ -7,10 +7,6 @@ import java.util.stream.Collectors;
 
 import org.projectD.interpreter.ast.Ast;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Arrays;
-
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
@@ -62,6 +58,11 @@ public class ObjectTypeDemo {
         }
 
         @Override
+        public String toString() {
+            return String.valueOf(value);
+        }
+
+        @Override
         public ObjectType getType() {
             return ObjectType.INTEGER_OBJ;
         }
@@ -89,6 +90,11 @@ public class ObjectTypeDemo {
         }
 
         @Override
+        public String toString() {
+            return String.valueOf(value);
+        }
+
+        @Override
         public ObjectType getType() {
             return ObjectType.DOUBLE_OBJ;
         }
@@ -109,6 +115,11 @@ public class ObjectTypeDemo {
 
         public Boolean(boolean value) {
             this.value = value;
+        }
+
+        @Override
+        public String toString() {
+            return String.valueOf(value);
         }
 
         @Override
@@ -134,6 +145,11 @@ public class ObjectTypeDemo {
         }
 
         @Override
+        public String toString() {
+            return "null";
+        }
+
+        @Override
         public String inspect() {
             return "null";
         }
@@ -148,6 +164,11 @@ public class ObjectTypeDemo {
 
         public Object getValue() {
             return this.value;
+        }
+
+        @Override
+        public String toString() {
+            return "return" + value.toString();
         }
 
         @Override
@@ -192,6 +213,30 @@ public class ObjectTypeDemo {
             this.parameters = parameters;
             this.body = body;
             this.env = env;
+        }
+
+        @Override
+        public String toString() {
+            StringBuilder out = new StringBuilder();
+
+            List<String> params = new ArrayList<>();
+            for (var p : this.parameters) {
+                params.add(p.toString());
+            }
+
+            out.append("func");
+            out.append("(");
+
+            StringJoiner joiner = new StringJoiner(", ");
+            for (String param : params) {
+                joiner.add(param);
+            }
+
+            out.append(joiner.toString());
+            out.append(") ");
+            out.append(body.toString());
+
+            return out.toString();
         }
 
         public Ast.BlockStatement getBody() {
@@ -258,24 +303,6 @@ public class ObjectTypeDemo {
         }
     }
 
-    public static class Builtin implements Object {
-        private final Function<Object[], Object> fn;
-
-        public Builtin(Function<Object[], Object> fn) {
-            this.fn = fn;
-        }
-
-        @Override
-        public ObjectType getType() {
-            return ObjectType.BUILTIN_OBJ;
-        }
-
-        @Override
-        public String inspect() {
-            return "builtin function";
-        }
-    }
-
     public static class ArrayObject implements Object {
         private final List<Object> elements;
 
@@ -285,6 +312,11 @@ public class ObjectTypeDemo {
 
         public List<Object> getValue() {
             return this.elements;
+        }
+
+        @Override
+        public String toString() {
+            return this.inspect();
         }
 
         @Override
@@ -327,6 +359,11 @@ public class ObjectTypeDemo {
 
         public Map<HashKey, HashPair> getPairs() {
             return this.pairs;
+        }
+
+        @Override
+        public String toString() {
+            return this.inspect();
         }
 
         @Override

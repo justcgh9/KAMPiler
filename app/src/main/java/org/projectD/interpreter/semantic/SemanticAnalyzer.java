@@ -69,10 +69,11 @@ public class SemanticAnalyzer {
             ((Ast.CallExpression) expr).setArguments(expressions);
         } else if (expr instanceof Ast.IndexLiteral) {
             var exp = (Ast.IndexLiteral) expr;
+            
             exp.setLeft(analyzeExpression(exp.getLeft()));
             exp.setIndex(analyzeExpression(exp.getIndex()));
             return exp;
-        }
+        } 
 
         return expr;
     }
@@ -437,12 +438,12 @@ public class SemanticAnalyzer {
         }
         
         putContextsBack(newStack);
-        var val = symbolTable.get(name);
-        if (val != null){
-            usedVariables.add(name);
-            return;
-        }
-        throw new IllegalArgumentException(name + " is not defined");
+        // var val = symbolTable.get(name);
+        // if (val != null){
+        usedVariables.add(name);
+            // return;
+        // }
+        // throw new IllegalArgumentException(name + " is not defined");
     }
 
     private void putContextsBack(Stack<Map<String, Pair<Ast.VarStatement, String>>> contexts) {

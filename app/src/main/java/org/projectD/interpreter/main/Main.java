@@ -48,11 +48,11 @@ public class Main {
                         // System.out.println(parsedResult);
                         TreePrinter tp = new TreePrinter();
                         SemanticAnalyzer sm = new SemanticAnalyzer();
-                        // sm.analyze(parsedResult);
+                        sm.analyze(parsedResult);
                         var some = parsedResult.toString();
                         Evaluator evaluator = new Evaluator();
                         var result = evaluator.eval(parsedResult, new Environment());
-                        System.out.println(result);
+                        // System.out.println(result);
                         // parsedResult.accept(tp);
 
                         String outputFileName = fileName.replace(".d", ".o");

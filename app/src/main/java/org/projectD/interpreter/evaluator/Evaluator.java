@@ -46,7 +46,19 @@ public class Evaluator {
             return evalIfStatement((Ast.IfStatement) node, environment);
         }
 
-        // TODO: Print, For, While
+        if (node instanceof Ast.PrintLiteral) {
+            var stmt = (Ast.PrintLiteral) node;
+            var args = evalExpressions(stmt.getArguments(), environment);
+            StringBuilder out = new StringBuilder();
+            for(var arg: args) {
+                out.append(arg.toString());
+                out.append(" ");
+            }
+            System.out.println(out.toString());
+            return NULL;
+        }
+
+        // TODO: For, While
 
         //Expressions
         if (node instanceof Ast.IntegerLiteral) {
@@ -361,24 +373,24 @@ public class Evaluator {
         switch (operator) {
             case "+":
                 return isDouble
-                ? new ObjectTypeDemo.Double((double) leftVal + (double) rightVal)
-                : new ObjectTypeDemo.Integer((long) leftVal + (long) rightVal);
+                ? new ObjectTypeDemo.Double(leftVal.doubleValue() + rightVal.doubleValue())
+                : new ObjectTypeDemo.Integer(leftVal.longValue() + rightVal.longValue());
             case "-":
                 return isDouble
-                ? new ObjectTypeDemo.Double((double) leftVal - (double) rightVal)
-                : new ObjectTypeDemo.Integer((long) leftVal - (long) rightVal);
+                ? new ObjectTypeDemo.Double(leftVal.doubleValue() - rightVal.doubleValue())
+                : new ObjectTypeDemo.Integer(leftVal.longValue() - rightVal.longValue());
             case "*":
                 return isDouble
-                ? new ObjectTypeDemo.Double((double) leftVal * (double) rightVal)
-                : new ObjectTypeDemo.Integer((long) leftVal * (long) rightVal);
+                ? new ObjectTypeDemo.Double(leftVal.doubleValue() * rightVal.doubleValue())
+                : new ObjectTypeDemo.Integer(leftVal.longValue() * rightVal.longValue());
             case "/":
-                if ((right.getType() == ObjectType.DOUBLE_OBJ && (double) rightVal == 0.0) ||
-                    (right.getType() == ObjectType.INTEGER_OBJ && (long) rightVal == 0)) {
+                if ((right.getType() == ObjectType.DOUBLE_OBJ && rightVal.doubleValue() == 0.0) ||
+                    (right.getType() == ObjectType.INTEGER_OBJ && rightVal.longValue() == 0)) {
                     newError("Division by zero is not allowed");
                 }
                 return isDouble
-                    ? new ObjectTypeDemo.Double((double) leftVal / (double) rightVal)
-                    : new ObjectTypeDemo.Integer((long) leftVal / (long) rightVal);
+                    ? new ObjectTypeDemo.Double(leftVal.doubleValue() / rightVal.doubleValue())
+                    : new ObjectTypeDemo.Integer(leftVal.longValue() / rightVal.longValue());
                     case "=":
                     return nativeBooleanToBooleanObject(leftVal == rightVal);
                 
