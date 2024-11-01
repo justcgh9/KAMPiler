@@ -58,6 +58,49 @@ public class Evaluator {
             return NULL;
         }
 
+        if (node instanceof Ast.ForLiteral) {
+            var stmt = (Ast.ForLiteral) node;
+            var loopVariable = stmt.getLoopVariable();
+            var typeInd = stmt.getTypeIndicator();
+            if(!(typeInd instanceof Ast.InfixExpression)) {return newError("Invalid type indicator: %s", typeInd);}
+
+            var typeIndicator = (Ast.InfixExpression) typeInd;
+            if(!typeIndicator.getOperator().equals("..")) {return newError("Invalid operator: %s",typeIndicator.getOperator());}
+            
+            var left = eval(typeIndicator.getLeft(), environment);
+            if (isError(left)) {
+                return left;
+            }
+
+            if (left.getType() != ObjectType.INTEGER_OBJ) {
+                return newError("Invalid type indicator start: %s", left);
+            }
+
+            var right = eval(typeIndicator.getRight(), environment);
+            if (isError(right)) {
+                return right;
+            }
+
+            if (right.getType() != ObjectType.INTEGER_OBJ) {
+                return newError("Invalid type indicator start: %s", right);
+            }
+
+            var env = new Environment(environment);
+            for(long i = ((ObjectTypeDemo.Integer) left).getValue(); i < ((ObjectTypeDemo.Integer) right).getValue(); i++) {
+                env.set(loopVariable.getName(), new ObjectTypeDemo.Integer(i));
+                var result = eval(stmt.getBody(), env);
+
+                if (result != null) {
+                    var resultType = result.getType();
+                    if (resultType == ObjectType.RETURN_VALUE_OBJ || resultType == ObjectType.ERROR_OBJ) {
+                        return result;
+                    } 
+                }
+            }
+
+            return NULL;
+        }
+
         // TODO: For, While
 
         //Expressions

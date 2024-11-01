@@ -355,6 +355,14 @@ public class Ast {
             this.loopBody = loopBody;
         }
 
+        public Identifier getLoopVariable() {
+            return this.loopVariable;
+        }
+
+        public Expression getTypeIndicator() {
+            return this.typeIndicator;
+        }
+
         public BlockStatement getBody() {
             return this.loopBody;
         }
