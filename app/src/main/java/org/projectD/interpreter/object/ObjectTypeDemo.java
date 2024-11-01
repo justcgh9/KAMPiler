@@ -182,6 +182,18 @@ public class ObjectTypeDemo {
             this.env = env;
         }
 
+        public Ast.BlockStatement getBody() {
+            return this.body;
+        }
+
+        public List<Ast.Identifier> getParameters() {
+            return this.parameters;
+        }
+
+        public Environment getEnvironment() {
+            return this.env;
+        }
+
         @Override
         public ObjectType getType() {
             return ObjectType.FUNCTION_OBJ;

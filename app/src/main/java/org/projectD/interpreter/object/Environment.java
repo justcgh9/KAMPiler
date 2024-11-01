@@ -7,6 +7,7 @@ import org.projectD.interpreter.object.ObjectTypeDemo.Object;
 public class Environment {
     Map<String, Object> store;
     Environment outer;
+    boolean isFunctional;
 
     public Environment() {
         this.store = new HashMap<>();
@@ -16,6 +17,13 @@ public class Environment {
     public Environment(Environment outer) {
         this.store = new HashMap<>();
         this.outer = outer;
+        this.isFunctional = false;
+    }
+
+    public Environment(Environment outer, boolean isFunctional) {
+        this.store = new HashMap<>();
+        this.outer = outer;
+        this.isFunctional = isFunctional;
     }
 
     public Object get(String name) {
@@ -29,5 +37,13 @@ public class Environment {
     public Object set(String name, Object val) {
         this.store.put(name, val);
         return val;
+    }
+
+    public boolean isFunctional() {
+        return this.isFunctional;
+    }
+
+    public Environment parent() {
+        return this.outer;
     }
 }

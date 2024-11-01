@@ -3,6 +3,10 @@ package org.projectD.interpreter.evaluator;
 import org.projectD.interpreter.object.ObjectTypeDemo;
 import org.projectD.interpreter.object.ObjectTypeDemo.ObjectType;
 import org.projectD.interpreter.object.Environment;
+
+import java.util.ArrayList;
+import java.util.List;
+
 import org.projectD.interpreter.ast.Ast;
 
 public class Evaluator {
@@ -91,7 +95,28 @@ public class Evaluator {
             return value;
         }
 
+        if (node instanceof Ast.FunctionLiteral) {
+            Ast.FunctionLiteral expr = (Ast.FunctionLiteral) node;
+            var params = expr.getParameters();
+            var body = expr.getBody();
+            return new ObjectTypeDemo.FunctionObject(params, body, environment);
+        }
 
+        if (node instanceof Ast.CallExpression) {
+            Ast.CallExpression expr = (Ast.CallExpression) node;
+            var function = eval(expr.getFunction(), environment);
+            
+            if(isError(function)) {
+                return function;
+            }
+
+            var args = evalExpressions(expr.getArguments(), environment);
+            if(args.size() == 1 && isError(args.get(0))) {
+                return args.get(0);
+            }
+
+            return applyFunction(function, args);
+        }
 
         return NULL;
     }
@@ -156,6 +181,43 @@ public class Evaluator {
         }
 
         return NULL;
+    }
+
+    private List<ObjectTypeDemo.Object> evalExpressions(List<Ast.Expression> exps, Environment environment) {
+        List<ObjectTypeDemo.Object> result = new ArrayList<>();
+
+        for(Ast.Expression expr: exps) {
+            var evaluated = eval(expr, environment);
+
+            if (isError(evaluated)) {
+                return new ArrayList<ObjectTypeDemo.Object>(List.of(evaluated));
+            }
+
+            result.add(evaluated);
+        }
+
+        return result;
+    }
+
+    private ObjectTypeDemo.Object applyFunction(ObjectTypeDemo.Object function, List<ObjectTypeDemo.Object> args) {
+        if (function instanceof ObjectTypeDemo.FunctionObject) {
+            var func = (ObjectTypeDemo.FunctionObject) function;
+            Environment environment = new Environment(func.getEnvironment(), true);
+
+            var params = func.getParameters();
+            for (int i = 0; i < params.size(); i++) {
+                environment.set(params.get(i).getName(), args.get(i));
+            }
+
+            var evaluated = eval(func.getBody(), environment);
+
+            if (evaluated instanceof ObjectTypeDemo.ReturnValue) {
+                return ((ObjectTypeDemo.ReturnValue) evaluated).getValue();
+            }
+
+            return evaluated;
+        }
+        return newError("Not a function: %s", function.getType());
     }
 
     private ObjectTypeDemo.Boolean nativeBooleanToBooleanObject(boolean inp) {
