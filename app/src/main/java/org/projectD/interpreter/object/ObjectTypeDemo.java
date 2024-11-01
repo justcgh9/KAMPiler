@@ -24,7 +24,7 @@ public class ObjectTypeDemo {
         EMPTY_OBJ, ERROR_OBJ, INTEGER_OBJ, DOUBLE_OBJ, BOOLEAN_OBJ, STRING_OBJ, RETURN_VALUE_OBJ, FUNCTION_OBJ, BUILTIN_OBJ, ARRAY_OBJ, TUPLE_OBJ
     }
 
-    static class HashKey {
+    public static class HashKey {
         ObjectType type;
         Number value;
 
@@ -32,9 +32,21 @@ public class ObjectTypeDemo {
             this.type = type;
             this.value = value;
         }
+
+        @Override
+        public boolean equals(java.lang.Object obj) {
+            if (!(obj instanceof HashKey)) {return false;}
+            var temp = (HashKey) obj;
+            return temp.type == this.type && temp.value.equals(this.value);
+        }
+
+        @Override
+        public int hashCode() {
+            return this.value.hashCode();
+        }
     }
 
-    interface Hashable {
+    public static interface Hashable {
         HashKey hashKey();
     }
 
@@ -296,6 +308,14 @@ public class ObjectTypeDemo {
             this.key = key;
             this.value = value;
         }
+
+        public Object getValue() {
+            return this.value;
+        }
+
+        public Object getKey() {
+            return this.key;
+        }
     }
 
     public static class TupleObject implements Object {
@@ -303,6 +323,10 @@ public class ObjectTypeDemo {
 
         public TupleObject(Map<HashKey, HashPair> pairs) {
             this.pairs = pairs;
+        }
+
+        public Map<HashKey, HashPair> getPairs() {
+            return this.pairs;
         }
 
         @Override

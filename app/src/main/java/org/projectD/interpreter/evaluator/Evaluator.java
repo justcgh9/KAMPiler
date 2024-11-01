@@ -5,7 +5,9 @@ import org.projectD.interpreter.object.ObjectTypeDemo.ObjectType;
 import org.projectD.interpreter.object.Environment;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.projectD.interpreter.ast.Ast;
 
@@ -71,10 +73,56 @@ public class Evaluator {
             return new ObjectTypeDemo.ArrayObject(elements);
         }
 
+        if (node instanceof Ast.TupleLiteral) {
+            var expr = (Ast.TupleLiteral) node;
+            Map<ObjectTypeDemo.HashKey, ObjectTypeDemo.HashPair> pairs = new HashMap<>();
+
+            for(var entry: expr.getPairs().entrySet()) {
+                var gotKey = entry.getKey();
+                if (!(gotKey instanceof Ast.IntegerLiteral || gotKey instanceof Ast.Identifier)) {
+                    return newError("Invalid key type: %s", gotKey.toString());
+                }
+                
+                var key = (gotKey instanceof Ast.IntegerLiteral) 
+                ? new ObjectTypeDemo.Integer((long) ((Ast.IntegerLiteral) gotKey).getValue()) 
+                : new ObjectTypeDemo.StringObject(((Ast.Identifier) gotKey).getName());
+
+                var value = eval(entry.getValue(), environment);
+                if (isError(value)) {
+                    return value;
+                }
+
+                var hashed = ((ObjectTypeDemo.Hashable) key).hashKey();
+                pairs.put(hashed, new ObjectTypeDemo.HashPair(key, value));
+            }
+
+            return new ObjectTypeDemo.TupleObject(pairs);
+        }
+
         if (node instanceof Ast.IndexLiteral) {
             var left = eval(((Ast.IndexLiteral) node).getLeft(), environment);
             if(isError(left)) {
                 return left;
+            }
+
+            if(left.getType() == ObjectType.TUPLE_OBJ) {
+                var tuple = (ObjectTypeDemo.TupleObject) left;
+
+                var index = ((Ast.IndexLiteral) node).getIndex();
+                if(!(index instanceof Ast.IntegerLiteral || index instanceof Ast.Identifier)) {
+                    return newError("key is unusable as hash: %s", index.toString());
+                }
+
+                var key = (index instanceof Ast.IntegerLiteral) 
+                ? new ObjectTypeDemo.Integer((long) ((Ast.IntegerLiteral) index).getValue()) 
+                : new ObjectTypeDemo.StringObject(((Ast.Identifier) index).getName());
+                
+                var pair = tuple.getPairs().get(((ObjectTypeDemo.Hashable) key).hashKey());
+                if (pair == null) {
+                    return NULL;
+                }
+
+                return pair.getValue();
             }
 
             var index = eval(((Ast.IndexLiteral) node).getIndex(), environment);
@@ -92,6 +140,7 @@ public class Evaluator {
 
                 return arr.getValue().get((int)idx);
             }
+
         }
 
         if (node instanceof Ast.PrefixExpression) {

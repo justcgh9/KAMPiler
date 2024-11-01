@@ -1,2 +1,3 @@
-var b := [func() => 1, 2, 3, 4, "hi"]
-b[4]
+var b := {a := "Hi, Kira"}
+b.0
+b.a

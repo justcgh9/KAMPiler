@@ -114,7 +114,7 @@ public class Lexer {
                 tok = newToken(TokenType.RBRACKET, ch);
                 break;
             case '.':
-                System.out.println(peekChar());
+                // System.out.println(peekChar());
                 if (peekChar() == '.') {
                     readChar();
                     tok = new Token("..", TokenType.DOTDOT);
