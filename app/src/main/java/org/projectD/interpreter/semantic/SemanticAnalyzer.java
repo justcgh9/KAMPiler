@@ -67,6 +67,11 @@ public class SemanticAnalyzer {
                 expressions.add(analyzeExpression(exp));
             }
             ((Ast.CallExpression) expr).setArguments(expressions);
+        } else if (expr instanceof Ast.IndexLiteral) {
+            var exp = (Ast.IndexLiteral) expr;
+            exp.setLeft(analyzeExpression(exp.getLeft()));
+            exp.setIndex(analyzeExpression(exp.getIndex()));
+            return exp;
         }
 
         return expr;

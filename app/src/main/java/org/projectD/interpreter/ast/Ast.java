@@ -1166,6 +1166,10 @@ public class Ast {
         public void expressionNode() {
         };
 
+        public List<Expression> getElements() {
+            return this.elements;
+        }
+
         public ArrayLiteral() {
             this.elements = new ArrayList<>();
         }
@@ -1238,8 +1242,20 @@ public class Ast {
             this.left = left;
         }
 
+        public void setIndex(Expression index) {
+            this.index = index;
+        }
+
         public void setToken(Token token) {
             this.token = token;
+        }
+
+        public Expression getLeft() {
+            return this.left;
+        }
+
+        public Expression getIndex() {
+            return this.index;
         }
 
         public String tokenLiteral() {

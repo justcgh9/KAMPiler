@@ -63,6 +63,37 @@ public class Evaluator {
             return nativeBooleanToBooleanObject(((Ast.BooleanLiteral) node).getValue());
         }
 
+        if (node instanceof Ast.ArrayLiteral) {
+            var elements = evalExpressions(((Ast.ArrayLiteral) node).getElements(), environment);
+            if(elements.size() == 1 && isError(elements.get(0))) {
+                return elements.get(0);
+            }
+            return new ObjectTypeDemo.ArrayObject(elements);
+        }
+
+        if (node instanceof Ast.IndexLiteral) {
+            var left = eval(((Ast.IndexLiteral) node).getLeft(), environment);
+            if(isError(left)) {
+                return left;
+            }
+
+            var index = eval(((Ast.IndexLiteral) node).getIndex(), environment);
+            if(isError(index)) {
+                return index;
+            }
+
+            if (left.getType() == ObjectType.ARRAY_OBJ && index.getType() == ObjectType.INTEGER_OBJ) {
+                var arr = (ObjectTypeDemo.ArrayObject) left;
+                var idx = ((ObjectTypeDemo.Integer) index).getValue();
+                long max = (long) arr.getValue().size();
+                if (idx < 0 || idx > max) {
+                    return NULL;
+                }
+
+                return arr.getValue().get((int)idx);
+            }
+        }
+
         if (node instanceof Ast.PrefixExpression) {
             Ast.PrefixExpression stmt = (Ast.PrefixExpression) node;
             var right = eval(stmt.getRight(), environment);
