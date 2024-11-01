@@ -646,6 +646,10 @@ public class Ast {
             return this.token.gLiteral();
         }
 
+        public String getValue(){
+            return this.value;
+        }
+
         @Override
         public boolean equals(Object obj) {
             if (obj == null) {

@@ -121,8 +121,6 @@ public class Evaluator {
             return NULL;
         }
 
-        // TODO: While
-
         //Expressions
         if (node instanceof Ast.IntegerLiteral) {
             return new ObjectTypeDemo.Integer((long)((Ast.IntegerLiteral) node).getValue());
@@ -237,6 +235,10 @@ public class Evaluator {
                 return left;
             }
             
+            if (stmt.getOperator().equals("is")){
+                return evalIsOperation(left, stmt.getRight());
+            }
+
             var right = eval(stmt.getRight(), environment);
             if (isError(right)) {
                 return right;
@@ -434,6 +436,34 @@ public class Evaluator {
         
         return NULL;
     }
+
+    private ObjectTypeDemo.Object evalIsOperation(ObjectTypeDemo.Object left, Ast.Expression right){
+        if (!(right instanceof Ast.TypeLiteral)){
+            return newError("expected type literal, found: %s", right);
+        }
+
+        Ast.TypeLiteral type = (Ast.TypeLiteral) right;
+        switch (type.getValue()) {
+            case "int":
+                return nativeBooleanToBooleanObject(left.getType() == ObjectType.INTEGER_OBJ);
+            case "real":
+                return nativeBooleanToBooleanObject(left.getType() == ObjectType.DOUBLE_OBJ);
+            case "string":
+                return nativeBooleanToBooleanObject(left.getType() == ObjectType.STRING_OBJ);
+            case "empty":
+                return nativeBooleanToBooleanObject(left.getType() == ObjectType.EMPTY_OBJ);
+            case "bool":
+                return nativeBooleanToBooleanObject(left.getType() == ObjectType.BOOLEAN_OBJ);
+            case "func":
+                return nativeBooleanToBooleanObject(left.getType() == ObjectType.FUNCTION_OBJ);
+            case "array":
+                return nativeBooleanToBooleanObject(left.getType() == ObjectType.ARRAY_OBJ);
+            case "tuple":
+                return nativeBooleanToBooleanObject(left.getType() == ObjectType.TUPLE_OBJ);
+            default:
+                return newError("unknown type: %s", type);
+        }
+    }
     
 
     private ObjectTypeDemo.Object evalInfixExpression(String operator, ObjectTypeDemo.Object left, ObjectTypeDemo.Object right) {
@@ -464,7 +494,7 @@ public class Evaluator {
             return nativeBooleanToBooleanObject(!left.equals(right));
         }
         
-        return newError("unknown operator: %s %s %s", operator, right.getType());
+        return newError("unknown operator: %s %s", operator, right.getType());
     }
 
     private ObjectTypeDemo.Object evalNumericInfixExpression(String operator, ObjectTypeDemo.Object left, ObjectTypeDemo.Object right) {

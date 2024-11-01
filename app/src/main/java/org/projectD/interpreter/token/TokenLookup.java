@@ -22,7 +22,7 @@ public class TokenLookup {
         keywords.put("do", TokenType.DO);
         keywords.put("end", TokenType.END);
         keywords.put("int", TokenType.TYPE);
-        keywords.put("str", TokenType.TYPE);
+        keywords.put("string", TokenType.TYPE);
         keywords.put("real", TokenType.TYPE);
         keywords.put("bool", TokenType.TYPE);
         keywords.put("array", TokenType.TYPE);
