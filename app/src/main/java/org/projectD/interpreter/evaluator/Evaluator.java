@@ -486,8 +486,8 @@ public class Evaluator {
         //TODO: refine the tuple specifics, implement tuple operations.
 
         //TODO: equals method for all the object types
-        if (operator.equals("==")) {
-            return nativeBooleanToBooleanObject(left.equals(right));
+        if (operator.equals("=")) {
+            return newError("invalid comparison between the types: %s and %s", left.getType(), right.getType());
         }
 
         if (operator.equals("!=")) {
@@ -503,7 +503,8 @@ public class Evaluator {
         Number leftVal, rightVal;
         leftVal = left.getType() == ObjectType.DOUBLE_OBJ ? ((ObjectTypeDemo.Double) left).getValue() : ((ObjectTypeDemo.Integer) left).getValue();
         rightVal = right.getType() == ObjectType.DOUBLE_OBJ ? ((ObjectTypeDemo.Double) right).getValue() : ((ObjectTypeDemo.Integer) right).getValue();
-
+        // System.out.println(leftVal.getClass());
+        // System.out.println(rightVal.getClass());
         switch (operator) {
             case "+":
                 return isDouble
@@ -526,10 +527,10 @@ public class Evaluator {
                     ? new ObjectTypeDemo.Double(leftVal.doubleValue() / rightVal.doubleValue())
                     : new ObjectTypeDemo.Integer(leftVal.longValue() / rightVal.longValue());
             case "=":
-                return nativeBooleanToBooleanObject(leftVal == rightVal);
+                return nativeBooleanToBooleanObject(leftVal.doubleValue() == rightVal.doubleValue());
                 
             case "!=":
-                return nativeBooleanToBooleanObject(leftVal != rightVal);
+                return nativeBooleanToBooleanObject(leftVal.doubleValue() != rightVal.doubleValue());
             
             case ">":
                 try {return nativeBooleanToBooleanObject(compare(leftVal, rightVal) > 0);}

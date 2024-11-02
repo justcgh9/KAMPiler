@@ -1,3 +1,3 @@
-var b := "b"
-var a := (b is string)
-print a
+var b := 4.0
+print b
+print b = 4
