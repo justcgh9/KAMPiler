@@ -1,3 +1,2 @@
-var b := 4.0
+var b := {a := 0, a := "Hi"}
 print b
-print b = 4

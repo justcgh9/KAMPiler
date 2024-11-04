@@ -440,6 +440,9 @@ TupleContent
 	}
 	| TupleContent COMMA IDENT ASSIGN Expression {
 		var tpl = (Ast.TupleLiteral) $1;
+		if (tpl.getPairs().get((Ast.Identifier) $3) != null) {
+			throw new IllegalArgumentException("duplicate key in tuple literal" + ((Ast.Identifier) $3).toString());
+		}
 		tpl.addAssignment((Ast.Identifier) $3, (Ast.Expression) $5);
 		$$ = tpl;
 	}
