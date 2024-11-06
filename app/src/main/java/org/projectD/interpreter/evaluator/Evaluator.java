@@ -51,6 +51,10 @@ public class Evaluator {
             var args = evalExpressions(stmt.getArguments(), environment);
             StringBuilder out = new StringBuilder();
             for(var arg: args) {
+                if(isError(arg)){
+                    // System.out.println(arg);
+                    return NULL;
+                }
                 out.append(arg.toString());
                 out.append(" ");
             }
@@ -295,6 +299,7 @@ public class Evaluator {
             if (result instanceof ObjectTypeDemo.ReturnValue) {
                 return ((ObjectTypeDemo.ReturnValue) result).getValue();
             } else if (result instanceof ObjectTypeDemo.Error) {
+                System.out.println(result);
                 return result;
             }
         }
@@ -483,9 +488,11 @@ public class Evaluator {
         if (left.getType() == ObjectType.ARRAY_OBJ && right.getType() == ObjectType.ARRAY_OBJ) {
             return evalArrayInfixExpression(operator, left, right);
         }
-        //TODO: refine the tuple specifics, implement tuple operations.
 
-        //TODO: equals method for all the object types
+        if (left.getType() == ObjectType.TUPLE_OBJ && right.getType() == ObjectType.TUPLE_OBJ) {
+            return evalTupleInfixExpression(operator, left, right);
+        }
+
         if (operator.equals("=")) {
             return newError("invalid comparison between the types: %s and %s", left.getType(), right.getType());
         }
@@ -607,6 +614,37 @@ public class Evaluator {
                 return newError("Unknown operator: %s %s %s", left.getType(), operator, right.getType());
         }
     }
+
+    private ObjectTypeDemo.Object evalTupleInfixExpression(String operator, ObjectTypeDemo.Object left, ObjectTypeDemo.Object right){
+        switch (operator) {
+            case "+":
+                var leftTuple = ((ObjectTypeDemo.TupleObject) left).getPairs();
+                long len = 0;
+
+                for (var element : leftTuple.entrySet()) {
+                    if (!(element.getValue().getKey() instanceof ObjectTypeDemo.Integer)) {continue;}
+                    var idx = (ObjectTypeDemo.Integer) element.getValue().getKey();
+                    if (idx.getValue() > len) {len = idx.getValue();}
+                }
+                
+                for (var element: ((ObjectTypeDemo.TupleObject) right).getPairs().entrySet()){
+                    if (!(element.getValue().getKey() instanceof ObjectTypeDemo.Integer) && leftTuple.containsKey(element.getKey())){
+                        return newError("ambigous tuple concatenation: key %s is met more than once", element.getKey());
+                    }
+                    if (element.getValue().getKey() instanceof ObjectTypeDemo.Integer){
+                        var key = new ObjectTypeDemo.Integer(len + ((ObjectTypeDemo.Integer) element.getValue().getKey()).getValue() + 1);
+                        leftTuple.put(key.hashKey(), new ObjectTypeDemo.HashPair(key, element.getValue().getValue()));
+                    } else {
+                        leftTuple.put(element.getKey(), element.getValue());
+                    }
+                    
+                }
+                return new ObjectTypeDemo.TupleObject(leftTuple);
+            default:
+                return newError("Unknown operator: %s %s %s", left.getType(), operator, right.getType());
+        }
+    }
+
 
     private ObjectTypeDemo.Object evalPrefixExpression(String operator, ObjectTypeDemo.Object right) {
         switch (operator) {
