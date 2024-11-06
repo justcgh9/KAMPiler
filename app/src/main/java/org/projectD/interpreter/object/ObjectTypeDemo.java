@@ -118,6 +118,10 @@ public class ObjectTypeDemo {
             this.value = value;
         }
 
+        public boolean getValue() {
+            return this.value;
+        }
+
         @Override
         public String toString() {
             return String.valueOf(value);
