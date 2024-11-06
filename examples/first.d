@@ -1,2 +1,3 @@
-var b := {a := "Hi", true, false, 1, 2 , 5.5} + {b := "Kira", func() => 1 + 1, {A := "Alisher"}}
-print b
+var x := 0
+for a in 1 .. 5 loop x := a
+end

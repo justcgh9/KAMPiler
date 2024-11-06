@@ -34,6 +34,10 @@ public class Environment {
         return obj;
     }
 
+    public Object getInLocal(String name) {
+        return this.store.get(name);
+    }
+
     public Object set(String name, Object val) {
         this.store.put(name, val);
         return val;
