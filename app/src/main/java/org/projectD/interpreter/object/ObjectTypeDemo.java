@@ -147,12 +147,12 @@ public class ObjectTypeDemo {
 
         @Override
         public String toString() {
-            return "null";
+            return "empty";
         }
 
         @Override
         public String inspect() {
-            return "null";
+            return "empty";
         }
     }
 
