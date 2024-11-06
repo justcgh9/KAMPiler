@@ -66,32 +66,52 @@ public class Evaluator {
             var stmt = (Ast.ForLiteral) node;
             var loopVariable = stmt.getLoopVariable();
             var typeInd = stmt.getTypeIndicator();
-            if(!(typeInd instanceof Ast.InfixExpression)) {return newError("Invalid type indicator: %s", typeInd);}
-
-            var typeIndicator = (Ast.InfixExpression) typeInd;
-            if(!typeIndicator.getOperator().equals("..")) {return newError("Invalid operator: %s",typeIndicator.getOperator());}
             
-            var left = eval(typeIndicator.getLeft(), environment);
-            if (isError(left)) {
-                return left;
+            if(typeInd instanceof Ast.InfixExpression) {
+
+                var typeIndicator = (Ast.InfixExpression) typeInd;
+                if(!typeIndicator.getOperator().equals("..")) {return newError("Invalid operator: %s",typeIndicator.getOperator());}
+                
+                var left = eval(typeIndicator.getLeft(), environment);
+                if (isError(left)) {
+                    return left;
+                }
+
+                if (left.getType() != ObjectType.INTEGER_OBJ) {
+                    return newError("Invalid type indicator start: %s", left);
+                }
+
+                var right = eval(typeIndicator.getRight(), environment);
+                if (isError(right)) {
+                    return right;
+                }
+
+                if (right.getType() != ObjectType.INTEGER_OBJ) {
+                    return newError("Invalid type indicator start: %s", right);
+                }
+
+                var env = new Environment(environment);
+                for(long i = ((ObjectTypeDemo.Integer) left).getValue(); i < ((ObjectTypeDemo.Integer) right).getValue(); i++) {
+                    env.set(loopVariable.getName(), new ObjectTypeDemo.Integer(i));
+                    var result = eval(stmt.getBody(), env);
+
+                    if (result != null) {
+                        var resultType = result.getType();
+                        if (resultType == ObjectType.RETURN_VALUE_OBJ || resultType == ObjectType.ERROR_OBJ) {
+                            return result;
+                        } 
+                    }
+                }
+
+                return NULL;
             }
 
-            if (left.getType() != ObjectType.INTEGER_OBJ) {
-                return newError("Invalid type indicator start: %s", left);
-            }
-
-            var right = eval(typeIndicator.getRight(), environment);
-            if (isError(right)) {
-                return right;
-            }
-
-            if (right.getType() != ObjectType.INTEGER_OBJ) {
-                return newError("Invalid type indicator start: %s", right);
-            }
-
+            var collection = eval(typeInd, environment);
+            if(!(collection.getType() == ObjectType.ARRAY_OBJ)) {return newError("invalid type indicator: %s", collection.getType());}
             var env = new Environment(environment);
-            for(long i = ((ObjectTypeDemo.Integer) left).getValue(); i < ((ObjectTypeDemo.Integer) right).getValue(); i++) {
-                env.set(loopVariable.getName(), new ObjectTypeDemo.Integer(i));
+            var arr = ((ObjectTypeDemo.ArrayObject) collection).getValue();
+            for(var obj: arr) {
+                env.set(loopVariable.getName(), obj);
                 var result = eval(stmt.getBody(), env);
 
                 if (result != null) {
@@ -416,13 +436,13 @@ public class Evaluator {
         if(!(left instanceof Ast.Identifier)) {return newError("Exprected Identifier, got %s", left);}
 
         var ident = (Ast.Identifier) left;
+        var current = environment.getInLocal(ident.getName());
+        if (current == null) {return newError("%s is not defined in this context", ident.getName());}
 
         if (indices.isEmpty()) {
             return environment.set(ident.getName(), eval(expr.getRight(), environment));
         }
 
-        var current = environment.get(ident.getName());
-        if (current == null) {return newError("%s is not defined", ident.getName());}
 
         if (!(current instanceof ObjectTypeDemo.ArrayObject)) {return newError("%s is not a list", current);}
 
