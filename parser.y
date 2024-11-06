@@ -175,6 +175,7 @@ ForStatement
 	: FOR IDENT IN Expression DOTDOT Expression LOOP BlockStatement END LineBreak {
 		$$ = new Ast.ForLiteral((Ast.Identifier) $2, new Ast.InfixExpression("..", (Ast.Expression) $4, (Ast.Expression) $6), (Ast.BlockStatement) $8);
 	}
+	| FOR IDENT IN 
 	;
 
 VarStatement
