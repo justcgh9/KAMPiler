@@ -43,6 +43,20 @@ public class Environment {
         return val;
     }
 
+    public Object setInNonLocal(String name, Object val) {
+        Object obj = this.store.get(name);
+        
+        if (obj != null) {
+            return this.set(name, val);
+        }
+
+        if (outer != null) {
+            return outer.setInNonLocal(name, val);
+        }
+
+        return null;
+    }
+
     public boolean isFunctional() {
         return this.isFunctional;
     }

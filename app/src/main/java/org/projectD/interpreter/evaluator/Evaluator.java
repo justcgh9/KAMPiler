@@ -436,11 +436,11 @@ public class Evaluator {
         if(!(left instanceof Ast.Identifier)) {return newError("Exprected Identifier, got %s", left);}
 
         var ident = (Ast.Identifier) left;
-        var current = environment.getInLocal(ident.getName());
+        var current = environment.get(ident.getName());
         if (current == null) {return newError("%s is not defined in this context", ident.getName());}
 
         if (indices.isEmpty()) {
-            return environment.set(ident.getName(), eval(expr.getRight(), environment));
+            return environment.setInNonLocal(ident.getName(), eval(expr.getRight(), environment));
         }
 
 
