@@ -53,7 +53,7 @@ public class Evaluator {
             for(var arg: args) {
                 if(isError(arg)){
                     // System.out.println(arg);
-                    return NULL;
+                    return arg;
                 }
                 out.append(arg.toString());
                 out.append(" ");

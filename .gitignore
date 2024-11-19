@@ -5,7 +5,10 @@
 build
 
 .vscode
+.metals
 
 # Parser is bison-generated
 Parser.java
 examples
+
+app/bin
