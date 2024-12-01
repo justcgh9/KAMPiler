@@ -9,6 +9,6 @@ build
 
 # Parser is bison-generated
 Parser.java
-examples
+examples/*.o
 
 app/bin
