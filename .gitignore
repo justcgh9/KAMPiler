@@ -8,7 +8,7 @@ build
 .metals
 
 # Parser is bison-generated
-Parser.java
+
 examples/*.o
 
 app/bin

@@ -1,5 +1,5 @@
-var x := 5
-var a
-for a in 1 .. 5 loop x := a - 1
-    print x
+var a := [0]
+var i
+for i in 1 .. 10 loop a := a + [i]
 end
+print a

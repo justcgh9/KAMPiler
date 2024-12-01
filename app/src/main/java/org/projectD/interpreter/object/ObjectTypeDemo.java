@@ -10,6 +10,7 @@ import org.projectD.interpreter.ast.Ast;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
+
 public class ObjectTypeDemo {
     public static interface Object {
         ObjectType getType();
@@ -17,7 +18,7 @@ public class ObjectTypeDemo {
     }
 
     public enum ObjectType {
-        EMPTY_OBJ, ERROR_OBJ, INTEGER_OBJ, DOUBLE_OBJ, BOOLEAN_OBJ, STRING_OBJ, RETURN_VALUE_OBJ, FUNCTION_OBJ, ARRAY_OBJ, TUPLE_OBJ
+        EMPTY_OBJ, ERROR_OBJ, INTEGER_OBJ, DOUBLE_OBJ, BOOLEAN_OBJ, STRING_OBJ, RETURN_VALUE_OBJ, FUNCTION_OBJ, ARRAY_OBJ, TUPLE_OBJ, BUILTIN_OBJ
     }
 
     public static class HashKey {
@@ -375,12 +376,52 @@ public class ObjectTypeDemo {
         public ObjectType getType() {
             return ObjectType.TUPLE_OBJ;
         }
-
+// meh. Nu ty poprobuy
         @Override
         public String inspect() {
             return pairs.values().stream()
-                .map(pair -> pair.key.inspect() + ": " + pair.value.inspect())
+                .map(pair -> (pair.key.inspect().matches("-?(0|[1-9]\\d*)") ? String.valueOf(java.lang.Integer.parseInt(String.valueOf(pair.key.inspect())) + 1): pair.key.inspect()) + ": " + pair.value.inspect())
                 .collect(Collectors.joining(", ", "{", "}"));
+        }
+    }
+
+    @FunctionalInterface
+    public interface BuiltinFunction {
+        Object apply(List<Object> args);
+    }
+
+    public static class BuiltinObject implements Object {
+        
+        private final BuiltinFunction fn;
+
+    
+        public BuiltinObject(BuiltinFunction fn) {
+            this.fn = fn;
+        }
+
+        
+        public BuiltinFunction getFn() {
+            return fn;
+        }
+
+        
+        public Object execute(List<Object> args) {
+            return fn.apply(args);
+        }
+        
+        @Override
+        public String toString() {
+            return this.inspect();
+        }
+
+        @Override
+        public ObjectType getType() {
+            return ObjectType.BUILTIN_OBJ;
+        }
+
+        @Override
+        public String inspect() {
+            return "builtin function";
         }
     }
 }

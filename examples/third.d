@@ -1,2 +1,6 @@
-var t := {a := "I am cool", b := {c := 5, 5.5}, true}
-print t
+var t := [];
+t[10] := 25;
+t[100] := func(x)=>x+1;
+t[1000] := {a:=1,b:=2.7};
+
+print t;
