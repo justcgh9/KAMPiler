@@ -157,29 +157,30 @@ public class Parser
     S_ExpressionStatement(61),     /* ExpressionStatement  */
     S_LineBreak(62),               /* LineBreak  */
     S_Expression(63),              /* Expression  */
-    S_Relation(64),                /* Relation  */
-    S_Factor(65),                  /* Factor  */
-    S_FuncLiteral(66),             /* FuncLiteral  */
-    S_FuncDeclarationParameters(67), /* FuncDeclarationParameters  */
-    S_BlockStatement(68),          /* BlockStatement  */
-    S_ReturnStatement(69),         /* ReturnStatement  */
-    S_AddExpression(70),           /* AddExpression  */
-    S_MultExpression(71),          /* MultExpression  */
-    S_UnaryExpression(72),         /* UnaryExpression  */
-    S_Term(73),                    /* Term  */
-    S_TypeLiteral(74),             /* TypeLiteral  */
-    S_Reference(75),               /* Reference  */
-    S_Tail(76),                    /* Tail  */
-    S_ArrayTail(77),               /* ArrayTail  */
-    S_TupleTail(78),               /* TupleTail  */
-    S_FuncTail(79),                /* FuncTail  */
-    S_CallArgs(80),                /* CallArgs  */
-    S_Array(81),                   /* Array  */
-    S_ArrayContent(82),            /* ArrayContent  */
-    S_Tuple(83),                   /* Tuple  */
-    S_TupleContent(84),            /* TupleContent  */
-    S_BoolOp(85),                  /* BoolOp  */
-    S_Compare(86);                 /* Compare  */
+    S_Something(64),               /* Something  */
+    S_Relation(65),                /* Relation  */
+    S_Factor(66),                  /* Factor  */
+    S_FuncLiteral(67),             /* FuncLiteral  */
+    S_FuncDeclarationParameters(68), /* FuncDeclarationParameters  */
+    S_BlockStatement(69),          /* BlockStatement  */
+    S_ReturnStatement(70),         /* ReturnStatement  */
+    S_AddExpression(71),           /* AddExpression  */
+    S_MultExpression(72),          /* MultExpression  */
+    S_UnaryExpression(73),         /* UnaryExpression  */
+    S_Term(74),                    /* Term  */
+    S_TypeLiteral(75),             /* TypeLiteral  */
+    S_Reference(76),               /* Reference  */
+    S_Tail(77),                    /* Tail  */
+    S_ArrayTail(78),               /* ArrayTail  */
+    S_TupleTail(79),               /* TupleTail  */
+    S_FuncTail(80),                /* FuncTail  */
+    S_CallArgs(81),                /* CallArgs  */
+    S_Array(82),                   /* Array  */
+    S_ArrayContent(83),            /* ArrayContent  */
+    S_Tuple(84),                   /* Tuple  */
+    S_TupleContent(85),            /* TupleContent  */
+    S_BoolOp(86),                  /* BoolOp  */
+    S_Compare(87);                 /* Compare  */
 
 
     private final int yycode_;
@@ -253,6 +254,7 @@ public class Parser
       SymbolKind.S_ExpressionStatement,
       SymbolKind.S_LineBreak,
       SymbolKind.S_Expression,
+      SymbolKind.S_Something,
       SymbolKind.S_Relation,
       SymbolKind.S_Factor,
       SymbolKind.S_FuncLiteral,
@@ -302,12 +304,12 @@ public class Parser
   "FOR", "LOOP", "IN", "NOT", "$accept", "CompilationUnit", "Statements",
   "Statement", "IfStatement", "AssignmentStatement", "WhileStatement",
   "ForStatement", "VarStatement", "PrintStatement", "PrintArgs",
-  "ExpressionStatement", "LineBreak", "Expression", "Relation", "Factor",
-  "FuncLiteral", "FuncDeclarationParameters", "BlockStatement",
-  "ReturnStatement", "AddExpression", "MultExpression", "UnaryExpression",
-  "Term", "TypeLiteral", "Reference", "Tail", "ArrayTail", "TupleTail",
-  "FuncTail", "CallArgs", "Array", "ArrayContent", "Tuple", "TupleContent",
-  "BoolOp", "Compare", null
+  "ExpressionStatement", "LineBreak", "Expression", "Something",
+  "Relation", "Factor", "FuncLiteral", "FuncDeclarationParameters",
+  "BlockStatement", "ReturnStatement", "AddExpression", "MultExpression",
+  "UnaryExpression", "Term", "TypeLiteral", "Reference", "Tail",
+  "ArrayTail", "TupleTail", "FuncTail", "CallArgs", "Array",
+  "ArrayContent", "Tuple", "TupleContent", "BoolOp", "Compare", null
     };
   }
 
@@ -781,23 +783,23 @@ public class Parser
   break;
 
 
-  case 28: /* Expression: Relation BoolOp Relation  */
-  if (yyn == 28)
-    /* "parser.y":217  */
-                                   {var exp = (Ast.InfixExpression) yystack.valueAt (1); exp.setLeft((Ast.Expression) yystack.valueAt (2)); exp.setRight((Ast.Expression) yystack.valueAt (0)); yyval = exp;};
+  case 30: /* Something: Relation BoolOp Something  */
+  if (yyn == 30)
+    /* "parser.y":222  */
+                                    {var exp = (Ast.InfixExpression) yystack.valueAt (1); exp.setLeft((Ast.Expression) yystack.valueAt (2)); exp.setRight((Ast.Expression) yystack.valueAt (0)); yyval = exp;};
   break;
 
 
-  case 31: /* Relation: Factor Compare Factor  */
-  if (yyn == 31)
-    /* "parser.y":223  */
+  case 32: /* Relation: Factor Compare Factor  */
+  if (yyn == 32)
+    /* "parser.y":226  */
                                 {var exp = (Ast.InfixExpression) yystack.valueAt (1); exp.setLeft((Ast.Expression) yystack.valueAt (2)); exp.setRight((Ast.Expression) yystack.valueAt (0)); yyval = exp;};
   break;
 
 
-  case 33: /* FuncLiteral: FUNCTION LPAREN FuncDeclarationParameters RPAREN IS BlockStatement END  */
-  if (yyn == 33)
-    /* "parser.y":231  */
+  case 34: /* FuncLiteral: FUNCTION LPAREN FuncDeclarationParameters RPAREN IS BlockStatement END  */
+  if (yyn == 34)
+    /* "parser.y":234  */
                                                                                  {
 		var func = (Ast.FunctionLiteral) yystack.valueAt (4);
 		var body = (Ast.BlockStatement) yystack.valueAt (1);
@@ -807,9 +809,9 @@ public class Parser
   break;
 
 
-  case 34: /* FuncLiteral: FUNCTION LPAREN FuncDeclarationParameters RPAREN ARROW Expression  */
-  if (yyn == 34)
-    /* "parser.y":237  */
+  case 35: /* FuncLiteral: FUNCTION LPAREN FuncDeclarationParameters RPAREN ARROW Expression  */
+  if (yyn == 35)
+    /* "parser.y":240  */
                                                                             {
 		var func = (Ast.FunctionLiteral) yystack.valueAt (3);
 		var statements = new ArrayList<Ast.Statement>();
@@ -820,16 +822,16 @@ public class Parser
   break;
 
 
-  case 35: /* FuncDeclarationParameters: %empty  */
-  if (yyn == 35)
-    /* "parser.y":247  */
+  case 36: /* FuncDeclarationParameters: %empty  */
+  if (yyn == 36)
+    /* "parser.y":250  */
                  {yyval = new Ast.FunctionLiteral(new ArrayList<Ast.Identifier>());};
   break;
 
 
-  case 36: /* FuncDeclarationParameters: IDENT  */
-  if (yyn == 36)
-    /* "parser.y":248  */
+  case 37: /* FuncDeclarationParameters: IDENT  */
+  if (yyn == 37)
+    /* "parser.y":251  */
                 {
 		var idt = new ArrayList<Ast.Identifier>();
 		idt.add((Ast.Identifier) yystack.valueAt (0));
@@ -838,9 +840,9 @@ public class Parser
   break;
 
 
-  case 37: /* FuncDeclarationParameters: FuncDeclarationParameters COMMA IDENT  */
-  if (yyn == 37)
-    /* "parser.y":253  */
+  case 38: /* FuncDeclarationParameters: FuncDeclarationParameters COMMA IDENT  */
+  if (yyn == 38)
+    /* "parser.y":256  */
                                                 {
 		var func = (Ast.FunctionLiteral) yystack.valueAt (2);
 		func.addParameter((Ast.Identifier) yystack.valueAt (0));
@@ -849,9 +851,9 @@ public class Parser
   break;
 
 
-  case 38: /* BlockStatement: Statement  */
-  if (yyn == 38)
-    /* "parser.y":262  */
+  case 39: /* BlockStatement: Statement  */
+  if (yyn == 39)
+    /* "parser.y":265  */
                     {
 		var statements = new ArrayList<Ast.Statement>();
 		var stmt = (Ast.Statement) yystack.valueAt (0);
@@ -862,9 +864,9 @@ public class Parser
   break;
 
 
-  case 39: /* BlockStatement: BlockStatement Statement  */
-  if (yyn == 39)
-    /* "parser.y":269  */
+  case 40: /* BlockStatement: BlockStatement Statement  */
+  if (yyn == 40)
+    /* "parser.y":272  */
                                    {
 		var blockStatement = (Ast.BlockStatement) yystack.valueAt (1);
 		blockStatement.addStatement((Ast.Statement) yystack.valueAt (0));
@@ -874,23 +876,23 @@ public class Parser
   break;
 
 
-  case 40: /* ReturnStatement: RETURN LineBreak  */
-  if (yyn == 40)
-    /* "parser.y":278  */
+  case 41: /* ReturnStatement: RETURN LineBreak  */
+  if (yyn == 41)
+    /* "parser.y":281  */
                            {yyval = new Ast.ReturnStatement(null);};
   break;
 
 
-  case 41: /* ReturnStatement: RETURN Expression LineBreak  */
-  if (yyn == 41)
-    /* "parser.y":279  */
+  case 42: /* ReturnStatement: RETURN Expression LineBreak  */
+  if (yyn == 42)
+    /* "parser.y":282  */
                                       {yyval = new Ast.ReturnStatement((Ast.Expression) yystack.valueAt (1));};
   break;
 
 
-  case 43: /* AddExpression: AddExpression PLUS MultExpression  */
-  if (yyn == 43)
-    /* "parser.y":284  */
+  case 44: /* AddExpression: AddExpression PLUS MultExpression  */
+  if (yyn == 44)
+    /* "parser.y":287  */
                                             {
 		var expr = (Ast.InfixExpression)yystack.valueAt (1);
 
@@ -902,9 +904,9 @@ public class Parser
   break;
 
 
-  case 44: /* AddExpression: AddExpression MINUS MultExpression  */
-  if (yyn == 44)
-    /* "parser.y":292  */
+  case 45: /* AddExpression: AddExpression MINUS MultExpression  */
+  if (yyn == 45)
+    /* "parser.y":295  */
                                              {
 		var expr = (Ast.InfixExpression)yystack.valueAt (1);
 
@@ -916,9 +918,9 @@ public class Parser
   break;
 
 
-  case 46: /* MultExpression: MultExpression MULTIPLY UnaryExpression  */
-  if (yyn == 46)
-    /* "parser.y":304  */
+  case 47: /* MultExpression: MultExpression MULTIPLY UnaryExpression  */
+  if (yyn == 47)
+    /* "parser.y":307  */
                                                   {
 		var expr = (Ast.InfixExpression)yystack.valueAt (1);
 
@@ -930,9 +932,9 @@ public class Parser
   break;
 
 
-  case 47: /* MultExpression: MultExpression DIVIDE UnaryExpression  */
-  if (yyn == 47)
-    /* "parser.y":312  */
+  case 48: /* MultExpression: MultExpression DIVIDE UnaryExpression  */
+  if (yyn == 48)
+    /* "parser.y":315  */
                                                 {
 		var expr = (Ast.InfixExpression)yystack.valueAt (1);
 
@@ -944,16 +946,16 @@ public class Parser
   break;
 
 
-  case 49: /* UnaryExpression: LPAREN AddExpression RPAREN  */
-  if (yyn == 49)
-    /* "parser.y":324  */
+  case 50: /* UnaryExpression: LPAREN AddExpression RPAREN  */
+  if (yyn == 50)
+    /* "parser.y":327  */
                                       {yyval = yystack.valueAt (1);};
   break;
 
 
-  case 50: /* UnaryExpression: MINUS Term  */
-  if (yyn == 50)
-    /* "parser.y":325  */
+  case 51: /* UnaryExpression: MINUS Term  */
+  if (yyn == 51)
+    /* "parser.y":328  */
                      {
 		var expr = (Ast.PrefixExpression) yystack.valueAt (1);
 
@@ -963,46 +965,46 @@ public class Parser
   break;
 
 
-  case 51: /* UnaryExpression: NOT Term  */
-  if (yyn == 51)
-    /* "parser.y":331  */
+  case 52: /* UnaryExpression: NOT Term  */
+  if (yyn == 52)
+    /* "parser.y":334  */
                    {
 		yyval = new Ast.PrefixExpression("not", ((Ast.Expression) yystack.valueAt (0)));
 	};
   break;
 
 
-  case 55: /* Term: Reference IS TypeLiteral  */
-  if (yyn == 55)
-    /* "parser.y":340  */
+  case 56: /* Term: Reference IS TypeLiteral  */
+  if (yyn == 56)
+    /* "parser.y":343  */
                                    {yyval = new Ast.InfixExpression("is", (Ast.Expression) yystack.valueAt (2), (Ast.TypeLiteral) yystack.valueAt (0));};
   break;
 
 
-  case 62: /* TypeLiteral: FUNCTION  */
-  if (yyn == 62)
-    /* "parser.y":350  */
+  case 63: /* TypeLiteral: FUNCTION  */
+  if (yyn == 63)
+    /* "parser.y":353  */
                    {yyval = new Ast.TypeLiteral(new Token("func", TokenType.TYPE), "func");};
   break;
 
 
-  case 63: /* TypeLiteral: LBRACKET RBRACKET  */
-  if (yyn == 63)
-    /* "parser.y":351  */
+  case 64: /* TypeLiteral: LBRACKET RBRACKET  */
+  if (yyn == 64)
+    /* "parser.y":354  */
                             {yyval = new Ast.TypeLiteral(new Token("[]", TokenType.TYPE), "array");};
   break;
 
 
-  case 64: /* TypeLiteral: LBRACE RBRACE  */
-  if (yyn == 64)
-    /* "parser.y":352  */
+  case 65: /* TypeLiteral: LBRACE RBRACE  */
+  if (yyn == 65)
+    /* "parser.y":355  */
                         {yyval = new Ast.TypeLiteral(new Token("{}", TokenType.TYPE), "tuple");};
   break;
 
 
-  case 66: /* Reference: Reference Tail  */
-  if (yyn == 66)
-    /* "parser.y":356  */
+  case 67: /* Reference: Reference Tail  */
+  if (yyn == 67)
+    /* "parser.y":359  */
                          {
 		try {
 			var idx = (Ast.IndexLiteral) yystack.valueAt (0);
@@ -1021,44 +1023,51 @@ public class Parser
   break;
 
 
-  case 70: /* ArrayTail: LBRACKET INT RBRACKET  */
-  if (yyn == 70)
-    /* "parser.y":379  */
+  case 71: /* ArrayTail: LBRACKET INT RBRACKET  */
+  if (yyn == 71)
+    /* "parser.y":382  */
                                 {var idx = new Ast.IndexLiteral((Ast.IntegerLiteral) yystack.valueAt (1)); idx.setToken(new Token("[]", TokenType.LBRACKET)); yyval = idx;};
   break;
 
 
-  case 71: /* TupleTail: DOT INT  */
-  if (yyn == 71)
+  case 72: /* ArrayTail: LBRACKET IDENT RBRACKET  */
+  if (yyn == 72)
     /* "parser.y":383  */
+                                  {var idx = new Ast.IndexLiteral((Ast.Identifier) yystack.valueAt (1)); idx.setToken(new Token("[]", TokenType.LBRACKET)); yyval = idx;};
+  break;
+
+
+  case 73: /* TupleTail: DOT INT  */
+  if (yyn == 73)
+    /* "parser.y":387  */
                   {yyval = new Ast.IndexLiteral((Ast.IntegerLiteral) yystack.valueAt (0));};
   break;
 
 
-  case 72: /* TupleTail: DOT IDENT  */
-  if (yyn == 72)
-    /* "parser.y":384  */
+  case 74: /* TupleTail: DOT IDENT  */
+  if (yyn == 74)
+    /* "parser.y":388  */
                     {yyval = new Ast.IndexLiteral((Ast.Identifier) yystack.valueAt (0));};
   break;
 
 
-  case 73: /* FuncTail: LPAREN CallArgs RPAREN  */
-  if (yyn == 73)
-    /* "parser.y":388  */
+  case 75: /* FuncTail: LPAREN CallArgs RPAREN  */
+  if (yyn == 75)
+    /* "parser.y":392  */
                                  {yyval = (Ast.CallExpression) yystack.valueAt (1);};
   break;
 
 
-  case 74: /* CallArgs: %empty  */
-  if (yyn == 74)
-    /* "parser.y":392  */
+  case 76: /* CallArgs: %empty  */
+  if (yyn == 76)
+    /* "parser.y":396  */
                  {yyval = new Ast.CallExpression();};
   break;
 
 
-  case 75: /* CallArgs: Expression  */
-  if (yyn == 75)
-    /* "parser.y":393  */
+  case 77: /* CallArgs: Expression  */
+  if (yyn == 77)
+    /* "parser.y":397  */
                      {
 		var callExp = new Ast.CallExpression();
 		callExp.addArgument((Ast.Expression) yystack.valueAt (0));
@@ -1067,9 +1076,9 @@ public class Parser
   break;
 
 
-  case 76: /* CallArgs: CallArgs COMMA Expression  */
-  if (yyn == 76)
-    /* "parser.y":398  */
+  case 78: /* CallArgs: CallArgs COMMA Expression  */
+  if (yyn == 78)
+    /* "parser.y":402  */
                                     {
 		var callExp = (Ast.CallExpression) yystack.valueAt (2);
 		callExp.addArgument((Ast.Expression) yystack.valueAt (0));
@@ -1078,23 +1087,23 @@ public class Parser
   break;
 
 
-  case 77: /* Array: LBRACKET RBRACKET  */
-  if (yyn == 77)
-    /* "parser.y":406  */
+  case 79: /* Array: LBRACKET RBRACKET  */
+  if (yyn == 79)
+    /* "parser.y":410  */
                             {yyval = new Ast.ArrayLiteral();};
   break;
 
 
-  case 78: /* Array: LBRACKET ArrayContent RBRACKET  */
-  if (yyn == 78)
-    /* "parser.y":407  */
+  case 80: /* Array: LBRACKET ArrayContent RBRACKET  */
+  if (yyn == 80)
+    /* "parser.y":411  */
                                          {yyval = (Ast.ArrayLiteral) yystack.valueAt (1);};
   break;
 
 
-  case 79: /* ArrayContent: Expression  */
-  if (yyn == 79)
-    /* "parser.y":411  */
+  case 81: /* ArrayContent: Expression  */
+  if (yyn == 81)
+    /* "parser.y":415  */
                      {
 		var arr = new Ast.ArrayLiteral();
 		arr.addExpression((Ast.Expression) yystack.valueAt (0));
@@ -1103,9 +1112,9 @@ public class Parser
   break;
 
 
-  case 80: /* ArrayContent: ArrayContent COMMA Expression  */
-  if (yyn == 80)
-    /* "parser.y":416  */
+  case 82: /* ArrayContent: ArrayContent COMMA Expression  */
+  if (yyn == 82)
+    /* "parser.y":420  */
                                         {
 		var arr = (Ast.ArrayLiteral) yystack.valueAt (2);
 		arr.addExpression((Ast.Expression) yystack.valueAt (0));
@@ -1114,23 +1123,23 @@ public class Parser
   break;
 
 
-  case 81: /* Tuple: LBRACE RBRACE  */
-  if (yyn == 81)
-    /* "parser.y":424  */
+  case 83: /* Tuple: LBRACE RBRACE  */
+  if (yyn == 83)
+    /* "parser.y":428  */
                         {yyval = new Ast.TupleLiteral();};
   break;
 
 
-  case 82: /* Tuple: LBRACE TupleContent RBRACE  */
-  if (yyn == 82)
-    /* "parser.y":425  */
+  case 84: /* Tuple: LBRACE TupleContent RBRACE  */
+  if (yyn == 84)
+    /* "parser.y":429  */
                                      {yyval = (Ast.TupleLiteral) yystack.valueAt (1);};
   break;
 
 
-  case 83: /* TupleContent: Expression  */
-  if (yyn == 83)
-    /* "parser.y":429  */
+  case 85: /* TupleContent: Expression  */
+  if (yyn == 85)
+    /* "parser.y":433  */
                      {
 		var tpl = new Ast.TupleLiteral();
 		tpl.addExpression((Ast.Expression) yystack.valueAt (0));
@@ -1139,9 +1148,9 @@ public class Parser
   break;
 
 
-  case 84: /* TupleContent: IDENT ASSIGN Expression  */
-  if (yyn == 84)
-    /* "parser.y":434  */
+  case 86: /* TupleContent: IDENT ASSIGN Expression  */
+  if (yyn == 86)
+    /* "parser.y":438  */
                                   {
 		var tpl = new Ast.TupleLiteral();
 		tpl.addAssignment((Ast.Identifier) yystack.valueAt (2), (Ast.Expression) yystack.valueAt (0));
@@ -1150,9 +1159,9 @@ public class Parser
   break;
 
 
-  case 85: /* TupleContent: TupleContent COMMA Expression  */
-  if (yyn == 85)
-    /* "parser.y":439  */
+  case 87: /* TupleContent: TupleContent COMMA Expression  */
+  if (yyn == 87)
+    /* "parser.y":443  */
                                         {
 		var tpl = (Ast.TupleLiteral) yystack.valueAt (2);
 		tpl.addExpression((Ast.Expression) yystack.valueAt (0));
@@ -1161,9 +1170,9 @@ public class Parser
   break;
 
 
-  case 86: /* TupleContent: TupleContent COMMA IDENT ASSIGN Expression  */
-  if (yyn == 86)
-    /* "parser.y":444  */
+  case 88: /* TupleContent: TupleContent COMMA IDENT ASSIGN Expression  */
+  if (yyn == 88)
+    /* "parser.y":448  */
                                                      {
 		var tpl = (Ast.TupleLiteral) yystack.valueAt (4);
 		if (tpl.getPairs().get((Ast.Identifier) yystack.valueAt (2)) != null) {
@@ -1175,71 +1184,71 @@ public class Parser
   break;
 
 
-  case 87: /* BoolOp: AND  */
-  if (yyn == 87)
-    /* "parser.y":455  */
+  case 89: /* BoolOp: AND  */
+  if (yyn == 89)
+    /* "parser.y":459  */
               {yyval = new Ast.InfixExpression("and");};
   break;
 
 
-  case 88: /* BoolOp: OR  */
-  if (yyn == 88)
-    /* "parser.y":456  */
+  case 90: /* BoolOp: OR  */
+  if (yyn == 90)
+    /* "parser.y":460  */
              {yyval = new Ast.InfixExpression("or");};
   break;
 
 
-  case 89: /* BoolOp: XOR  */
-  if (yyn == 89)
-    /* "parser.y":457  */
+  case 91: /* BoolOp: XOR  */
+  if (yyn == 91)
+    /* "parser.y":461  */
               {yyval = new Ast.InfixExpression("xor");};
   break;
 
 
-  case 90: /* BoolOp: NOT_EQ  */
-  if (yyn == 90)
-    /* "parser.y":458  */
+  case 92: /* BoolOp: NOT_EQ  */
+  if (yyn == 92)
+    /* "parser.y":462  */
                  {yyval = new Ast.InfixExpression("!=");};
   break;
 
 
-  case 91: /* Compare: LT  */
-  if (yyn == 91)
-    /* "parser.y":462  */
+  case 93: /* Compare: LT  */
+  if (yyn == 93)
+    /* "parser.y":466  */
              {yyval = new Ast.InfixExpression("<");};
   break;
 
 
-  case 92: /* Compare: GT  */
-  if (yyn == 92)
-    /* "parser.y":463  */
+  case 94: /* Compare: GT  */
+  if (yyn == 94)
+    /* "parser.y":467  */
              {yyval = new Ast.InfixExpression(">");};
   break;
 
 
-  case 93: /* Compare: LEQ  */
-  if (yyn == 93)
-    /* "parser.y":464  */
+  case 95: /* Compare: LEQ  */
+  if (yyn == 95)
+    /* "parser.y":468  */
               {yyval = new Ast.InfixExpression("<=");};
   break;
 
 
-  case 94: /* Compare: GEQ  */
-  if (yyn == 94)
-    /* "parser.y":465  */
+  case 96: /* Compare: GEQ  */
+  if (yyn == 96)
+    /* "parser.y":469  */
               {yyval = new Ast.InfixExpression(">=");};
   break;
 
 
-  case 95: /* Compare: EQ  */
-  if (yyn == 95)
-    /* "parser.y":466  */
+  case 97: /* Compare: EQ  */
+  if (yyn == 97)
+    /* "parser.y":470  */
              {yyval = new Ast.InfixExpression("=");};
   break;
 
 
 
-/* "app/src/main/java/org/projectD/interpreter/parser/Parser.java":1243  */
+/* "app/src/main/java/org/projectD/interpreter/parser/Parser.java":1252  */
 
         default: break;
       }
@@ -1661,23 +1670,24 @@ public class Parser
   {
     return new short[]
     {
-     402,  -103,  -103,  -103,  -103,   569,   561,   449,   459,    11,
-     501,     9,   511,   511,  -103,  -103,   511,    29,   569,    50,
-     402,  -103,  -103,  -103,  -103,  -103,  -103,  -103,  -103,    31,
-      70,    81,  -103,  -103,     6,    59,  -103,  -103,    28,  -103,
-    -103,  -103,   -19,    -6,    49,  -103,  -103,    21,  -103,  -103,
-     -16,    34,  -103,  -103,    31,    57,    32,  -103,    47,    27,
-      42,  -103,  -103,  -103,  -103,  -103,  -103,  -103,  -103,   561,
-    -103,  -103,  -103,  -103,  -103,   561,   561,   561,   561,   561,
-     511,   511,     3,    91,    14,  -103,  -103,  -103,  -103,  -103,
-     511,   553,  -103,   511,  -103,   511,  -103,  -103,  -103,    55,
-     511,  -103,   402,   402,   511,  -103,  -103,    59,    59,  -103,
-    -103,    31,  -103,    61,  -103,  -103,    75,  -103,    79,    82,
-    -103,  -103,  -103,   101,  -103,  -103,    31,    56,   112,  -103,
-    -103,    33,   167,   -17,  -103,  -103,   511,  -103,  -103,  -103,
-     511,  -103,   511,   402,  -103,    31,   402,  -103,    31,   511,
-     402,  -103,  -103,  -103,   214,  -103,   261,  -103,    73,   308,
-    -103,    31,   402,    31,  -103,   355,  -103,    31,  -103
+     405,  -103,  -103,  -103,  -103,     6,   564,   452,   462,    10,
+     504,     3,   514,   514,  -103,  -103,   514,    40,     6,    32,
+     405,  -103,  -103,  -103,  -103,  -103,  -103,  -103,  -103,    19,
+    -103,    53,    93,  -103,  -103,    77,    86,  -103,  -103,    -9,
+    -103,  -103,  -103,    33,     5,    36,  -103,  -103,    35,  -103,
+    -103,    30,     9,  -103,  -103,    19,    63,    50,  -103,    18,
+      24,    27,  -103,  -103,  -103,  -103,  -103,  -103,  -103,  -103,
+     564,  -103,  -103,  -103,  -103,  -103,   564,   564,   564,   564,
+     564,   514,   514,     2,    96,    -6,  -103,  -103,  -103,  -103,
+    -103,   514,   556,  -103,   514,  -103,   514,  -103,  -103,  -103,
+      80,   514,  -103,   405,   405,   514,  -103,  -103,    86,    86,
+    -103,  -103,    19,  -103,    89,  -103,  -103,    45,    47,  -103,
+      51,    58,  -103,  -103,  -103,   107,  -103,  -103,    19,    87,
+      95,  -103,  -103,    49,   170,   -21,  -103,  -103,   514,  -103,
+    -103,  -103,  -103,   514,  -103,   514,   405,  -103,    19,   405,
+    -103,    19,   514,   405,  -103,  -103,  -103,   217,  -103,   264,
+    -103,    74,   311,  -103,    19,   405,    19,  -103,   358,  -103,
+      19,  -103
     };
   }
 
@@ -1689,23 +1699,24 @@ public class Parser
   {
     return new byte[]
     {
-       2,    52,    53,    56,    65,     0,     0,     0,     0,     0,
-       0,     0,     0,     0,    57,    58,     0,     0,     0,     0,
+       2,    53,    54,    57,    66,     0,     0,     0,     0,     0,
+       0,     0,     0,     0,    58,    59,     0,     0,     0,     0,
        3,     4,     9,    13,    10,    12,     7,     8,     6,     0,
-      27,    30,    29,    11,    32,    42,    45,    48,    54,    59,
-      60,    50,    54,     0,    65,    81,    83,     0,    77,    79,
-       0,     0,    26,    40,     0,    35,     0,    23,     0,     0,
-       0,    51,     1,     5,    25,    87,    88,    89,    90,     0,
-      92,    91,    94,    93,    95,     0,     0,     0,     0,     0,
-       0,    74,     0,     0,     0,    66,    67,    68,    69,    49,
-       0,     0,    82,     0,    78,     0,    20,    41,    36,     0,
-       0,    22,     0,     0,     0,    28,    31,    43,    44,    46,
-      47,     0,    75,     0,    71,    72,     0,    61,     0,     0,
-      62,    55,    84,    65,    85,    80,     0,     0,     0,    24,
-      38,     0,     0,     0,    16,    73,     0,    70,    64,    63,
-       0,    21,     0,     0,    37,     0,     0,    39,     0,     0,
-       0,    76,    86,    34,     0,    14,     0,    17,     0,     0,
-      33,     0,     0,     0,    15,     0,    19,     0,    18
+      27,    29,    31,    28,    11,    33,    43,    46,    49,    55,
+      60,    61,    51,    55,     0,    66,    83,    85,     0,    79,
+      81,     0,     0,    26,    41,     0,    36,     0,    23,     0,
+       0,     0,    52,     1,     5,    25,    89,    90,    91,    92,
+       0,    94,    93,    96,    95,    97,     0,     0,     0,     0,
+       0,     0,    76,     0,     0,     0,    67,    68,    69,    70,
+      50,     0,     0,    84,     0,    80,     0,    20,    42,    37,
+       0,     0,    22,     0,     0,     0,    30,    32,    44,    45,
+      47,    48,     0,    77,     0,    73,    74,     0,     0,    62,
+       0,     0,    63,    56,    86,    66,    87,    82,     0,     0,
+       0,    24,    39,     0,     0,     0,    16,    75,     0,    71,
+      72,    65,    64,     0,    21,     0,     0,    38,     0,     0,
+      40,     0,     0,     0,    78,    88,    35,     0,    14,     0,
+      17,     0,     0,    34,     0,     0,     0,    15,     0,    19,
+       0,    18
     };
   }
 
@@ -1716,9 +1727,9 @@ public class Parser
     return new byte[]
     {
     -103,  -103,  -103,     4,  -103,  -103,  -103,  -103,  -103,  -103,
-    -103,  -103,   -22,    15,    52,    53,  -103,  -103,  -102,  -103,
-     116,    35,    38,     8,  -103,     0,  -103,  -103,  -103,  -103,
-    -103,  -103,  -103,  -103,  -103,  -103,  -103
+    -103,  -103,   -12,    26,    59,  -103,    52,  -103,  -103,  -102,
+    -103,   124,    48,    61,     1,  -103,     0,  -103,  -103,  -103,
+    -103,  -103,  -103,  -103,  -103,  -103,  -103,  -103
     };
   }
 
@@ -1728,10 +1739,10 @@ public class Parser
   {
     return new short[]
     {
-       0,    19,    20,   130,    22,    23,    24,    25,    26,    27,
-      56,    28,    53,    29,    30,    31,    32,    99,   131,    33,
-      34,    35,    36,    37,   121,    42,    85,    86,    87,    88,
-     113,    39,    50,    40,    47,    69,    75
+       0,    19,    20,   132,    22,    23,    24,    25,    26,    27,
+      57,    28,    54,    29,    30,    31,    32,    33,   100,   133,
+      34,    35,    36,    37,    38,   123,    43,    86,    87,    88,
+      89,   114,    40,    51,    41,    48,    70,    76
     };
   }
 
@@ -1743,68 +1754,68 @@ public class Parser
   {
     return new short[]
     {
-      38,   132,    76,    77,    21,    81,   114,    64,    82,   115,
-      93,   149,    83,    41,    76,    77,    94,    51,    84,    89,
-      38,   117,    46,    49,    63,    54,    61,    57,    58,    96,
-     150,    59,    97,    55,   101,    60,     1,     2,     3,     4,
-      80,   154,     5,   118,   156,   119,    95,    91,   159,   120,
-      62,    92,    81,    52,    52,    82,    52,     6,   100,    83,
-     165,    90,     7,    98,     8,    84,     9,    10,    11,    78,
-      79,   145,    12,    13,   103,   146,    14,    15,    16,    17,
-     127,   128,    18,    65,    66,    67,   135,   136,   102,   134,
-     104,    68,   142,   143,   116,   111,   112,    70,    71,    72,
-      73,    74,    38,    38,   141,   122,   124,   137,   125,   138,
-     126,   107,   108,   140,   139,   129,   109,   110,   144,   133,
-     162,   105,    43,   155,     0,     0,   157,     0,   106,     0,
-       0,    38,    38,     0,     0,   147,   147,     0,     0,   164,
-       0,   166,     0,    38,     0,   168,    38,     0,     0,     0,
-      38,   151,     0,     0,    38,   152,    38,   153,   147,    38,
-     147,     0,    38,   147,   158,    38,     0,     0,     0,   147,
+      39,   119,   134,    81,    21,   115,    42,   152,   116,     1,
+       2,     3,     4,    77,    78,    82,    52,    65,    83,    62,
+      39,    96,    84,   120,    64,   121,   153,    56,    85,   122,
+      90,    53,    63,    47,    50,     7,    55,     8,    58,    59,
+      97,    53,    60,    98,   157,   102,    61,   159,    91,    14,
+      15,   162,     1,     2,     3,     4,    94,    82,     5,   103,
+      83,    92,    95,   168,    84,    93,    66,    67,    68,    99,
+      85,   104,    53,     6,    69,   105,   101,   139,     7,   140,
+       8,   141,     9,    10,    11,    77,    78,   148,    12,    13,
+     142,   149,    14,    15,    16,    17,    79,    80,    18,   117,
+     136,   147,   118,    39,    39,   129,   130,   112,   113,    71,
+      72,    73,    74,    75,   137,   138,   144,   124,   126,   143,
+     127,   165,   128,   145,   146,   108,   109,   131,   107,   106,
+      44,   135,     0,    39,    39,     0,   158,   150,   150,   160,
+     110,   111,     0,     0,     0,     0,    39,     0,     0,    39,
+       0,     0,   167,    39,   169,     0,     0,    39,   171,    39,
+       0,   150,    39,   150,   154,    39,   150,     0,    39,   155,
+       0,   156,   150,     1,     2,     3,     4,     0,   161,     5,
+       0,     0,     0,     0,     0,     0,     0,     0,     0,     0,
+       0,     0,     0,     0,     6,     0,     0,     0,     0,     7,
+       0,     8,     0,     9,    10,    11,     0,     0,   151,    12,
+      13,     0,     0,    14,    15,    16,    17,     0,     0,    18,
        1,     2,     3,     4,     0,     0,     5,     0,     0,     0,
        0,     0,     0,     0,     0,     0,     0,     0,     0,     0,
        0,     6,     0,     0,     0,     0,     7,     0,     8,     0,
-       9,    10,    11,     0,     0,   148,    12,    13,     0,     0,
+       9,    10,    11,     0,     0,   163,    12,    13,     0,     0,
       14,    15,    16,    17,     0,     0,    18,     1,     2,     3,
        4,     0,     0,     5,     0,     0,     0,     0,     0,     0,
        0,     0,     0,     0,     0,     0,     0,     0,     6,     0,
        0,     0,     0,     7,     0,     8,     0,     9,    10,    11,
-       0,     0,   160,    12,    13,     0,     0,    14,    15,    16,
+       0,     0,   164,    12,    13,     0,     0,    14,    15,    16,
       17,     0,     0,    18,     1,     2,     3,     4,     0,     0,
        5,     0,     0,     0,     0,     0,     0,     0,     0,     0,
        0,     0,     0,     0,     0,     6,     0,     0,     0,     0,
-       7,     0,     8,     0,     9,    10,    11,     0,     0,   161,
+       7,     0,     8,     0,     9,    10,    11,     0,     0,   166,
       12,    13,     0,     0,    14,    15,    16,    17,     0,     0,
       18,     1,     2,     3,     4,     0,     0,     5,     0,     0,
        0,     0,     0,     0,     0,     0,     0,     0,     0,     0,
        0,     0,     6,     0,     0,     0,     0,     7,     0,     8,
-       0,     9,    10,    11,     0,     0,   163,    12,    13,     0,
+       0,     9,    10,    11,     0,     0,   170,    12,    13,     0,
        0,    14,    15,    16,    17,     0,     0,    18,     1,     2,
        3,     4,     0,     0,     5,     0,     0,     0,     0,     0,
        0,     0,     0,     0,     0,     0,     0,     0,     0,     6,
        0,     0,     0,     0,     7,     0,     8,     0,     9,    10,
-      11,     0,     0,   167,    12,    13,     0,     0,    14,    15,
-      16,    17,     0,     0,    18,     1,     2,     3,     4,     0,
-       0,     5,     0,     0,     0,     0,     0,     0,     0,     0,
-       0,     0,     0,     0,     0,     0,     6,     0,     0,     0,
-       0,     7,     0,     8,     0,     9,    10,    11,     0,     0,
-       0,    12,    13,     0,     0,    14,    15,    16,    17,     0,
-       0,    18,     1,     2,     3,    44,     0,     0,     5,     0,
-       0,     0,     1,     2,     3,     4,     0,     0,     5,     0,
-       0,     0,     0,     6,     0,     0,     0,     0,     7,    45,
-       8,     0,     0,     6,    11,     0,     0,     0,     7,     0,
-       8,    48,    14,    15,    11,     0,     0,     0,    18,     0,
-       0,     0,    14,    15,     1,     2,     3,     4,    18,     0,
-       5,     0,     0,     0,     1,     2,     3,     4,     0,     0,
-       5,     0,     0,    52,     0,     6,     0,     0,     0,     0,
-       7,     0,     8,     0,     0,     6,    11,     0,     0,     0,
-       7,     0,     8,     0,    14,    15,    11,     0,     0,     0,
-      18,     0,     0,     0,    14,    15,     1,     2,     3,   123,
-      18,     0,     5,     0,     1,     2,     3,     4,     0,     0,
-       5,     0,     1,     2,     3,     4,     0,     6,     0,     0,
-       0,     0,     7,     0,     8,     6,     0,     0,    11,     0,
-       7,     0,     8,     0,     0,     0,    14,    15,     7,     0,
-       8,     0,    18,     0,    14,    15,     0,     0,     0,     0,
-      18,     0,    14,    15
+      11,     0,     0,     0,    12,    13,     0,     0,    14,    15,
+      16,    17,     0,     0,    18,     1,     2,     3,    45,     0,
+       0,     5,     0,     0,     0,     1,     2,     3,     4,     0,
+       0,     5,     0,     0,     0,     0,     6,     0,     0,     0,
+       0,     7,    46,     8,     0,     0,     6,    11,     0,     0,
+       0,     7,     0,     8,    49,    14,    15,    11,     0,     0,
+       0,    18,     0,     0,     0,    14,    15,     1,     2,     3,
+       4,    18,     0,     5,     0,     0,     0,     1,     2,     3,
+       4,     0,     0,     5,     0,     0,    53,     0,     6,     0,
+       0,     0,     0,     7,     0,     8,     0,     0,     6,    11,
+       0,     0,     0,     7,     0,     8,     0,    14,    15,    11,
+       0,     0,     0,    18,     0,     0,     0,    14,    15,     1,
+       2,     3,   125,    18,     0,     5,     0,     1,     2,     3,
+       4,     0,     0,     5,     0,     0,     0,     0,     0,     0,
+       6,     0,     0,     0,     0,     7,     0,     8,     6,     0,
+       0,    11,     0,     7,     0,     8,     0,     0,     0,    14,
+      15,     0,     0,     0,     0,    18,     0,    14,    15,     0,
+       0,     0,     0,    18
     };
   }
 
@@ -1813,23 +1824,28 @@ private static final short[] yycheck_ = yycheck_init();
   {
     return new short[]
     {
-       0,   103,     8,     9,     0,    24,     3,    29,    27,     6,
-      26,    28,    31,     5,     8,     9,    32,     6,    37,    25,
-      20,     7,     7,     8,    20,    10,    18,    12,    13,    51,
-      47,    16,    54,    24,    56,     6,     3,     4,     5,     6,
-      12,   143,     9,    29,   146,    31,    12,    26,   150,    35,
-       0,    30,    24,    22,    22,    27,    22,    24,    26,    31,
-     162,    12,    29,     6,    31,    37,    33,    34,    35,    10,
-      11,    38,    39,    40,    47,    42,    43,    44,    45,    46,
-      25,    26,    49,    13,    14,    15,    25,    26,    41,   111,
-      48,    21,    36,    37,     3,    80,    81,    16,    17,    18,
-      19,    20,   102,   103,   126,    90,    91,    32,    93,    30,
-      95,    76,    77,    12,    32,   100,    78,    79,     6,   104,
-      47,    69,     6,   145,    -1,    -1,   148,    -1,    75,    -1,
-      -1,   131,   132,    -1,    -1,   131,   132,    -1,    -1,   161,
-      -1,   163,    -1,   143,    -1,   167,   146,    -1,    -1,    -1,
-     150,   136,    -1,    -1,   154,   140,   156,   142,   154,   159,
-     156,    -1,   162,   159,   149,   165,    -1,    -1,    -1,   165,
+       0,     7,   104,    12,     0,     3,     5,    28,     6,     3,
+       4,     5,     6,     8,     9,    24,     6,    29,    27,    18,
+      20,    12,    31,    29,    20,    31,    47,    24,    37,    35,
+      25,    22,     0,     7,     8,    29,    10,    31,    12,    13,
+      52,    22,    16,    55,   146,    57,     6,   149,    12,    43,
+      44,   153,     3,     4,     5,     6,    26,    24,     9,    41,
+      27,    26,    32,   165,    31,    30,    13,    14,    15,     6,
+      37,    47,    22,    24,    21,    48,    26,    32,    29,    32,
+      31,    30,    33,    34,    35,     8,     9,    38,    39,    40,
+      32,    42,    43,    44,    45,    46,    10,    11,    49,     3,
+     112,     6,     6,   103,   104,    25,    26,    81,    82,    16,
+      17,    18,    19,    20,    25,    26,   128,    91,    92,    12,
+      94,    47,    96,    36,    37,    77,    78,   101,    76,    70,
+       6,   105,    -1,   133,   134,    -1,   148,   133,   134,   151,
+      79,    80,    -1,    -1,    -1,    -1,   146,    -1,    -1,   149,
+      -1,    -1,   164,   153,   166,    -1,    -1,   157,   170,   159,
+      -1,   157,   162,   159,   138,   165,   162,    -1,   168,   143,
+      -1,   145,   168,     3,     4,     5,     6,    -1,   152,     9,
+      -1,    -1,    -1,    -1,    -1,    -1,    -1,    -1,    -1,    -1,
+      -1,    -1,    -1,    -1,    24,    -1,    -1,    -1,    -1,    29,
+      -1,    31,    -1,    33,    34,    35,    -1,    -1,    38,    39,
+      40,    -1,    -1,    43,    44,    45,    46,    -1,    -1,    49,
        3,     4,     5,     6,    -1,    -1,     9,    -1,    -1,    -1,
       -1,    -1,    -1,    -1,    -1,    -1,    -1,    -1,    -1,    -1,
       -1,    24,    -1,    -1,    -1,    -1,    29,    -1,    31,    -1,
@@ -1852,29 +1868,24 @@ private static final short[] yycheck_ = yycheck_init();
        5,     6,    -1,    -1,     9,    -1,    -1,    -1,    -1,    -1,
       -1,    -1,    -1,    -1,    -1,    -1,    -1,    -1,    -1,    24,
       -1,    -1,    -1,    -1,    29,    -1,    31,    -1,    33,    34,
-      35,    -1,    -1,    38,    39,    40,    -1,    -1,    43,    44,
+      35,    -1,    -1,    -1,    39,    40,    -1,    -1,    43,    44,
       45,    46,    -1,    -1,    49,     3,     4,     5,     6,    -1,
-      -1,     9,    -1,    -1,    -1,    -1,    -1,    -1,    -1,    -1,
-      -1,    -1,    -1,    -1,    -1,    -1,    24,    -1,    -1,    -1,
-      -1,    29,    -1,    31,    -1,    33,    34,    35,    -1,    -1,
-      -1,    39,    40,    -1,    -1,    43,    44,    45,    46,    -1,
-      -1,    49,     3,     4,     5,     6,    -1,    -1,     9,    -1,
-      -1,    -1,     3,     4,     5,     6,    -1,    -1,     9,    -1,
-      -1,    -1,    -1,    24,    -1,    -1,    -1,    -1,    29,    30,
-      31,    -1,    -1,    24,    35,    -1,    -1,    -1,    29,    -1,
-      31,    32,    43,    44,    35,    -1,    -1,    -1,    49,    -1,
-      -1,    -1,    43,    44,     3,     4,     5,     6,    49,    -1,
-       9,    -1,    -1,    -1,     3,     4,     5,     6,    -1,    -1,
-       9,    -1,    -1,    22,    -1,    24,    -1,    -1,    -1,    -1,
-      29,    -1,    31,    -1,    -1,    24,    35,    -1,    -1,    -1,
-      29,    -1,    31,    -1,    43,    44,    35,    -1,    -1,    -1,
-      49,    -1,    -1,    -1,    43,    44,     3,     4,     5,     6,
-      49,    -1,     9,    -1,     3,     4,     5,     6,    -1,    -1,
-       9,    -1,     3,     4,     5,     6,    -1,    24,    -1,    -1,
-      -1,    -1,    29,    -1,    31,    24,    -1,    -1,    35,    -1,
-      29,    -1,    31,    -1,    -1,    -1,    43,    44,    29,    -1,
-      31,    -1,    49,    -1,    43,    44,    -1,    -1,    -1,    -1,
-      49,    -1,    43,    44
+      -1,     9,    -1,    -1,    -1,     3,     4,     5,     6,    -1,
+      -1,     9,    -1,    -1,    -1,    -1,    24,    -1,    -1,    -1,
+      -1,    29,    30,    31,    -1,    -1,    24,    35,    -1,    -1,
+      -1,    29,    -1,    31,    32,    43,    44,    35,    -1,    -1,
+      -1,    49,    -1,    -1,    -1,    43,    44,     3,     4,     5,
+       6,    49,    -1,     9,    -1,    -1,    -1,     3,     4,     5,
+       6,    -1,    -1,     9,    -1,    -1,    22,    -1,    24,    -1,
+      -1,    -1,    -1,    29,    -1,    31,    -1,    -1,    24,    35,
+      -1,    -1,    -1,    29,    -1,    31,    -1,    43,    44,    35,
+      -1,    -1,    -1,    49,    -1,    -1,    -1,    43,    44,     3,
+       4,     5,     6,    49,    -1,     9,    -1,     3,     4,     5,
+       6,    -1,    -1,     9,    -1,    -1,    -1,    -1,    -1,    -1,
+      24,    -1,    -1,    -1,    -1,    29,    -1,    31,    24,    -1,
+      -1,    35,    -1,    29,    -1,    31,    -1,    -1,    -1,    43,
+      44,    -1,    -1,    -1,    -1,    49,    -1,    43,    44,    -1,
+      -1,    -1,    -1,    49
     };
   }
 
@@ -1888,20 +1899,21 @@ private static final short[] yycheck_ = yycheck_init();
        0,     3,     4,     5,     6,     9,    24,    29,    31,    33,
       34,    35,    39,    40,    43,    44,    45,    46,    49,    51,
       52,    53,    54,    55,    56,    57,    58,    59,    61,    63,
-      64,    65,    66,    69,    70,    71,    72,    73,    75,    81,
-      83,    73,    75,    70,     6,    30,    63,    84,    32,    63,
-      82,     6,    22,    62,    63,    24,    60,    63,    63,    63,
-       6,    73,     0,    53,    62,    13,    14,    15,    21,    85,
-      16,    17,    18,    19,    20,    86,     8,     9,    10,    11,
-      12,    24,    27,    31,    37,    76,    77,    78,    79,    25,
-      12,    26,    30,    26,    32,    12,    62,    62,     6,    67,
-      26,    62,    41,    47,    48,    64,    65,    71,    71,    72,
-      72,    63,    63,    80,     3,     6,     3,     7,    29,    31,
-      35,    74,    63,     6,    63,    63,    63,    25,    26,    63,
-      53,    68,    68,    63,    62,    25,    26,    32,    30,    32,
-      12,    62,    36,    37,     6,    38,    42,    53,    38,    28,
-      47,    63,    63,    63,    68,    62,    68,    62,    63,    68,
-      38,    38,    47,    38,    62,    68,    62,    38,    62
+      64,    65,    66,    67,    70,    71,    72,    73,    74,    76,
+      82,    84,    74,    76,    71,     6,    30,    63,    85,    32,
+      63,    83,     6,    22,    62,    63,    24,    60,    63,    63,
+      63,     6,    74,     0,    53,    62,    13,    14,    15,    21,
+      86,    16,    17,    18,    19,    20,    87,     8,     9,    10,
+      11,    12,    24,    27,    31,    37,    77,    78,    79,    80,
+      25,    12,    26,    30,    26,    32,    12,    62,    62,     6,
+      68,    26,    62,    41,    47,    48,    64,    66,    72,    72,
+      73,    73,    63,    63,    81,     3,     6,     3,     6,     7,
+      29,    31,    35,    75,    63,     6,    63,    63,    63,    25,
+      26,    63,    53,    69,    69,    63,    62,    25,    26,    32,
+      32,    30,    32,    12,    62,    36,    37,     6,    38,    42,
+      53,    38,    28,    47,    63,    63,    63,    69,    62,    69,
+      62,    63,    69,    38,    38,    47,    38,    62,    69,    62,
+      38,    62
     };
   }
 
@@ -1913,14 +1925,14 @@ private static final short[] yycheck_ = yycheck_init();
     {
        0,    50,    51,    51,    52,    52,    53,    53,    53,    53,
       53,    53,    53,    53,    54,    54,    55,    56,    57,    57,
-      58,    58,    59,    60,    60,    61,    62,    63,    63,    63,
-      64,    64,    65,    66,    66,    67,    67,    67,    68,    68,
-      69,    69,    70,    70,    70,    71,    71,    71,    72,    72,
-      72,    72,    73,    73,    73,    73,    73,    73,    73,    73,
-      73,    74,    74,    74,    74,    75,    75,    76,    76,    76,
-      77,    78,    78,    79,    80,    80,    80,    81,    81,    82,
-      82,    83,    83,    84,    84,    84,    84,    85,    85,    85,
-      85,    86,    86,    86,    86,    86
+      58,    58,    59,    60,    60,    61,    62,    63,    63,    64,
+      64,    65,    65,    66,    67,    67,    68,    68,    68,    69,
+      69,    70,    70,    71,    71,    71,    72,    72,    72,    73,
+      73,    73,    73,    74,    74,    74,    74,    74,    74,    74,
+      74,    74,    75,    75,    75,    75,    76,    76,    77,    77,
+      77,    78,    78,    79,    79,    80,    81,    81,    81,    82,
+      82,    83,    83,    84,    84,    85,    85,    85,    85,    86,
+      86,    86,    86,    87,    87,    87,    87,    87
     };
   }
 
@@ -1932,14 +1944,14 @@ private static final short[] yycheck_ = yycheck_init();
     {
        0,     2,     0,     1,     1,     2,     1,     1,     1,     1,
        1,     1,     1,     1,     6,     8,     4,     6,    10,     8,
-       3,     5,     3,     1,     3,     2,     1,     1,     3,     1,
-       1,     3,     1,     7,     6,     0,     1,     3,     1,     2,
-       2,     3,     1,     3,     3,     1,     3,     3,     1,     3,
-       2,     2,     1,     1,     1,     3,     1,     1,     1,     1,
-       1,     1,     1,     2,     2,     1,     2,     1,     1,     1,
-       3,     2,     2,     3,     0,     1,     3,     2,     3,     1,
-       3,     2,     3,     1,     3,     3,     5,     1,     1,     1,
-       1,     1,     1,     1,     1,     1
+       3,     5,     3,     1,     3,     2,     1,     1,     1,     1,
+       3,     1,     3,     1,     7,     6,     0,     1,     3,     1,
+       2,     2,     3,     1,     3,     3,     1,     3,     3,     1,
+       3,     2,     2,     1,     1,     1,     3,     1,     1,     1,
+       1,     1,     1,     1,     2,     2,     1,     2,     1,     1,
+       1,     3,     3,     2,     2,     3,     0,     1,     3,     2,
+       3,     1,     3,     2,     3,     1,     3,     3,     5,     1,
+       1,     1,     1,     1,     1,     1,     1,     1
     };
   }
 
@@ -2001,7 +2013,7 @@ private static final short[] yycheck_ = yycheck_init();
 
   private static final int YYLAST_ = 613;
   private static final int YYEMPTY_ = -2;
-  private static final int YYFINAL_ = 62;
+  private static final int YYFINAL_ = 63;
   private static final int YYNTOKENS_ = 50;
 
 /* Unqualified %code blocks.  */
@@ -2029,10 +2041,10 @@ private static final short[] yycheck_ = yycheck_init();
 		System.out.println(p.getRoot());
 	}
 
-/* "app/src/main/java/org/projectD/interpreter/parser/Parser.java":2033  */
+/* "app/src/main/java/org/projectD/interpreter/parser/Parser.java":2045  */
 
 }
-/* "parser.y":469  */
+/* "parser.y":473  */
 
 
 

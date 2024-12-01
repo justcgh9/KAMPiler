@@ -458,18 +458,26 @@ public class Evaluator {
             if (!(current instanceof ObjectTypeDemo.ArrayObject)) {return newError("%s is not a list", current);}
     
             List<ObjectTypeDemo.Object> result = new ArrayList<>(((ObjectTypeDemo.ArrayObject) current).getValue());
+            if (indices.size() == 1) {
+                for(var j = result.size(); j <= indices.get(0).intValue(); j++) {
+                    result.add(j, NULL);
+                }
+                
+                result.set(indices.get(0).intValue(), eval(expr.getRight(), environment));
+                return environment.setInNonLocal(ident.getName(), new ObjectTypeDemo.ArrayObject(result));
+            }
+
             for (int i = 0; i < indices.size(); i++) {
                 if(i == indices.size() - 1) {
                     for(var j = result.size(); j <= indices.get(i).intValue(); j++) {
                         result.add(j, NULL);
                     }
-
+                    
                     result.set(indices.get(i).intValue(), eval(expr.getRight(), environment));
-                    return environment.setInNonLocal(ident.getName(), new ArrayObject(result));
-                                    
+                    return environment.setInNonLocal(ident.getName(), current);
                 }
     
-                var temp = result.get(i);
+                var temp = result.get(indices.get(i).intValue());
                 if (!(temp instanceof ObjectTypeDemo.ArrayObject)) {return newError("%s is not a list", current);}
     
                 result = ((ObjectTypeDemo.ArrayObject) temp).getValue();
@@ -524,6 +532,10 @@ public class Evaluator {
             if (left.getType() == ObjectType.ARRAY_OBJ && right.getType() == ObjectType.ARRAY_OBJ) {
                 return evalArrayInfixExpression(operator, left, right);
             }
+
+            if (left.getType() == ObjectType.BOOLEAN_OBJ && right.getType() == ObjectType.BOOLEAN_OBJ) {
+                return evalBooleanInfixExpression(operator, left, right);
+            }
     
             if (left.getType() == ObjectType.TUPLE_OBJ && right.getType() == ObjectType.TUPLE_OBJ) {
                 return evalTupleInfixExpression(operator, left, right);
@@ -538,6 +550,23 @@ public class Evaluator {
             }
             
             return newError("unknown operator: %s %s", operator, right.getType());
+        }
+
+        private ObjectTypeDemo.Object evalBooleanInfixExpression(String operator, ObjectTypeDemo.Object left, ObjectTypeDemo.Object right) {
+            boolean leftVal, rightVal;
+            leftVal = ((ObjectTypeDemo.Boolean) left).getValue();
+            rightVal = ((ObjectTypeDemo.Boolean) right).getValue();
+            switch (operator) {
+                case "or":
+                    return nativeBooleanToBooleanObject(leftVal || rightVal);
+                case "and":
+                    return nativeBooleanToBooleanObject(leftVal && rightVal);
+                case "xor":
+                    return nativeBooleanToBooleanObject(leftVal ^ rightVal);
+            
+                default:
+                    return newError("unknown operator: %s %s", operator, right.getType());
+            }
         }
     
         private ObjectTypeDemo.Object evalNumericInfixExpression(String operator, ObjectTypeDemo.Object left, ObjectTypeDemo.Object right) {
@@ -635,6 +664,8 @@ public class Evaluator {
                     break;
                 case "=":
                     return nativeBooleanToBooleanObject(leftValue.replaceAll("^\"|\"$", "").equals(rightValue.replaceAll("^\"|\"$", "")));
+                case "!=":
+                    return nativeBooleanToBooleanObject(!leftValue.replaceAll("^\"|\"$", "").equals(rightValue.replaceAll("^\"|\"$", "")));    
                 default:
                     return newError("Unknown operator: %s %s %s", left.getType(), operator, right.getType());
                 }

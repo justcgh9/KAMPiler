@@ -213,10 +213,13 @@ LineBreak
 	;
 
 Expression
-	: Relation
-	| Relation BoolOp Relation {var exp = (Ast.InfixExpression) $2; exp.setLeft((Ast.Expression) $1); exp.setRight((Ast.Expression) $3); $$ = exp;}
+	: Something
 	| FuncLiteral
 	;
+
+Something
+	: Relation
+	| Relation BoolOp Something {var exp = (Ast.InfixExpression) $2; exp.setLeft((Ast.Expression) $1); exp.setRight((Ast.Expression) $3); $$ = exp;}
 
 Relation
 	: Factor 
@@ -377,6 +380,7 @@ Tail
 
 ArrayTail
 	: LBRACKET INT RBRACKET {var idx = new Ast.IndexLiteral((Ast.IntegerLiteral) $2); idx.setToken(new Token("[]", TokenType.LBRACKET)); $$ = idx;}
+	| LBRACKET IDENT RBRACKET {var idx = new Ast.IndexLiteral((Ast.Identifier) $2); idx.setToken(new Token("[]", TokenType.LBRACKET)); $$ = idx;}
 	;
 
 TupleTail
